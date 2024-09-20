@@ -1,7 +1,9 @@
 .DS_Store
 .vscode
 
-**/.exe
+TestFiles/*.json
+
+**/*.exe
 **/_build
 **/build
 
