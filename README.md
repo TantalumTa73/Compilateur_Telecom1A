@@ -14,10 +14,16 @@ git branch -M main
 git push -uf origin main
 ```
 
-## How to use Make and CMake
+## How to compile
 
-- Write `cd Interpreter/build`
-- Write `cmake ..`
-- Write `make`
-- Write `./main`
+### Dune
+
+- Write `dune build --root ParserLexer`
+- Write `./ParserLexer/expr2json.exe TestFiles/test.c`
+
+### CMake and Make
+
+- Write `cmake Interpreter -B Interpreter/build`
+- Write `make -C Interpreter/build `
+- Write `./Interpreter/main TestFiles/test.json`
 
