@@ -7,11 +7,12 @@
 %token LB RB LP RP EQ
 %token <string> IDENT
 %token <int> CST
+%token MULT PLUS
 
-/* Point d'entrée de la grammaire */
+/* Point d'entrï¿½e de la grammaire */
 %start prog
 
-/* Type des valeurs retournées par l'analyseur syntaxique */
+/* Type des valeurs retournï¿½es par l'analyseur syntaxique */
 %type <Ast.program> prog
 
 %%
@@ -25,11 +26,22 @@ def:
 | INT f = IDENT LP INT x = IDENT RP LB body = list(stmt) RB { Gfun(f, x, body, $loc)  }
 ;
 
-
 stmt:
 | id = IDENT EQ e = expr SEMICOLON { Set(id,e, $loc) }
 ;
 
+// utilisation de grammaires non ambigues depuis https://en.wikipedia.org/wiki/Syntax_diagram
 expr:
-| c = CST { Cst(c, $loc)}
+| t = term { ExprSingle(t, $loc) }
+| t = term PLUS e = expr { ExprDouble(t, "plus", e, $loc) }
+;
+
+term:
+| f = factor { TermSingle(f, $loc) }
+| f = factor MULT t = term { TermDouble(f, "mult", t, $loc) } 
+;
+
+factor:
+| c = CST { Cst(c, $loc) }
+| LP e = expr RP { Parenthesis(e, $loc) }
 ;

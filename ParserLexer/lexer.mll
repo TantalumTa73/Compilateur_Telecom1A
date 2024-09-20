@@ -26,6 +26,8 @@ rule token = parse
   | '('     { LP }
   | ')'     { RP }
   | '='     { EQ }
+  | '*'     { MULT }
+  | '+'     { PLUS }
   | eof     { EOF }
   | _ as c  { raise (Lexing_error c) }
  

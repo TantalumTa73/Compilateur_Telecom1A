@@ -6,3 +6,5 @@ TestFiles/*.json
 **/*.exe
 **/_build
 **/build
+
+**/expr2json.exe
