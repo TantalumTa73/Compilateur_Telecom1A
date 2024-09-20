@@ -5,5 +5,5 @@ int w ;
 int u ;
 
 int main ( int a ) {
-  u = 42 ;
+  u = 3 + 8;
 }
