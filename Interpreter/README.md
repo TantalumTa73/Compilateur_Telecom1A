@@ -1,5 +1,12 @@
 # Interpreter
 
+## How to compile
+
+- Write `cd Interpreter/build`
+- Write `cmake ..`
+- Write `make`
+- Write `./main`
+
 ## File organization
 
 - token.cpp : define differents tokens
