@@ -1,4 +1,6 @@
 .DS_Store
+.vscode
 
-expr2json.exe
-_build
+**/.exe
+**/_build
+**/build
