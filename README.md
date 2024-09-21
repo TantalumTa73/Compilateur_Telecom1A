@@ -36,5 +36,5 @@ When you modify something in ParserLexer, please add a test file in TestFiles.
 
 - Write `cmake Interpreter -B Interpreter/build`
 - Write `make -C Interpreter/build `
-- Write `./Interpreter/main TestFiles/my_file.json`
+- Write `./Interpreter/build/main TestFiles/my_file.json`
 
