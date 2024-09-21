@@ -1,6 +1,5 @@
-int x ;
 
 int main(int a) {
-    x = 42 ;
+    a = 1 ;
 }
 

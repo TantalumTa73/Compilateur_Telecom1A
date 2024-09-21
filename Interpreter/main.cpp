@@ -1,8 +1,7 @@
 #include <unordered_map> // dictionary
 #include <iostream>
 
-#include "json_reader.cpp"
-// #include "token.hpp"
+#include "json_reader.hpp"
 
 int main(int argc, char *argv[]) {
     

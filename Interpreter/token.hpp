@@ -20,16 +20,23 @@ class Token {
         int start_char ;
         int end_line ;
         int end_char ;
-        std::vector<Token> childs ;
+        Token* parent ;
 
-        Token() ;
+        std::vector<Token> childs ;
+        std::unordered_map<std::string, std::string> attributes ;
+
+        Token();
         Token(std::string name, int start_line, int start_char, int end_line, int end_char) ;
 
-        void add_attribute(std::string key, std::string value) ;
         std::string get_attribute(std::string key) ;
+        void set_attribute(std::string key, std::string value) ;
+        
+        void add_child(Token child) ;
 
-    private:
-        std::unordered_map<std::string, std::string> attributes ;
+        void print();
+        void print(std::string indent);
+
+    // private:
 };
 
 // class gvardef : Token {} ;
