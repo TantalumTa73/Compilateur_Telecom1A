@@ -16,14 +16,25 @@ git push -uf origin main
 
 ## How to compile
 
-### Dune
+### ParserLexer
 
-- Write `dune build --root ParserLexer`
-- Write `./ParserLexer/expr2json.exe TestFiles/test.c`
+#### Compile
+To compile the project, write `dune build --root ParserLexer`.
 
-### CMake and Make
+#### Run on file
+To run on a file, write `./ParserLexer/expr2json.exe TestFiles/my_file.c`
+
+#### Test on examples :
+To view which test pass or not, write :
+- `cmake TestFiles -B TestFiles/build`
+- `cmake --build TestFiles/build`
+- `ctest --test-dir TestFiles/build`
+
+When you modify something in ParserLexer, please add a test file in TestFiles.
+
+### Interpreter
 
 - Write `cmake Interpreter -B Interpreter/build`
 - Write `make -C Interpreter/build `
-- Write `./Interpreter/main TestFiles/test.json`
+- Write `./Interpreter/main TestFiles/my_file.json`
 

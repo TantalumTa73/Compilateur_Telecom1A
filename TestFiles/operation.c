@@ -1,6 +1,6 @@
-int x ;
 int u ;
 
 int main ( int a ) {
-  u = 42 ;
+    u = 1 + 2 ;
+    u = 2 * 3 ;
 }
