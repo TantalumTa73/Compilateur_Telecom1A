@@ -3,7 +3,6 @@
 #include "token.hpp"
 
 Token::Token(){
-    name = "";
     start_line = 0;
     start_char = 0;
     end_line = 0;
@@ -13,10 +12,9 @@ Token::Token(){
 }
 
 Token::Token(
-    std::string name_, int start_line_, int start_char_,
+    int start_line_, int start_char_,
     int end_line_, int end_char_ 
 ){
-    name = name_;
     start_line = start_line_;
     start_char = start_char_;
     end_line = end_line_;
@@ -34,7 +32,12 @@ std::string Token::get_attribute(std::string key) {
 }
 
 void Token::set_attribute(std::string key, std::string value) {
-    attributes[key] = value;
+    if      (key == "start_line") start_line = std::stoi(value);
+    else if (key == "start_char") start_char = std::stoi(value);
+    else if (key == "end_line") end_line = std::stoi(value);
+    else if (key == "end_char") end_char = std::stoi(value);
+    else attributes[key] = value;
+    
     return ;
 }
 
@@ -49,7 +52,6 @@ void Token::print(){
     return ;
 }
 void Token::print(std::string indent = ""){
-    std::cout << indent << "Name: " << name << "\n";
     std::cout << indent << "Start Line: " << start_line << "\n";
     std::cout << indent << "Start Char: " << start_char << "\n";
     std::cout << indent << "End Line: " << end_line << "\n";
