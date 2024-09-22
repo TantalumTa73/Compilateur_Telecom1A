@@ -7,7 +7,7 @@
 %token LB RB LP RP EQ
 %token <string> IDENT
 %token <int> CST
-%token MULT PLUS
+%token MULT PLUS MINUS DIVISION MODULO
 
 /* Point d'entr�e de la grammaire */
 %start prog
@@ -33,12 +33,15 @@ stmt:
 // utilisation de grammaires non ambigues depuis https://en.wikipedia.org/wiki/Syntax_diagram
 expr:
 | t = term { ExprSingle(t, $loc) }
-| t = term PLUS e = expr { ExprDouble(t, "plus", e, $loc) }
+| e = expr PLUS t = term { ExprDouble(e, "plus", t, $loc) }
+| e = expr MINUS t = term { ExprDouble(e, "minus", t, $loc) }
 ;
 
 term:
 | f = factor { TermSingle(f, $loc) }
-| f = factor MULT t = term { TermDouble(f, "mult", t, $loc) } 
+| t = term MULT f = factor { TermDouble(t, "mult", f, $loc) } 
+| t = term DIVISION f = factor { TermDouble(t, "division", f, $loc)}
+| t = term MODULO f = factor { TermDouble(t, "modulo", f, $loc) }
 ;
 
 factor:

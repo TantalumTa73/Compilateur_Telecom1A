@@ -28,6 +28,9 @@ rule token = parse
   | '='     { EQ }
   | '*'     { MULT }
   | '+'     { PLUS }
+  | '-'     { MINUS }
+  | '/'     { DIVISION }
+  | '%'     { MODULO }
   | eof     { EOF }
   | _ as c  { raise (Lexing_error c) }
  
