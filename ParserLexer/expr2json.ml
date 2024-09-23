@@ -34,14 +34,14 @@ let () =
     Ast.toJSON p |> Yojson.to_file fichier_sortie
   with
     | Lexer.Lexing_error c -> 
-	(* Erreur lexicale. On récupère sa position absolue et 
-	   on la convertit en numéro de ligne *)
+	(* Erreur lexicale. On rï¿½cupï¿½re sa position absolue et 
+	   on la convertit en numï¿½ro de ligne *)
 	localisation (Lexing.lexeme_start_p buf);
 	eprintf "Erreur dans l'analyse lexicale: %c@." c;
 	exit 1
     | Parser.Error -> 
-	(* Erreur syntaxique. On récupère sa position absolue et on la 
-	   convertit en numéro de ligne *)
+	(* Erreur syntaxique. On rï¿½cupï¿½re sa position absolue et on la 
+	   convertit en numï¿½ro de ligne *)
 	localisation (Lexing.lexeme_start_p buf);
 	eprintf "Erreur dans l'analyse syntaxique@.";
 	exit 1

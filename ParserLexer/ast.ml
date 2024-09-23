@@ -2,18 +2,21 @@ open Yojson
 
 type ppos = Lexing.position * Lexing.position
 
-type program = gdef list
+type program = loc list
 
 and gdef =
   | Gvar of string*ppos
-  | Gfun of string*string*stmt list*ppos
+  | Gfun of string*string*loc list*ppos
 
 and stmt =
   | Set of string * expr * ppos
+  | StmtFunc of string * expr * ppos
+  | Return of expr*ppos
 
 and expr =
   | ExprSingle of term*ppos
   | ExprDouble of expr*string*term*ppos
+  | ExprFunc of string*expr*ppos
 
 and term =
   | TermSingle of factor*ppos
@@ -21,7 +24,12 @@ and term =
 
 and factor =
   | Cst of int*ppos
+  | Var of string*ppos
   | Parenthesis of expr*ppos
+
+and loc =
+  | Stmt of stmt
+  | Def of gdef
 
 let pos ((s,e):ppos) =
   [ "start_line",`Int s.pos_lnum ;
@@ -37,6 +45,10 @@ let rec toJSONexpr = function
                                               "operator", `String operator ;
                                               "left", toJSONexpr e ;
                                               "right", toJSONterm t] @ pos p)
+  | ExprFunc(f, e, p) -> `Assoc (["action", `String "function" ;
+                                  "name", `String f ;
+                                  "expr", toJSONexpr e ] @ pos p)
+
 and toJSONterm = function
   | TermSingle(f, p) -> toJSONfactor f
     (*`Assoc (["type", `String "term-single" ;
@@ -50,27 +62,37 @@ and toJSONfactor = function
                           "value", `Int c] @ pos p)
   | Parenthesis(expr, p) -> `Assoc (["type", `String "cst" ;
                                      "inner", toJSONexpr expr] @ pos p) 
+  | Var(name, p) -> `Assoc (["type", `String "var" ;
+                             "name", `String name ; ] @ pos p)
                              
 let toJSONstmt = function
-  | Set(varname, e, p) -> `Assoc (["action",`String "varset";
-                               "name", `String varname;
+  | Set(varname, e, p) -> `Assoc (["action",`String "varset" ;
+                               "name", `String varname ;
                                "expr", toJSONexpr e ] @
                                 pos p)
+  | StmtFunc(funcname, e, p) -> `Assoc (["action", `String "function" ;
+                                         "name", `String funcname ; 
+                                         "expr", toJSONexpr e] @ pos p)
+  | Return(e, p) -> `Assoc (["action", `String "return" ;
+                             "expr", toJSONexpr e ] @ pos p)
 
-let toJSONdef = function
-  | Gvar(name, p)  -> `Assoc (["action",`String "gvardef";
+let rec toJSONdef = function
+  | Gvar(name, p)  -> `Assoc (["action",`String "gvardef" ;
                                "name", `String name ] @
                                 pos p)
   | Gfun(name, arg, body, p)  -> `Assoc (["action",`String "gfundef";
                                     "name", `String name ;
                                     "arg", `String arg; 
-                                    "body", `List (List.map toJSONstmt body) ] @
+                                    "body", `List (List.map toJSONloc body) ] @
                                 pos p)
 
+and toJSONloc = function 
+  | Def(d) -> toJSONdef d
+  | Stmt(s) -> toJSONstmt s
      
                  
 let toJSON (p:program) : Yojson.t =
-  `List (List.map toJSONdef p)
+  `List (List.map toJSONloc p)
 
 
   
