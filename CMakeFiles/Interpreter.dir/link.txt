@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/Interpreter.dir/interpreter.cpp.o CMakeFiles/Interpreter.dir/json_reader.cpp.o CMakeFiles/Interpreter.dir/main.cpp.o CMakeFiles/Interpreter.dir/token.cpp.o -o main
