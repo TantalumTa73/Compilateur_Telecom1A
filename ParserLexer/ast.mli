@@ -8,10 +8,12 @@ and gdef =
 
 and stmt =
   | Set of string * expr * ppos
+  | StmtFunc of string * expr * ppos 
 
 and expr =
   | ExprSingle of term*ppos
   | ExprDouble of expr*string*term*ppos
+  | ExprFunc of string*expr*ppos
 
 and term =
   | TermSingle of factor*ppos
@@ -19,6 +21,7 @@ and term =
 
 and factor =
   | Cst of int*ppos
+  | Var of string*ppos
   | Parenthesis of expr*ppos
 
 
