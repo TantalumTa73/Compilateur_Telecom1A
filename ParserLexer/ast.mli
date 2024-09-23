@@ -11,11 +11,11 @@ and stmt =
 
 and expr =
   | ExprSingle of term*ppos
-  | ExprDouble of term*string*expr*ppos
+  | ExprDouble of expr*string*term*ppos
 
 and term =
   | TermSingle of factor*ppos
-  | TermDouble of factor*string*term*ppos
+  | TermDouble of term*string*factor*ppos
 
 and factor =
   | Cst of int*ppos
