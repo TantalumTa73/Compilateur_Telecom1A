@@ -2,7 +2,10 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+
 #include "token.hpp"
+#include "functions.hpp"
+
 
 class Interpreter {
 
@@ -13,7 +16,11 @@ class Interpreter {
 
         void run() ;
 
-    // private:
+    private:
         Token root ;
-        std::unordered_map<std::string, int> variables ;
+        std::unordered_map<std::string, int> gvar ;
+        std::unordered_map<std::string, Function> functions ;
+
+        int get_value(Token token) ;
+
 };

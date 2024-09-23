@@ -19,9 +19,7 @@ int main(int argc, char *argv[]) {
     Interpreter interpreter(token);
     interpreter.run();
 
-    throw InterpretException(1, 1, 1, 1, "This is an error");
-    std::cout << "End of program" << std::endl;
-
+    
 
     return 0;
 }

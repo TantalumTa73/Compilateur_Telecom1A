@@ -2,9 +2,9 @@
 #include <string>
 #include "exception.hpp"
 
-InterpretException::InterpretException(
+InterpreterException::InterpreterException(
             int start_line, int start_char,
-            int end_line, int end_char, const char* msg
+            int end_line, int end_char, std::string msg
 ) : start_line(start_line), start_char(start_char), 
 end_line(end_line), end_char(end_char),
 message(msg) {
@@ -15,6 +15,6 @@ message(msg) {
         ", char " + std::to_string(end_char) + ": " + message;
 };
 
-const char* InterpretException::what() const throw(){
+const char* InterpreterException::what() const throw(){
     return error_message.c_str();
 }

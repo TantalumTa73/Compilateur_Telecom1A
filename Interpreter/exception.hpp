@@ -1,7 +1,7 @@
 #include <exception>
 #include <string>
 
-class InterpretException : public std::exception {
+class InterpreterException : public std::exception {
     private:
         std::string message;
         std::string error_message;
@@ -11,9 +11,11 @@ class InterpretException : public std::exception {
         int end_char ;
 
     public:
-        InterpretException(
+        InterpreterException(
             int start_line, int start_char,
-            int end_line, int end_char, const char* msg
+            int end_line, int end_char,
+            // const char* msg
+            std::string msg
         ) ;
 
         const char* what() const throw();

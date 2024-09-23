@@ -1,6 +1,6 @@
 int u ;
 
 int main ( int a ) {
-    u = 1 + 2 ;
+    a = 1 ;
     u = 2 * 3 ;
 }
