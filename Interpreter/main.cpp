@@ -2,6 +2,9 @@
 #include <iostream>
 
 #include "json_reader.hpp"
+#include "token.hpp"
+#include "interpreter.hpp"
+#include "exception.hpp"
 
 int main(int argc, char *argv[]) {
     
@@ -12,7 +15,13 @@ int main(int argc, char *argv[]) {
 
     std::string filename = argv[1];
     JsonReader reader(filename);
-    reader.readFile();
+    Token token = reader.readFile();
+    Interpreter interpreter(token);
+    interpreter.run();
+
+    throw InterpretException(1, 1, 1, 1, "This is an error");
+    std::cout << "End of program" << std::endl;
+
 
     return 0;
 }

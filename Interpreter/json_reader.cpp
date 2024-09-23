@@ -70,10 +70,6 @@ Token JsonReader::readFile(){
     // std::cout << "End at object : " << token_ptr << " (" << (token_ptr==&root)<< ")\n";
 
 
-    std::cout << "Printing objects\n\n";
-    for (Token t : root.childs) t.print();
-    
-
     return root;
 }
 
