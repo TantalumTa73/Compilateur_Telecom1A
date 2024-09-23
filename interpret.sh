@@ -1,7 +1,9 @@
 #!/bin/bash
 
+_cfilename="${1:-file.c}"
+echo "$_cfilename"
 dune build --root ParserLexer
-./ParserLexer/expr2json.exe TestFiles/file.c
+./ParserLexer/expr2json.exe "$_cfilename"
 cmake Interpreter -B Interpreter/build
 make -C Interpreter/build/
-./Interpreter/build/main TestFiles/file.json
+./Interpreter/build/main "${_cfilename%".c"}.json"
