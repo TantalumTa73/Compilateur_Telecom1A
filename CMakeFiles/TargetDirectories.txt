@@ -1,3 +1,0 @@
-/Users/dadidou/Documents/Telecom/1A/Info/Compilation/Imperative_Compiler/CMakeFiles/Interpreter.dir
-/Users/dadidou/Documents/Telecom/1A/Info/Compilation/Imperative_Compiler/CMakeFiles/edit_cache.dir
-/Users/dadidou/Documents/Telecom/1A/Info/Compilation/Imperative_Compiler/CMakeFiles/rebuild_cache.dir
