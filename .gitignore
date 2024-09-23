@@ -8,3 +8,5 @@ TestFiles/*.json
 **/build
 
 **/expr2json.exe
+
+**/*tester.sh
