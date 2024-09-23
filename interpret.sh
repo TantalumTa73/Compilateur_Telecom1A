@@ -1,7 +1,6 @@
 #!/bin/bash
 
 _cfilename="${1:-file.c}"
-echo "$_cfilename"
 dune build --root ParserLexer
 ./ParserLexer/expr2json.exe "$_cfilename"
 cmake Interpreter -B Interpreter/build
