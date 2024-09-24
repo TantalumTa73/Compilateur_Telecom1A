@@ -102,8 +102,9 @@ int Interpreter::get_value(Token token){
 
 void Interpreter::call_function(){
     std::string fun_name = actual_token.get_attribute("name");
-    std::string argument = actual_token.get_attribute("arg");
+    std::string argument = actual_token.childs[0].get_attribute("arg");
     v_cout << "Calling function " << fun_name << std::endl;
+    v_cout << "Argument: " << argument << std::endl;
 
     if (fun_name == "print"){
         v_cout << "Printing " << get_var(argument) << std::endl;
