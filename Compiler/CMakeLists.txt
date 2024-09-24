@@ -13,6 +13,8 @@ file(GLOB libs_file CONFIGURE_DEPENDS
     ../Interpreter/json_reader.hpp
     ../Interpreter/token.cpp
     ../Interpreter/token.hpp
+    interpreter.cpp
+    interpreter.hpp
     *.cpp
     *.hpp
 )
