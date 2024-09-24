@@ -6,3 +6,44 @@
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
 [100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+running file TestFiles/variable.json
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+c file    : TestFiles/variable.json
+json file : TestFiles/variable.json
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/yann/Documents/Cours/Telecom/Info/IMP_comp/Interpreter/build
+[100%] Built target Interpreter
+c file    : TestFiles/variable.c
+json file : TestFiles/variable.json
