@@ -5,5 +5,5 @@ eval $(opam env)
 dune build
 cd ..
 cp ParserLexer/expr2json.exe .
-./expr2json.exe file.c
-python3 PythonInterpreter/interpreter.py file.json
+./expr2json.exe $1.c
+python3 PythonInterpreter/interpreter.py $1.json

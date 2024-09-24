@@ -8,7 +8,8 @@ and gdef =
 
 and stmt =
   | Set of string * expr * ppos
-  | StmtFunc of string * expr * ppos 
+  | StmtFunc of string * expr * ppos
+  | StmtRead of string * ppos 
   | Return of expr * ppos
 
 and expr =
@@ -23,6 +24,7 @@ and term =
 and factor =
   | Cst of int*ppos
   | Var of string*ppos
+  | Minus of factor*ppos
   | Parenthesis of expr*ppos
 
 and loc = 

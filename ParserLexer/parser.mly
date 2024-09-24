@@ -57,5 +57,6 @@ term:
 factor:
 | c = CST { Cst(c, $loc) }
 | id = IDENT { Var(id, $loc) }
+| MINUS f = factor { Minus(f, $loc) }
 | LP e = expr RP { Parenthesis(e, $loc) }
 ;

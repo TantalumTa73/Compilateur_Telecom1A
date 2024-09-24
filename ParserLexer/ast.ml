@@ -11,13 +11,14 @@ and gdef =
 and stmt =
   | Set of string * expr * ppos
   | StmtFunc of string * expr * ppos
+  | StmtRead of string * ppos
   | Return of expr*ppos
 
 and expr =
   | ExprSingle of term*ppos
   | ExprDouble of expr*string*term*ppos
   | ExprFunc of string*expr*ppos
-
+  
 and term =
   | TermSingle of factor*ppos
   | TermDouble of term*string*factor*ppos
@@ -25,6 +26,7 @@ and term =
 and factor =
   | Cst of int*ppos
   | Var of string*ppos
+  | Minus of factor*ppos
   | Parenthesis of expr*ppos
 
 and loc =
@@ -60,10 +62,12 @@ and toJSONterm = function
 and toJSONfactor = function
   | Cst(c, p) -> `Assoc (["type", `String "cst" ;
                           "value", `Int c] @ pos p)
-  | Parenthesis(expr, p) -> `Assoc (["type", `String "cst" ;
+  | Parenthesis(expr, p) -> `Assoc (["type", `String "parenthesis" ;
                                      "inner", toJSONexpr expr] @ pos p) 
   | Var(name, p) -> `Assoc (["type", `String "var" ;
                              "name", `String name ; ] @ pos p)
+  | Minus(f, p) -> `Assoc (["type", `String "opposite" ;
+                            "expr", toJSONfactor f] @ pos p)
                              
 let toJSONstmt = function
   | Set(varname, e, p) -> `Assoc (["action",`String "varset" ;
@@ -73,6 +77,9 @@ let toJSONstmt = function
   | StmtFunc(funcname, e, p) -> `Assoc (["action", `String "function" ;
                                          "name", `String funcname ; 
                                          "expr", toJSONexpr e] @ pos p)
+  | StmtRead(varname, p) -> `Assoc (["action", `String "function" ;
+                                     "name", `String "read" ;
+                                     "var", `String varname] @ pos p)
   | Return(e, p) -> `Assoc (["action", `String "return" ;
                              "expr", toJSONexpr e ] @ pos p)
 

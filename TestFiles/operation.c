@@ -7,14 +7,44 @@ int f ( int a ) {
 }
 
 int main ( int a ) {
-    a = 1 ;
-    u = 2 * 3 ;
-    u = 15 / 5 * 3 ;
-    u = 3 + u ;
+    a = 15 / -5;
+    print(a);
+    
+    a = 5 + 5 / 5;
+    print(a);
 
-    print(45 * u + 7);
-    u = f(8);
-    print(u);
+    a = 1 + 1 + 1 + 1 + 1 + 1;
+    print(a);
+
+    a = 1 - 1;
+    print(a);
+
+    a = -1 - 1;
+    print(a);
+
+    a = -1 + (-1) * 3;
+    print(a);
+
+    a = 15 / (3 * 5);
+    print(a);
+
+    a = 15 / 3 * 5;
+    print(a);
+
+    a = -5 / 5;
+    print(a);
+
+    a = (1);
+    print(a);
+
+    a = 18 / (3 + 3 + 1 - 1);
+    print(a);
+
+    a = 15 / (-3) + 2;
+    print(a);
+
+    a = -a + 5;
+    print(a);
 
     return f(3);
 }
