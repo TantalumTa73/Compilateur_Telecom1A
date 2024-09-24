@@ -62,8 +62,9 @@ and toJSONfactor = function
                                      "inner", toJSONexpr expr] @ pos p) 
   | Var(name, p) -> `Assoc (["type", `String "var" ;
                              "name", `String name ; ] @ pos p)
-  | Minus(f, p) -> `Assoc (["type", `String "opposite" ;
-                            "expr", toJSONfactor f] @ pos p)
+  | Minus(f, p) -> `Assoc (["type", `String "operation" ;
+                            "operator", `String "uminus" ;
+                            "right", toJSONfactor f] @ pos p)
   | FactorFunc(f, e, p) -> `Assoc (["action", `String "function" ;
                                   "name", `String f ;
                                   "expr", toJSONexpr e ] @ pos p)

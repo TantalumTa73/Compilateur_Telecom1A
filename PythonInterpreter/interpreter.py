@@ -71,9 +71,6 @@ def eval_expr(expr):
     if "type" not in expr:
         raise Exception("expr should have a type if it is not a function")
 
-    if expr["type"] == "opposite":
-        return -eval_expr(expr["expr"])
-
     operators = {
         "plus": lambda x, y: x + y,
         "minus": lambda x, y: x - y,
@@ -83,6 +80,10 @@ def eval_expr(expr):
     }
 
     if expr["type"] == "operation":
+
+        if expr["operator"] == "uminus":
+            return -eval_expr(expr["right"])
+
         l_eval = eval_expr(expr["left"])
         r_eval = eval_expr(expr["right"])
         return operators[expr["operator"]](l_eval, r_eval)
