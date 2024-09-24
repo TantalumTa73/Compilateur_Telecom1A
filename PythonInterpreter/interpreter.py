@@ -19,6 +19,7 @@ def call_function(func_name, argument):
 
     if func_name == "print":
         print(argument)
+        # print(variables, local_variables)
         return
     
     f: Function = functions[func_name]
@@ -47,7 +48,9 @@ def call_function(func_name, argument):
                     raise Exception(f"variable {var_name} was never initialized")
     
             if element["action"] == "return":
-                return eval_expr(element["expr"])
+                ret_value = eval_expr(element["expr"])
+                local_variables.pop()
+                return ret_value 
             
             if element["action"] == "function":
                 call_function(element["name"], eval_expr(element["expr"]))
@@ -64,9 +67,12 @@ def eval_expr(expr):
     if "action" in expr:
         if expr["action"] == "function":
             return call_function(expr["name"], eval_expr(expr["expr"]))  
-    
+
     if "type" not in expr:
         raise Exception("expr should have a type if it is not a function")
+
+    if expr["type"] == "opposite":
+        return -eval_expr(expr["expr"])
 
     operators = {
         "plus": lambda x, y: x + y,
@@ -81,8 +87,11 @@ def eval_expr(expr):
         r_eval = eval_expr(expr["right"])
         return operators[expr["operator"]](l_eval, r_eval)
         
-    if expr["type"] == "cst":
+    if expr["type"] == "cst": 
         return expr["value"]
+    
+    if expr["type"] == "parenthesis":
+        return eval_expr(expr["inner"])
         
     if expr["type"] == "var":
         
@@ -92,7 +101,8 @@ def eval_expr(expr):
         elif var_name in variables:
             return variables[var_name]
         else:
-            raise Exception(f"Variable {var_name} has never been defined before")
+            print()
+            raise Exception(f"Variable {var_name} has never been defined before", expr["start_line"])
 
 
 

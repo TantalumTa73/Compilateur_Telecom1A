@@ -44,7 +44,6 @@ expr:
 | t = term { ExprSingle(t, $loc) }
 | e = expr PLUS t = term { ExprDouble(e, "plus", t, $loc) }
 | e = expr MINUS t = term { ExprDouble(e, "minus", t, $loc) }
-| f = IDENT LP e = expr RP { ExprFunc(f, e, $loc) }
 ;
 
 term:
@@ -57,5 +56,7 @@ term:
 factor:
 | c = CST { Cst(c, $loc) }
 | id = IDENT { Var(id, $loc) }
+| MINUS f = factor { Minus(f, $loc) }
 | LP e = expr RP { Parenthesis(e, $loc) }
+| f = IDENT LP e = expr RP { FactorFunc(f, e, $loc) }
 ;
