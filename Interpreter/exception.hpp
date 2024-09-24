@@ -1,6 +1,8 @@
 #include <exception>
 #include <string>
 
+#include "token.hpp"
+
 class InterpreterException : public std::exception {
     private:
         std::string message;
@@ -17,6 +19,7 @@ class InterpreterException : public std::exception {
             // const char* msg
             std::string msg
         ) ;
+        InterpreterException( Token token, std::string msg ) ;
 
         const char* what() const throw();
 };

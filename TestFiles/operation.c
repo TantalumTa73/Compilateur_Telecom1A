@@ -1,4 +1,7 @@
 int u ;
+int x ;
+int y ;
+int z ;
 
 int f ( int a ) {
     return 2;
@@ -6,9 +9,9 @@ int f ( int a ) {
 
 int main ( int a ) {
     a = 1 ;
-    u = 2 * 3 ;
-    u = 15 / 5 * 3 ;
-    u = 3 + u ;
+    x = 2 * 3 ;
+    y = 15 / 5 * 3 ;
+    z = 3 + u ;
 
     print(45 * u + 7);
     u = f(8);

@@ -19,7 +19,7 @@ Token JsonReader::readFile(){
     root.set_attribute("name", "__root__");
     Token *token_ptr = &root;
 
-    // std::cout << "Main at " << token_ptr << "\n";
+    // v_cout << "Main at " << token_ptr << "\n";
     
     std::string name ;
     std::string value ;
@@ -35,10 +35,10 @@ Token JsonReader::readFile(){
             name = "" ;
             value = "" ;
             is_name = true ;
-            // std::cout << "New object at " << token_ptr << ", parent: " << token_ptr->parent << "\n";
+            // v_cout << "New object at " << token_ptr << ", parent: " << token_ptr->parent << "\n";
         }
         else if (c == ',' || c == '}'){
-            // std::cout << "Adding to " << token_ptr << " : " << name << " : " << value << "\n";
+            // v_cout << "Adding to " << token_ptr << " : " << name << " : " << value << "\n";
             
             if (value != "")
                 token_ptr->set_attribute(name, value);
@@ -67,7 +67,7 @@ Token JsonReader::readFile(){
 
     file.close();
 
-    // std::cout << "End at object : " << token_ptr << " (" << (token_ptr==&root)<< ")\n";
+    // v_cout << "End at object : " << token_ptr << " (" << (token_ptr==&root)<< ")\n";
 
 
     return root;
