@@ -3,7 +3,15 @@
 
 #include "functions.hpp"
 
-Function::Function(std::string name_, std::string arg_)  : name(name_), arg(arg_){
+Function::Function() : 
+    name(""), arg(0), body(std::vector<Token>()) {
+    arg_value = 0;
+    vars = std::unordered_map<std::string, int>();
+    return ;
+}
+
+Function::Function(std::string name_, std::string arg_, std::vector<Token> body_) : 
+    name(name_), arg(arg_), body(body_) {
     arg_value = 0;
     vars = std::unordered_map<std::string, int>();
     return ;

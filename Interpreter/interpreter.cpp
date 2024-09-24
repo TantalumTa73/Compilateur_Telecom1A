@@ -11,16 +11,26 @@
 
 
 Interpreter::Interpreter() {
-    root = Token();
     gvar = std::unordered_map<std::string, int>();
     functions = std::unordered_map<std::string, Function>();
+
+    stack = std::vector<Token>();
+    stack_context = std::vector<std::string>();
+
     return;
 }
 
-Interpreter::Interpreter(Token root_) {
-    root = root_;
+Interpreter::Interpreter(Token root) {
     gvar = std::unordered_map<std::string, int>();
     functions = std::unordered_map<std::string, Function>();
+
+    reverse(root.childs.begin(), root.childs.end()) ;    
+    for (Token t : root.childs){
+        stack.push_back(t);
+        stack_context.push_back("__root__");
+    }
+    reverse(root.childs.begin(), root.childs.end()) ;
+
     return;
 }
 
@@ -29,7 +39,7 @@ int Interpreter::get_var(std::string var_name){
 
     if (functions.find(actual_function) == functions.end()){
 
-        std::string msg = "Function " + actual_function + " not found";
+        std::string msg = "Function " + actual_function + " not found (get_var)";
         throw InterpreterException(actual_token, msg);
 
     } else if (functions[actual_function].get_var(var_name).has_value()){
@@ -41,7 +51,7 @@ int Interpreter::get_var(std::string var_name){
         return gvar[var_name] ;
 
     } else {
-        std::string msg = "Variable " + var_name + " not found";
+        std::string msg = "Variable " + var_name + " not found (get_var)";
         throw InterpreterException(actual_token, msg);
     }
     
@@ -53,7 +63,7 @@ void Interpreter::set_var(std::string var_name, int value){
 
     if (functions.find(actual_function) == functions.end()){
 
-        std::string msg = "Function " + actual_function + " not found";
+        std::string msg = "Function " + actual_function + " not found (set_var)";
         throw InterpreterException(actual_token, msg);
 
     } else if (functions[actual_function].get_var(var_name).has_value()){
@@ -67,7 +77,7 @@ void Interpreter::set_var(std::string var_name, int value){
         gvar[var_name] = value;
 
     } else {
-        std::string msg = "Variable " + var_name + " not found";
+        std::string msg = "Variable " + var_name + " not found (set_var)";
         throw InterpreterException(actual_token, msg);
     }
     
@@ -78,20 +88,45 @@ int Interpreter::get_value(Token token){
 
 
     if (token.get_attribute("type") == "cst"){
-        v_cout << "\t Constant\n" ;
+        // v_cout << "\t Constant\n" ;
         return std::stoi(token.get_attribute("value"));
 
     } else if (token.get_attribute("type") == "var"){
-        v_cout << "\t Variable\n" ;
+        // v_cout << "\t Variable\n" ;
         return get_var(token.get_attribute("name"));
 
     } else if (token.get_attribute("type") == "operation"){
-        v_cout << "\t Operation\n" ;
+        // v_cout << "\t Operation\n" ;
 
+        Token left = token.childs[0];
+        int left_value = get_value(left);
+
+        std::string op = token.get_attribute("operator");
+
+        if (op == "uminus") return -left_value ;
+
+        Token right = token.childs[1];
+        int right_value = get_value(right);
+
+        v_cout << "Operation " << left_value << " " << op << " " << right_value << std::endl;
+
+        if (op == "mult") return left_value * right_value;
+        if (op == "division") return left_value / right_value;
+        if (op == "plus") return left_value + right_value;
+        if (op == "minus") return left_value - right_value;
+        
+        throw InterpreterException(token, "Unknown operator " + op);
+
+    } else if (token.get_attribute("type")=="parenthesis"){
+        // v_cout << "\t Parenthesis\n" ;
+        return get_value(token.childs[0]);
 
     } else if (token.get_attribute("action") == "function"){
-        v_cout << "\t Function\n" ;
-
+        // v_cout << "\t Function\n" ;
+        std::string fun_name = token.get_attribute("name");
+        int arg = get_value(token.childs[0]);
+        call_function(fun_name, arg);
+        return last_value;
 
     } else {
         v_cout << "\t Unknown :" << token.get_attribute("type") << std::endl;
@@ -100,45 +135,47 @@ int Interpreter::get_value(Token token){
     return -1;
 }
 
-void Interpreter::call_function(){
-    std::string fun_name = actual_token.get_attribute("name");
-    std::string argument = actual_token.childs[0].get_attribute("arg");
+void Interpreter::call_function(std::string fun_name, int arg){
+    
     v_cout << "Calling function " << fun_name << std::endl;
-    v_cout << "Argument: " << argument << std::endl;
 
     if (fun_name == "print"){
-        v_cout << "Printing " << get_var(argument) << std::endl;
+        v_cout << "Printing " << arg << std::endl;
+        std::cout << arg << std::endl;
+    } else if (functions.find(fun_name) != functions.end()){
+        
+        Function f = functions[fun_name];
+        f.arg_value = arg; 
+        std::vector<Token> body = f.body;
+
+        reverse(body.begin(), body.end()) ;
+        for (Token t : body){
+            stack.push_back(t);
+            stack_context.push_back(fun_name);
+        }
+        reverse(body.begin(), body.end()) ;
+
     } else {
-        std::string msg = "Function " + fun_name + " not found";
-        throw InterpreterException(actual_token, msg);
+        std::string msg = "Function " + fun_name + " not found (call_function)";
+        throw InterpreterException(-2,-2,-2,-2, msg);
     }
 
 }
 
 void Interpreter::run() {
 
-    v_cout << "Printing tree" << std::endl;
-    for (Token t : root.childs) t.print();
-    v_cout << std::endl;
+    v_cout << "Running interpreter\n" ;
+    v_cout << "Nb tokens: " << stack.size() << "\n\n";
 
-    v_cout << "Running interpreter" << std::endl;
+    bool defining = true ;
 
-    std::vector<Token> stack;
-    stack.push_back(root);
-    // Token token ;
-    actual_function = "__root__";
-
-    while (stack.size() > 0) {
+    while (true) {
         actual_token = stack.back();
+        actual_function = stack_context.back();
         stack.pop_back();
         
-
-        if (actual_token.get_attribute("name") == "__root__"){
-            reverse(actual_token.childs.begin(), actual_token.childs.end()) ;
-            for (Token t : actual_token.childs) stack.push_back(t);
-            reverse(actual_token.childs.begin(), actual_token.childs.end()) ;
-
-        } else if (actual_token.get_attribute("action") == "gvardef"){
+        
+        if        (actual_token.get_attribute("action") == "gvardef"){
             std::string var_name = actual_token.get_attribute("name");
             v_cout << "Defining global variable " << var_name << std::endl;
             gvar[var_name] = 0;
@@ -149,13 +186,8 @@ void Interpreter::run() {
             
             v_cout << "Defining function " << fun_name << std::endl;
 
-            Function f = Function(fun_name, argument);
+            Function f = Function(fun_name, argument,actual_token.childs);
             functions.insert(std::make_pair(fun_name, f));
-            actual_function = fun_name;
-
-            reverse(actual_token.childs.begin(), actual_token.childs.end()) ;
-            for (Token t : actual_token.childs) stack.push_back(t);
-            reverse(actual_token.childs.begin(), actual_token.childs.end()) ;
 
         } else if (actual_token.get_attribute("action") == "varset"){
 
@@ -163,22 +195,31 @@ void Interpreter::run() {
             
         } else if (actual_token.get_attribute("action") == "function"){
             
-            call_function();
+            std::string fun_name = actual_token.get_attribute("name");
+            int arg = get_value(actual_token.childs[0]);
+            call_function(fun_name, arg);
             
         } else if (actual_token.get_attribute("action") == "return"){
             v_cout << "Return in " << actual_function << std::endl;
 
+            last_value = get_value(actual_token.childs[0]);
             
         } else {
-            v_cout << "Unknown action: " << actual_token.get_attribute("action") ;
-            v_cout << " in line " << actual_token.start_line ;
-            v_cout << " char " << actual_token.start_char ;
-            v_cout << " to line " << actual_token.end_line ;
-            v_cout << " char " << actual_token.end_char << std::endl;
+            v_cout << "Unknown action: " << actual_token.get_attribute("action") << std::endl ;
+            actual_token.print();
+            throw InterpreterException(actual_token, "Unknown action");
         }
 
+        if (stack.size() == 0 && defining){
+            call_function("main", 0);
+            defining = false;
+        } else if (stack.size() == 0){
+            break;
+        }
 
     }
+
+    
 
     return ;
 }

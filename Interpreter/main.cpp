@@ -17,6 +17,14 @@ int main(int argc, char *argv[]) {
     }
 
     std::string filename = argv[1];
+
+    if (filename.find(".json") == std::string::npos) {
+        v_cout << "Invalid file extension\n";
+        v_cout << "Invalid file extension\n";
+        v_cout << "Invalid file extension\n";
+        v_cout << "Invalid file extension\n\n";
+    }
+
     JsonReader reader(filename);
     Token token = reader.readFile();
     Interpreter interpreter(token);
