@@ -17,7 +17,6 @@ and stmt =
 and expr =
   | ExprSingle of term*ppos
   | ExprDouble of expr*string*term*ppos
-  | ExprFunc of string*expr*ppos
   
 and term =
   | TermSingle of factor*ppos
@@ -28,6 +27,7 @@ and factor =
   | Var of string*ppos
   | Minus of factor*ppos
   | Parenthesis of expr*ppos
+  | FactorFunc of string*expr*ppos
 
 and loc =
   | Stmt of stmt
@@ -47,10 +47,6 @@ let rec toJSONexpr = function
                                               "operator", `String operator ;
                                               "left", toJSONexpr e ;
                                               "right", toJSONterm t] @ pos p)
-  | ExprFunc(f, e, p) -> `Assoc (["action", `String "function" ;
-                                  "name", `String f ;
-                                  "expr", toJSONexpr e ] @ pos p)
-
 and toJSONterm = function
   | TermSingle(f, p) -> toJSONfactor f
     (*`Assoc (["type", `String "term-single" ;
@@ -68,6 +64,11 @@ and toJSONfactor = function
                              "name", `String name ; ] @ pos p)
   | Minus(f, p) -> `Assoc (["type", `String "opposite" ;
                             "expr", toJSONfactor f] @ pos p)
+  | FactorFunc(f, e, p) -> `Assoc (["action", `String "function" ;
+                                  "name", `String f ;
+                                  "expr", toJSONexpr e ] @ pos p)
+
+
                              
 let toJSONstmt = function
   | Set(varname, e, p) -> `Assoc (["action",`String "varset" ;

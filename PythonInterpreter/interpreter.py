@@ -19,6 +19,7 @@ def call_function(func_name, argument):
 
     if func_name == "print":
         print(argument)
+        # print(variables, local_variables)
         return
     
     f: Function = functions[func_name]
@@ -47,7 +48,9 @@ def call_function(func_name, argument):
                     raise Exception(f"variable {var_name} was never initialized")
     
             if element["action"] == "return":
-                return eval_expr(element["expr"])
+                ret_value = eval_expr(element["expr"])
+                local_variables.pop()
+                return ret_value 
             
             if element["action"] == "function":
                 call_function(element["name"], eval_expr(element["expr"]))
@@ -98,7 +101,8 @@ def eval_expr(expr):
         elif var_name in variables:
             return variables[var_name]
         else:
-            raise Exception(f"Variable {var_name} has never been defined before")
+            print()
+            raise Exception(f"Variable {var_name} has never been defined before", expr["start_line"])
 
 
 

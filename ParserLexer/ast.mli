@@ -15,7 +15,6 @@ and stmt =
 and expr =
   | ExprSingle of term*ppos
   | ExprDouble of expr*string*term*ppos
-  | ExprFunc of string*expr*ppos
 
 and term =
   | TermSingle of factor*ppos
@@ -26,6 +25,7 @@ and factor =
   | Var of string*ppos
   | Minus of factor*ppos
   | Parenthesis of expr*ppos
+  | FactorFunc of string*expr*ppos
 
 and loc = 
   | Stmt of stmt
