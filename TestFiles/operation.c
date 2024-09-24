@@ -1,7 +1,9 @@
 int u ;
 
 int f ( int a ) {
-    return 2;
+    int u ;
+    u = a + 2 ;
+    return 3 * u + 8;
 }
 
 int main ( int a ) {
@@ -13,4 +15,6 @@ int main ( int a ) {
     print(45 * u + 7);
     u = f(8);
     print(u);
+
+    return f(3);
 }
