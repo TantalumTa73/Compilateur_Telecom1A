@@ -7,7 +7,7 @@ int f ( int a ) {
 }
 
 int main ( int a ) {
-    u = 1 + 2 ;
+    a = 1 ;
     u = 2 * 3 ;
     u = 15 / 5 * 3 ;
     u = 3 + u ;
