@@ -3,6 +3,9 @@
 #include <string>
 #include <unordered_map>
 
+#define v_cout if (verbose) std::cout
+
+extern bool verbose ;
 
 class Token {
     public:

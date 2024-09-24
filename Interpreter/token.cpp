@@ -2,6 +2,8 @@
 #include <iostream>
 #include "token.hpp"
 
+bool verbose = false;
+
 Token::Token(){
     start_line = 0;
     start_char = 0;
@@ -52,18 +54,20 @@ void Token::print(){
     return ;
 }
 void Token::print(std::string indent = ""){
-    std::cout << indent << "Start Line: " << start_line << "\n";
-    std::cout << indent << "Start Char: " << start_char << "\n";
-    std::cout << indent << "End Line: " << end_line << "\n";
-    std::cout << indent << "End Char: " << end_char << "\n";
+
+    
+    v_cout << indent << "Start Line: " << start_line << "\n";
+    v_cout << indent << "Start Char: " << start_char << "\n";
+    v_cout << indent << "End Line: " << end_line << "\n";
+    v_cout << indent << "End Char: " << end_char << "\n";
     if (attributes.size() != 0){
-        std::cout << indent << "Attributes: \n";
+        v_cout << indent << "Attributes: \n";
         for (auto a : attributes){
-            std::cout << indent << "\t" << a.first << " : " << a.second << "\n";
+            v_cout << indent << "\t" << a.first << " : " << a.second << "\n";
         }
     }
     if (childs.size() != 0){
-        std::cout << indent << "Childs: \n";
+        v_cout << indent << "Childs: \n";
         for (Token t : childs){
             t.print(indent + "\t");
         }

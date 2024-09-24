@@ -1,4 +1,7 @@
 int u ;
+int x ;
+int y ;
+int z ;
 
 int f ( int a ) {
     int u ;
@@ -7,6 +10,7 @@ int f ( int a ) {
 }
 
 int main ( int a ) {
+
     a = 15 / -5;
     print(a);
     

@@ -8,9 +8,12 @@
 
 int main(int argc, char *argv[]) {
     
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+    if (argc < 2) {
+        v_cout << "Usage: " << argv[0] << " <filename>" << std::endl;
         return 1;
+    } else if (argc > 2) {
+        verbose = true;
+        v_cout << "Verbose mode" << std::endl;
     }
 
     std::string filename = argv[1];
