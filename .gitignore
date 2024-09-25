@@ -12,3 +12,5 @@ TestFiles/*.json
 **/expr2json.exe
 **/a.out
 **/*tester.sh
+
+TestFiles/_*

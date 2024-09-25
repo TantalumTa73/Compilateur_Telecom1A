@@ -32,11 +32,13 @@ To run a file, write :
 ### Test on examples :
 To view which test pass or not, write :
 - `./Bash/test-parser.sh`
+- `./Bash/test-interpret.sh`
 
 
 ## TODO list
 
-- Delet Parentesis token is parser
-- Add operation "cond ? x : y"
+- Delete Parentesis token is parser
+- Add operation `cond ? x : y ;`
 - Unify local / global variable in interpreter.cpp
-
+- Define and set variable `int x = 1;`
+- Support `#define <stdio.h>`
