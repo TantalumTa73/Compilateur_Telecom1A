@@ -14,27 +14,29 @@ git pull origin main
 <!-- git push -uf origin main -->
 ```
 
-## How to compile
+## How to use
 
-### ParserLexer
 
-#### Compile
-To compile the project, write `dune build --root ParserLexer`.
+### Build a sub-project
+To build a sub project, write :
+- `./Bash/build-dune.sh`
+- `./Bash/build-compiler.sh`
+- `./Bash/build-interpret.sh`
 
-#### Run on file
-To run on a file, write `./ParserLexer/expr2json.exe TestFiles/my_file.c`
+### Run on file
+To run a file, write :
+- `./Bash/parse.sh my_file`
+- `./Bash/compile-cpp.sh my_file`
+- `./Bash/interpret-cpp.sh my_file`
 
-#### Test on examples :
+### Test on examples :
 To view which test pass or not, write :
-- `cmake TestFiles -B TestFiles/build`
-- `cmake --build TestFiles/build`
-- `ctest --test-dir TestFiles/build`
+- `./Bash/test-parser.sh`
 
-When you modify something in ParserLexer, please add a test file in TestFiles.
 
-### Interpreter
+## TODO list
 
-- Write `cmake Interpreter -B Interpreter/build`
-- Write `make -C Interpreter/build `
-- Write `./Interpreter/build/main TestFiles/my_file.json`
+- Delet Parentesis token is parser
+- Add operation "cond ? x : y"
+- Unify local / global variable in interpreter.cpp
 

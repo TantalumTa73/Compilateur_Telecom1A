@@ -13,4 +13,4 @@ echo "json file : $_jsonfilename"  >> log.txt
 
 
 ./ParserLexer/expr2json.exe "$_cfilename"  >> log.txt
-./Interpreter/build/main $_jsonfilename
+./Interpreter/build/main $_jsonfilename $2
