@@ -29,6 +29,7 @@ class Interpreter {
 
         int get_var(std::string var_name) ;
         void set_var(std::string var_name, int value) ;
+        void def_var(std::string var_name);
         void call_function(std::string function_name, int arg) ;
 
 };

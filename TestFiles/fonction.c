@@ -1,3 +1,5 @@
+
+
 int u ;
 u = 18 ; 
 
@@ -19,7 +21,7 @@ int h ( int v ) {
 }
 
 int main ( int a ) {
-    
+    a=0 ;
     print(a) ;
     print(u) ;
 

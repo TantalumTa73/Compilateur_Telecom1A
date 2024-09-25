@@ -37,17 +37,20 @@ Interpreter::Interpreter(Token root) {
 
 int Interpreter::get_var(std::string var_name){
 
-    if (functions.find(actual_function) == functions.end()){
-
-        std::string msg = "Function " + actual_function + " not found (get_var)";
-        throw InterpreterException(actual_token, msg);
-
-    } else if (functions[actual_function].get_var(var_name).has_value()){
+    if (
+        functions.find(actual_function) != functions.end() && 
+        functions[actual_function].get_var(var_name).has_value() && 
+        actual_function != "__root__"
+    ){
+        v_cout << "Get local variable " << var_name ;
+        v_cout << " in " << actual_function << std::endl;
 
         return functions[actual_function].get_var(var_name).value();
 
     } else if (gvar.find(var_name) != gvar.end()){
 
+        v_cout << "Get global variable " << var_name ;
+        v_cout << " (func " << actual_function << ")" << std::endl;
         return gvar[var_name] ;
 
     } else {
@@ -61,19 +64,20 @@ int Interpreter::get_var(std::string var_name){
 
 void Interpreter::set_var(std::string var_name, int value){
 
-    if (functions.find(actual_function) == functions.end()){
+    if (
+        functions.find(actual_function) != functions.end() && 
+        functions[actual_function].get_var(var_name).has_value() && 
+        actual_function != "__root__"
+    ){
 
-        std::string msg = "Function " + actual_function + " not found (set_var)";
-        throw InterpreterException(actual_token, msg);
-
-    } else if (functions[actual_function].get_var(var_name).has_value()){
-
-        v_cout << "Set local variable " << var_name << " to " << value << std::endl;
+        v_cout << "Set local variable " << var_name << " to " << value ;
+        v_cout << " in " << actual_function << std::endl;
         functions[actual_function].set_var(var_name, value);
 
     } else if (gvar.find(var_name) != gvar.end()){
 
-        v_cout << "Set global variable " << var_name << " to " << value << std::endl;
+        v_cout << "Set global variable " << var_name << " to " << value ;
+        v_cout << " (func " << actual_function << ")" << std::endl;
         gvar[var_name] = value;
 
     } else {
@@ -81,6 +85,29 @@ void Interpreter::set_var(std::string var_name, int value){
         throw InterpreterException(actual_token, msg);
     }
     
+    return ;
+}
+
+void Interpreter::def_var(std::string var_name){
+
+    if (actual_function == "__root__"){
+
+        v_cout << "Def global variable " << var_name ;
+        v_cout << " (func " << actual_function << ")" << std::endl;
+        gvar[var_name] = 0;
+
+    } else if (functions.find(actual_function) != functions.end()){
+        v_cout << "Def local variable " << var_name ;
+        v_cout << " in " << actual_function << std::endl;
+        functions[actual_function].set_var(var_name, 0);
+
+    } else {
+        std::string msg = "Function " + actual_function + " not found (def_var)";
+        throw InterpreterException(actual_token, msg);
+    }
+
+    
+
     return ;
 }
 
@@ -137,7 +164,8 @@ int Interpreter::get_value(Token token){
 
 void Interpreter::call_function(std::string fun_name, int arg){
     
-    v_cout << "Calling function " << fun_name << std::endl;
+    v_cout << "Calling function " << fun_name ;
+    v_cout << " in " << actual_function << " with arg " << arg << std::endl;
 
     if (fun_name == "print"){
         v_cout << "Printing " << arg << std::endl;
@@ -173,12 +201,13 @@ void Interpreter::run() {
         actual_token = stack.back();
         actual_function = stack_context.back();
         stack.pop_back();
+        stack_context.pop_back();
         
         
         if        (actual_token.get_attribute("action") == "gvardef"){
             std::string var_name = actual_token.get_attribute("name");
-            v_cout << "Defining global variable " << var_name << std::endl;
-            gvar[var_name] = 0;
+            
+            def_var(var_name);
 
         } else if (actual_token.get_attribute("action") == "gfundef"){
             std::string fun_name = actual_token.get_attribute("name");
@@ -200,9 +229,9 @@ void Interpreter::run() {
             call_function(fun_name, arg);
             
         } else if (actual_token.get_attribute("action") == "return"){
-            v_cout << "Return in " << actual_function << std::endl;
 
             last_value = get_value(actual_token.childs[0]);
+            v_cout << "Return in " << actual_function << std::endl;
             
         } else {
             v_cout << "Unknown action: " << actual_token.get_attribute("action") << std::endl ;
@@ -218,8 +247,6 @@ void Interpreter::run() {
         }
 
     }
-
-    
 
     return ;
 }
