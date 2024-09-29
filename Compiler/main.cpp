@@ -13,10 +13,11 @@ int main(int argc, char** argv)
         v_cout << "Usage: " << argv[0] << " <filename>" << std::endl;
         return 1; 
     }
-    std::string filename = argv[1];
-    JsonReader reader(filename);
+    std::string cfilename = argv[1];
+    std::string jsonfilename = cfilename.substr(0, cfilename.size()) + ".json";
+    JsonReader reader(jsonfilename);
     Token token = reader.readFile();
-    Compiler compiler(token, filename);
+    Compiler compiler(token, cfilename);
     compiler.run();
     return 0;
 }

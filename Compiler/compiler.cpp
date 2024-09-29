@@ -1,5 +1,3 @@
-#pragma once
-
 #include <string>
 #include <vector>
 #include <iostream>
@@ -13,7 +11,7 @@
 
 Compiler::Compiler() {
     root = Token();
-    gvar = std::unordered_map<std::string, int>();
+    registers_name = std::unordered_map<int, std::string>();
     functions = std::unordered_map<std::string, Function>();
     return;
 }
@@ -26,20 +24,34 @@ Compiler::Compiler(Token root_, std::string cfilename_) {
     return;
 }
 
-void Compiler::update(){
-    //write on the file.s
+void Compiler::w_init(){
+    file << "   section .text\n";
+    file << "   global main\n";
+    file << "\n";
+    file << "main:\n";
+}
+
+void Compiler::w_init_var()
+
+void Compiler::w_set_var(std::string str){
+
+}
+
+void Compiler::w_print(std::string){
+    file << "\n"; 
+    file << "\n"; 
+    file << "\n"; 
 }
 
 void Compiler::run(){
-    std::ofstream file;
-    std::string sfilename = cfilename.replace(cfilename.size() - 1, 1, "s");
+    std::string sfilename = cfilename.substr(0, cfilename.size()) + ".s";
     file.open(sfilename, std::ios::out);
-
+    w_init();
 
     std::vector<Token> stack;
     stack.push_back(root);
 
-    actual_function = "__root__";
+    actual_function = "main";
 
     while (stack.size() > 0) {
         actual_token = stack.back();
@@ -55,6 +67,6 @@ void Compiler::run(){
             gvar[var_name] = 0;
         }
     }
-
+    file << "ret";
     file.close();
 }

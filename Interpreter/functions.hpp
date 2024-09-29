@@ -10,8 +10,12 @@ class Function {
     public:
 
         const std::string name;
+<<<<<<< HEAD
         const std::vector<Token> body;
         int arg_value;
+=======
+        const int layer;
+>>>>>>> e17db6d (compiler in progress...)
 
         Function() ;
         Function(std::string name_, std::string arg_, std::vector<Token> body_) ;
