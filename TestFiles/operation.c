@@ -50,5 +50,33 @@ int main ( int a ) {
     a = -a + 5;
     print(a);
 
+    a = 3 - 2;
+    print(a);
+
+    a = (3 - 2);
+    print(a);
+
+    a = 7 - 3 * 2;
+    print(a);
+
+    a = 1 - a;
+    print(a);
+
+    a = -1 - 2 - 3 - 4;
+    print(a);
+
+    a = 7 + (-3);
+    print(a);
+
+    a = a - a;
+    print(a);
+
+    a = -5;
+    print(a);
+
+    a = 5 - 5 - 5 - 5 * (-1);
+    print(a);
+
     return f(3);
+
 }
