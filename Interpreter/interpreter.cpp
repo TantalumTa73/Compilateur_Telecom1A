@@ -139,6 +139,7 @@ int Interpreter::get_value(Token token){
 
         if (op == "mult") return left_value * right_value;
         if (op == "division") return left_value / right_value;
+        if (op == "modulo") return left_value % right_value;
         if (op == "plus") return left_value + right_value;
         if (op == "minus") return left_value - right_value;
         

@@ -37,8 +37,11 @@ To view which test pass or not, write :
 
 ## TODO list
 
-- Delete Parentesis token is parser
-- Add operation `cond ? x : y ;`
-- Unify local / global variable in interpreter.cpp
-- Define and set variable `int x = 1;`
-- Support `#define <stdio.h>`
+- Parser : Delete Parentesis token
+- Parser : fusion expr and term ?
+- Interpreter : Unify local / global variable system
+- New feature : Define and set variable `int x = 1`
+- New feature : Ignore `#define <stdio.h>`
+- New feature : Support `x = +1`
+- New feature : operation `cond ? x : y `
+- New feature : operatior of assignment, Comparison, Logical, Bitwise
