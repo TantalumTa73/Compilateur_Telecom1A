@@ -55,7 +55,7 @@ def evaluate_expression(expr):
     
     operators = {
         "plus": "add %rax, %rbx",
-        "minus": "sub %rax, %rbx",
+        "minus": "sub %rbx, %rax\n\tmov %rax, %rbx",
         "mult": "imul %rax, %rbx",
         "division": "xor %rdx, %rdx\n\tidivq %rbx\n\tmov %rax, %rbx",
         "modulo": "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx",
