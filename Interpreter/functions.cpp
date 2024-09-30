@@ -4,18 +4,11 @@
 #include "functions.hpp"
 
 Function::Function() : 
-    name(""), arg_name(0), body(std::vector<Token>()) {
-    // arg_value = 0;
-    vars = std::unordered_map<std::string, int>();
-    return ;
-}
+    FunctionDef(0,0,0,0, "", "", std::vector<SimplifiedToken>()) {}
 
-Function::Function(std::string name_, std::string arg_name_, std::vector<Token> body_) : 
-    name(name_), arg_name(arg_name_), body(body_) {
-    // arg_value = 0;
-    vars = std::unordered_map<std::string, int>();
-    return ;
-}
+Function::Function(FunctionDef f) : 
+    FunctionDef(f) {}
+
 
 std::optional<int> Function::get_var(std::string var_name) {
     if (var_name == arg_name && false) {

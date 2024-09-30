@@ -3,6 +3,7 @@
 
 #include "token.hpp"
 #include "simplified_token.hpp"
+#include "exception.hpp"
 
 SimplifiedToken simplify(Token token){
     // SimplifiedToken new_token ;
@@ -21,7 +22,7 @@ SimplifiedToken simplify(Token token){
         return Return(token);
     }
 
-    throw "Unknown action";
+    throw InterpreterException(token, "Unknown action");
 }
 
 std::vector<SimplifiedToken> simplify(std::vector<Token> tokens){
