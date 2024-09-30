@@ -17,7 +17,7 @@ class Interpreter {
         void run() ;
 
     private:
-        int last_value ;
+        std::vector<int> last_values ;
 
         Token actual_token ;
         std::string actual_function ;
@@ -27,11 +27,14 @@ class Interpreter {
 
         std::unordered_map<std::string, Function> functions ;
 
-        int get_value(Token token) ;
+        void get_value(Token token) ;
 
-        int get_var(std::string var_name) ;
-        void set_var(std::string var_name, int value) ;
+        void get_var(std::string var_name) ;
+        void set_var(std::string var_name) ;
         void def_var(std::string var_name);
-        void call_function(std::string function_name, int arg) ;
+        void call_function(std::string function_name) ;
+
+        void push(int value) ;
+        int pop() ;
 
 };

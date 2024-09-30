@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "json_reader.hpp"
+#include "json_simplifier.hpp"
 #include "token.hpp"
 #include "interpreter.hpp"
 #include "exception.hpp"
@@ -27,7 +28,8 @@ int main(int argc, char *argv[]) {
 
     JsonReader reader(filename);
     Token token = reader.readFile();
-    Interpreter interpreter(token);
+    Token simplified = simplify(token);
+    Interpreter interpreter(simplified);
     interpreter.run();
 
     
