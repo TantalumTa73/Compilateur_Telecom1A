@@ -23,6 +23,8 @@ int main (int a){
     x = 1 ;
     print(x);
 
+    get_global(0);
+
     def_local(2);
     print(x);
 

@@ -33,5 +33,6 @@ int main ( int a ) {
     print(b);
 
     u = f(2);
+    print(u);
 
 }
