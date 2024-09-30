@@ -11,7 +11,7 @@
 
 
 Interpreter::Interpreter() {
-    gvar = std::unordered_map<std::string, int>();
+
     functions = std::unordered_map<std::string, Function>();
 
     stack = std::vector<Token>();
@@ -21,7 +21,7 @@ Interpreter::Interpreter() {
 }
 
 Interpreter::Interpreter(Token root) {
-    gvar = std::unordered_map<std::string, int>();
+
     functions = std::unordered_map<std::string, Function>();
 
     reverse(root.childs.begin(), root.childs.end()) ;    
@@ -39,19 +39,27 @@ int Interpreter::get_var(std::string var_name){
 
     if (
         functions.find(actual_function) != functions.end() && 
-        functions[actual_function].get_var(var_name).has_value() && 
-        actual_function != "__root__"
+        functions[actual_function].get_var(var_name).has_value()
     ){
-        v_cout << "Get local variable " << var_name ;
-        v_cout << " in " << actual_function << std::endl;
+        v_cout << "Get variable " << var_name ;
+        v_cout << " in " << actual_function ;
 
-        return functions[actual_function].get_var(var_name).value();
+        int value = functions[actual_function].get_var(var_name).value();
 
-    } else if (gvar.find(var_name) != gvar.end()){
+        v_cout << " (=" << value << ")" << std::endl;
 
-        v_cout << "Get global variable " << var_name ;
-        v_cout << " (func " << actual_function << ")" << std::endl;
-        return gvar[var_name] ;
+        return value;
+
+    } else if (functions["__root__"].get_var(var_name).has_value()){
+
+        v_cout << "Get variable " << var_name ;
+        v_cout << " in " << "__root__" ;
+
+        int value = functions["__root__"].get_var(var_name).value();
+
+        v_cout << " (=" << value << ")" << std::endl;
+
+        return value;
 
     } else {
         std::string msg = "Variable " + var_name + " not found (get_var)";
@@ -66,19 +74,18 @@ void Interpreter::set_var(std::string var_name, int value){
 
     if (
         functions.find(actual_function) != functions.end() && 
-        functions[actual_function].get_var(var_name).has_value() && 
-        actual_function != "__root__"
+        functions[actual_function].get_var(var_name).has_value()
     ){
 
-        v_cout << "Set local variable " << var_name << " to " << value ;
+        v_cout << "Set variable " << var_name << " to " << value ;
         v_cout << " in " << actual_function << std::endl;
         functions[actual_function].set_var(var_name, value);
 
-    } else if (gvar.find(var_name) != gvar.end()){
+    } else if (functions["__root__"].get_var(var_name).has_value()){
 
-        v_cout << "Set global variable " << var_name << " to " << value ;
-        v_cout << " (func " << actual_function << ")" << std::endl;
-        gvar[var_name] = value;
+        v_cout << "Set variable " << var_name << " to " << value ;
+        v_cout << " in " << actual_function << std::endl;
+        functions["__root__"].set_var(var_name, value);
 
     } else {
         std::string msg = "Variable " + var_name + " not found (set_var)";
@@ -90,14 +97,8 @@ void Interpreter::set_var(std::string var_name, int value){
 
 void Interpreter::def_var(std::string var_name){
 
-    if (actual_function == "__root__"){
-
-        v_cout << "Def global variable " << var_name ;
-        v_cout << " (func " << actual_function << ")" << std::endl;
-        gvar[var_name] = 0;
-
-    } else if (functions.find(actual_function) != functions.end()){
-        v_cout << "Def local variable " << var_name ;
+    if (functions.find(actual_function) != functions.end()){
+        v_cout << "Def variable " << var_name ;
         v_cout << " in " << actual_function << std::endl;
         functions[actual_function].set_var(var_name, 0);
 
@@ -174,7 +175,7 @@ void Interpreter::call_function(std::string fun_name, int arg){
     } else if (functions.find(fun_name) != functions.end()){
         
         Function f = functions[fun_name];
-        f.arg_value = arg; 
+        functions[fun_name].set_var(f.arg_name, arg);
         std::vector<Token> body = f.body;
 
         reverse(body.begin(), body.end()) ;
@@ -197,6 +198,9 @@ void Interpreter::run() {
     v_cout << "Nb tokens: " << stack.size() << "\n\n";
 
     bool defining = true ;
+
+    Function root = Function("__root__", "__argc__",actual_token.childs);
+    functions.insert(std::make_pair("__root__", root));
 
     while (true) {
         actual_token = stack.back();

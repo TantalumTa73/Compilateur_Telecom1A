@@ -10,17 +10,19 @@ class Function {
     public:
 
         const std::string name;
+        const std::string arg_name;
+
         const std::vector<Token> body;
-        int arg_value;
+        
+        // int arg_value;
         int layer;
 
         Function() ;
-        Function(std::string name_, std::string arg_, std::vector<Token> body_) ;
+        Function(std::string name_, std::string arg_name_, std::vector<Token> body_) ;
 
         std::optional<int> get_var(std::string var_name);
         void set_var(std::string var_name, int value);
 
     private:
-        const std::string arg;
         std::unordered_map<std::string, int> vars;
 };

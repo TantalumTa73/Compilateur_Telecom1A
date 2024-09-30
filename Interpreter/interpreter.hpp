@@ -18,11 +18,13 @@ class Interpreter {
 
     private:
         int last_value ;
+
         Token actual_token ;
         std::string actual_function ;
+
         std::vector<Token> stack;
         std::vector<std::string> stack_context;
-        std::unordered_map<std::string, int> gvar ;
+
         std::unordered_map<std::string, Function> functions ;
 
         int get_value(Token token) ;

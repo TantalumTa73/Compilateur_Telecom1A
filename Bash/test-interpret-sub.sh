@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 _cfilename="${1:-file.c}"
 _jsonfilename="${_cfilename%".c"}.json"
 
@@ -8,6 +10,7 @@ cd ../..
 touch TestFiles/_test.c
 touch TestFiles/_res1.txt
 touch TestFiles/_res2.txt
+
 
 echo "#include <stdio.h>"       >  TestFiles/_test.c
 echo ""                         >> TestFiles/_test.c
@@ -18,11 +21,13 @@ cat $_cfilename                 >> TestFiles/_test.c
 gcc TestFiles/_test.c -o TestFiles/_test
 rm TestFiles/_test.c
 
-./TestFiles/_test                   > TestFiles/_res1.txt
-./ParserLexer/expr2json.exe "$_cfilename"  >> log.txt
+echo "L0"
+./TestFiles/_test                       > TestFiles/_res1.txt && true
+echo "L1"
+./ParserLexer/expr2json.exe "$_cfilename" >> log.txt
+echo "L2"
 ./Interpreter/build/main $_jsonfilename > TestFiles/_res2.txt
-
-# exit 0
+echo "L3"
 
 
 if diff TestFiles/_res1.txt TestFiles/_res2.txt; then
