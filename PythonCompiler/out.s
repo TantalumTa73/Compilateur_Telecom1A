@@ -117,7 +117,16 @@ main:
 	xor %rax, %rax
 	
 	# constant
+	push $2
+	
+	# constant
 	push $1
+	
+	# plus
+	pop %rax
+	pop %rbx
+	add %rax, %rbx
+	push %rbx
 	
 	# constant
 	push $3
@@ -160,10 +169,11 @@ main:
 	add %rax, %rbx
 	push %rbx
 	
-	# plus
+	# minus
 	pop %rax
 	pop %rbx
-	add %rax, %rbx
+	sub %rbx, %rax
+	mov %rax, %rbx
 	push %rbx
 	
 	# varset b
