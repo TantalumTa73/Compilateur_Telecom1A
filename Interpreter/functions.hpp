@@ -12,7 +12,7 @@ class Function {
         const std::string name;
         const std::vector<Token> body;
         int arg_value;
-        const int layer;
+        int layer;
 
         Function() ;
         Function(std::string name_, std::string arg_, std::vector<Token> body_) ;
