@@ -54,6 +54,46 @@ def set_section(section):
     CURRENT_SECTION = section
 
 
+def set_variable(varname: str, funcname):
+
+    add_line(f"# varset of var {varname + funcname}")
+    if varname + funcname in LOCAL_VARIABLES:
+        # add_line(f"{COMMENT} varset {element['name']}")
+        add_line(f"pop -{LOCAL_VARIABLES[varname + funcname]}(%rbp)")
+        add_line()
+    else:
+        add_line(f"pop %rax")
+        add_line(f"mov %rax, {varname}(%rip)")
+        # add_line(f"popq {varname}(%rip)")
+        add_line()
+
+
+def get_variable_location(varname: str, funcname: str):
+
+    if varname + funcname in LOCAL_VARIABLES:
+        return f"-{LOCAL_VARIABLES[varname + funcname]}(%rbp)"
+    else:
+        return f"{varname}(%rip)"
+
+
+
+def get_variable(varname: str, funcname: str):
+
+    """
+    push variable onto the stack
+    """
+
+    location = get_variable_location(varname, funcname)
+
+    if varname + funcname in LOCAL_VARIABLES:
+        add_line(f"{COMMENT} variable expr {varname + funcname}")
+        add_line(f"push {location}")
+    else:
+        add_line(f"{COMMENT} variable expr glob {varname}")
+        add_line(f"push {location}")
+    add_line()
+
+
 def evaluate_expression(expr, funcname):
     
     operators = {
@@ -116,17 +156,7 @@ def evaluate_expression(expr, funcname):
         return
 
     if expr["type"] == "var":
-
-
-        # print(LOCAL_VARIABLES)
-        if expr['name'] + funcname in LOCAL_VARIABLES:
-            add_line(f"{COMMENT} variable expr {expr['name'] + funcname}")
-            add_line(f"push -{LOCAL_VARIABLES[expr['name'] + funcname]}(%rbp)")
-        else:
-            add_line(f"{COMMENT} variable expr glob {expr['name']}")
-            add_line(f"push {expr['name']}(%rip)")
-
-        add_line()
+        get_variable(expr["name"], funcname)
         return
     
     if expr["type"] == "parenthesis":
@@ -134,21 +164,6 @@ def evaluate_expression(expr, funcname):
         return
     
     reduced_element(expr)
-
-
-def set_variable(varname: str, funcname):
-
-    add_line(f"# varset of var {varname + funcname}")
-    if varname + funcname in LOCAL_VARIABLES:
-        # add_line(f"{COMMENT} varset {element['name']}")
-        add_line(f"pop -{LOCAL_VARIABLES[varname + funcname]}(%rbp)")
-        add_line()
-    else:
-        add_line(f"pop %rax")
-        add_line(f"mov %rax, {varname}(%rip)")
-        # add_line(f"popq {varname}(%rip)")
-        add_line()
-
 
 
 def end_function_here():
@@ -234,9 +249,13 @@ def define_function(funcname, body, arg):
 
                 if element["name"] == "read":
                     add_line("# read value")
+                    add_line("push %rax")
                     add_line("call scan")
                     add_line("push %rax")
-                    add_line(f"pop -{LOCAL_VARIABLES[element['expr']['name'] + funcname]}(%rbp)")
+                    # print(LOCAL_VARIABLES)
+                    location = get_variable_location(element['expr']['name'], funcname)
+                    # print(location)
+                    add_line(f"pop {location}")
                     add_line()
                     continue
 

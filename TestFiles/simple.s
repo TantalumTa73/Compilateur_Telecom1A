@@ -46,7 +46,7 @@ scan:
         mov %rsp, %rbp           
         
         # Pop the last element from the stack into rsi (argument for printf)
-        ; mov 16(%rbp), %rsi     
+        # mov 16(%rbp), %rsi     
         sub $8, %rsp            
     
         # Align the stack for printf
@@ -80,131 +80,6 @@ scan:
 u: .quad
 
 	.text
-g:
-	push %rbp
-	mov %rsp, %rbp
-	
-	# get argument, variable bg
-	mov 16(%rbp), %rax
-	mov %rax, -8(%rbp)
-	sub $8, %rsp
-	
-	# variable expr bg
-	push -8(%rbp)
-	
-	# constant
-	push $1
-	
-	# plus
-	pop %rbx
-	pop %rax
-	add %rax, %rbx
-	push %rbx
-	
-	# return
-	pop %rax
-	
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-	
-	# just in case final return
-	mov $0, %rax
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-	
-f:
-	push %rbp
-	mov %rsp, %rbp
-	
-	# get argument, variable bf
-	mov 16(%rbp), %rax
-	mov %rax, -8(%rbp)
-	sub $8, %rsp
-	
-	# constant
-	push $2
-	
-	# variable expr bf
-	push -8(%rbp)
-	
-	push %rax
-	call g
-	add $8, %rsp
-	push %rax
-	
-	# mult
-	pop %rbx
-	pop %rax
-	imul %rax, %rbx
-	push %rbx
-	
-	# return
-	pop %rax
-	
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-	
-	# just in case final return
-	mov $0, %rax
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-	
-h:
-	push %rbp
-	mov %rsp, %rbp
-	
-	# get argument, variable vh
-	mov 16(%rbp), %rax
-	mov %rax, -8(%rbp)
-	sub $8, %rsp
-	
-	# space for var bh
-	sub $8, %rsp
-	
-	# constant
-	push $12
-	
-	# varset of var bh
-	pop -16(%rbp)
-	
-	# variable expr bh
-	push -16(%rbp)
-	
-	# print value
-	call print
-	
-	# constant
-	push $5
-	
-	# varset of var vh
-	pop -8(%rbp)
-	
-	# variable expr vh
-	push -8(%rbp)
-	
-	# print value
-	call print
-	
-	# variable expr vh
-	push -8(%rbp)
-	
-	# return
-	pop %rax
-	
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-	
-	# just in case final return
-	mov $0, %rax
-	mov %rbp, %rsp
-	pop %rbp
-	ret
-	
 main:
 	push %rbp
 	mov %rsp, %rbp
@@ -214,64 +89,11 @@ main:
 	mov %rax, -8(%rbp)
 	sub $8, %rsp
 	
-	# constant
-	push $18
-	
-	# varset of var umain
-	pop %rax
-	mov %rax, u(%rip)
-	
-	# constant
-	push $0
-	
-	# varset of var amain
-	pop -8(%rbp)
-	
-	# variable expr amain
-	push -8(%rbp)
-	
-	# print value
-	call print
-	
-	# variable expr glob u
-	push u(%rip)
-	
-	# print value
-	call print
-	
-	# space for var bmain
-	sub $8, %rsp
-	
-	# constant
-	push $42
-	
-	# varset of var bmain
-	pop -16(%rbp)
-	
-	# variable expr amain
-	push -8(%rbp)
-	
-	# function call, no varset
-	call h
-	add $8, %rsp
-	
-	# variable expr bmain
-	push -16(%rbp)
-	
-	# print value
-	call print
-	
-	# constant
-	push $2
-	
+	# read value
 	push %rax
-	call f
-	add $8, %rsp
+	call scan
 	push %rax
-	
-	# varset of var umain
-	pop %rax
-	mov %rax, u(%rip)
+	pop u(%rip)
 	
 	# variable expr glob u
 	push u(%rip)

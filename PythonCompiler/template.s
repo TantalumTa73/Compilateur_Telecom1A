@@ -46,7 +46,7 @@ scan:
         mov %rsp, %rbp           
         
         # Pop the last element from the stack into rsi (argument for printf)
-        ; mov 16(%rbp), %rsi     
+        # mov 16(%rbp), %rsi     
         sub $8, %rsp            
     
         # Align the stack for printf
