@@ -109,7 +109,7 @@ def evaluate_expression(expr, funcname):
         if expr["action"] == "function":
             evaluate_expression(expr["expr"], funcname)      
             
-            add_line("push %rax")
+            # add_line("push %rax")
             add_line(f"call {expr['name']}")
             add_line(f"add ${SIZE}, %rsp")
             add_line("push %rax")
