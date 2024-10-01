@@ -260,7 +260,11 @@ if __name__ == "__main__":
     with open(sys.argv[1], "r") as f:
         data = json.load(f)
 
-    with open("template.s", "r") as f:
+    template = "template.s"
+    if len(sys.argv) >= 3:
+        template = sys.argv[2]
+
+    with open(template, "r") as f:
         CURRENT_ASM = f.read()
 
     # set_section("data")
@@ -297,5 +301,5 @@ if __name__ == "__main__":
     # CURRENT_ASM += START_ASM
     # print(CURRENT_ASM)
 
-    with open("out.s", "w") as f:
+    with open(sys.argv[1].replace(".json", ".s"), "w") as f:
         f.write(CURRENT_ASM)
