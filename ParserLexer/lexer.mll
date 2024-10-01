@@ -7,6 +7,7 @@
   (* Sert à récupérer les identifiants ou les mots clef qui pourraient être des id*)
   let id_or_kwd s = match s with
   | "return" -> RET
+  | "read(" -> READ
   | "int" -> INT
   | s -> IDENT s  
 }

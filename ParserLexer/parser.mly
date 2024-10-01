@@ -9,6 +9,7 @@
 %token <int> CST
 %token MULT PLUS MINUS DIVISION MODULO
 %token RET
+%token READ
 
 /* Point d'entr�e de la grammaire */
 %start prog
@@ -28,6 +29,7 @@ loc:
 | id = IDENT EQ e = expr SEMICOLON { Stmt(Set(id, e, $loc)) }
 | f = IDENT LP e = expr RP SEMICOLON { Stmt(StmtFunc(f, e, $loc)) }
 | RET e = expr SEMICOLON { Stmt(Return(e, $loc)) }
+// | READ id = IDENT RP { Stmt(StmtRead(id, $loc)) }
 ;
 // def:
 // | INT id = IDENT SEMICOLON { Gvar(id, $loc) }

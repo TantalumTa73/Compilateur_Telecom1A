@@ -13,7 +13,7 @@ COMMENT = "#"
 CURRENT_ASM = ""
 START_ASM = ""
 
-CURRENT_SECTION = None
+CURRENT_SECTION = "text"
 CODE_FRAGMENTS = {
 
 }
@@ -57,7 +57,7 @@ def evaluate_expression(expr):
         "plus": "add %rax, %rbx",
         "minus": "sub %rbx, %rax\n\tmov %rax, %rbx",
         "mult": "imul %rax, %rbx",
-        "division": "xor %rdx, %rdx\n\tidivq %rbx\n\tmov %rax, %rbx",
+        "division": "cqo\n\tidivq %rbx\n\tmov %rax, %rbx",
         "modulo": "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx",
     }
     
@@ -81,12 +81,12 @@ def evaluate_expression(expr):
 
         if expr["operator"] in operators.keys():
             
-            evaluate_expression(expr["right"]) # second argument should be pushed first
             evaluate_expression(expr["left"])
+            evaluate_expression(expr["right"]) # second argument should be pushed first
 
             add_line(f"{COMMENT} {expr['operator']}")         
-            add_line("pop %rax")
             add_line("pop %rbx")
+            add_line("pop %rax")
 
             add_line(operators[expr["operator"]])
 
@@ -116,7 +116,7 @@ def evaluate_expression(expr):
 
         add_line(f"{COMMENT} variable expr")
 
-        print(LOCAL_VARIABLES)
+        # print(LOCAL_VARIABLES)
         if expr['name'] in LOCAL_VARIABLES:
             add_line(f"push -{LOCAL_VARIABLES[expr['name']]}(%rbp)")
         else:
@@ -197,30 +197,45 @@ def define_function(funcname, body, arg):
 
             if element["action"] == "function":
 
-                evaluate_expression(element["expr"])
+                # print(element)
+                if element["name"] != "read":
+                    evaluate_expression(element["expr"])
 
-                add_line(f"{COMMENT} printf")
+                if element["name"] == "print":
+                    add_line("# print value")
+                    add_line("call print")
+                    add_line()
 
-                add_line("pop %rsi")
-                # add_line("mov $-2, %rsi")
-                if VARIABLE_OFFSET % 16 != 0:
-                    add_line("sub $8, %rsp")
-
-                add_line("lea int_fmt(%rip), %rdi")
-                add_line("mov $0, %rax")
-                add_line("call printf")
-                add_line("xor %rax, %rax")
-
-                if VARIABLE_OFFSET % 16 != 0:
-                    add_line("add $8, %rsp")
-
-                add_line()
+                if element["name"] == "read":
+                    add_line("# read value")
+                    add_line("call scan")
+                    add_line("push %rax")
+                    add_line(f"pop -{LOCAL_VARIABLES[element['expr']['name']]}(%rbp)")
+                    add_line()
 
 
+                # add_line(f"{COMMENT} printf")
+
+                # add_line("pop %rsi")
+                # # add_line("mov $-2, %rsi")
+                # if VARIABLE_OFFSET % 16 != 0:
+                #     add_line("sub $8, %rsp")
+
+                # add_line("lea int_fmt(%rip), %rdi")
+                # add_line("mov $0, %rax")
+                # add_line("call printf")
+                # add_line("xor %rax, %rax")
+
+                # if VARIABLE_OFFSET % 16 != 0:
+                #     add_line("add $8, %rsp")
+
+                # add_line()
 
 
 
-        reduced_element(element)
+
+
+        # reduced_element(element)
 
         # if "expr" in element:
         #     evaluate_expression(element["expr"])
@@ -245,21 +260,23 @@ if __name__ == "__main__":
     with open(sys.argv[1], "r") as f:
         data = json.load(f)
 
+    with open("template.s", "r") as f:
+        CURRENT_ASM = f.read()
 
-    set_section("data")
-    add_line("int_fmt:", indent=False)
-    add_line('.string "%d\\n"')
+    # set_section("data")
+    # add_line("int_fmt:", indent=False)
+    # add_line('.string "%d\\n"')
 
-    set_section("text")
-    add_line(".globl main")
+    # set_section("text")
+    # add_line(".globl main")
 
 
     for element in data:
         
-        reduced_element(element)
+        # reduced_element(element)
         if element["action"] == "gvardef":
             set_section("bss")
-            CURRENT_ASM += f"\t{element['name']} resp ${SIZE // 4}\n"
+            CURRENT_ASM += f"\t{element['name']}: .quad\n"
 
         if element["action"] == "gvarset":
             pass
@@ -278,7 +295,7 @@ if __name__ == "__main__":
 
 
     # CURRENT_ASM += START_ASM
-    print(CURRENT_ASM)
+    # print(CURRENT_ASM)
 
     with open("out.s", "w") as f:
         f.write(CURRENT_ASM)

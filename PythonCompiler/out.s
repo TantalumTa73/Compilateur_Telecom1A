@@ -1,9 +1,80 @@
-	.data
+.section .data
 int_fmt:
-	.string "%d\n"
+    .string "%d\n"           # Format string for printing integers
+int_fmt_scan:
+    .string "%d"
 
-	.text
-	.globl main
+.section .text
+.globl print
+.extern printf               # Declare printf as an external function
+.globl main
+
+print:
+        # Prologue
+        push %rbp                
+        mov %rsp, %rbp           
+        
+        # Pop the last element from the stack into rsi (argument for printf)
+        mov 16(%rbp), %rsi                 
+    
+        # Align the stack for printf
+        mov %rsp, %rax           
+        and $15, %rax            
+        jnz .align_stack_printf         
+    
+.call_printf:
+        # Load the format string into rdi (first argument for printf)
+        lea int_fmt(%rip), %rdi  
+        mov $0, %rax             
+    
+        # Call printf
+        call printf              
+
+        # Epilogue
+        mov %rbp, %rsp
+        pop %rbp                   
+        ret                      
+
+.align_stack_printf:
+        sub $8, %rsp       
+        jmp .call_printf
+
+
+scan:
+        # Prologue
+        push %rbp                
+        mov %rsp, %rbp           
+        
+        # Pop the last element from the stack into rsi (argument for printf)
+        ; mov 16(%rbp), %rsi     
+        sub $8, %rsp            
+    
+        # Align the stack for printf
+        mov %rsp, %rax           
+        and $15, %rax            
+        jnz .align_stack_scanf         
+    
+.call_scanf:
+        # Load the format string into rdi (first argument for printf)
+        leaq 8(%rsp), %rsi
+        leaq int_fmt_scan(%rip), %rdi  
+        movq $0, %rax             
+    
+        # Call printf
+        call scanf
+        
+        mov 8(%rsp), %rax 
+
+        # Epilogue
+        mov %rbp, %rsp
+        popq %rbp                   
+        ret                      
+
+.align_stack_scanf:
+        sub $8, %rsp       
+        jmp .call_scanf
+
+
 main:
 	push %rbp
 	mov %rsp, %rbp
@@ -16,76 +87,88 @@ main:
 	# space for var b
 	sub $8, %rsp
 	
-	# constant
-	push $6
-	
-	# varset b
+	# read value
+	call scan
+	push %rax
 	pop -16(%rbp)
 	
 	# variable expr
 	push -16(%rbp)
 	
-	# printf
-	pop %rsi
-	lea int_fmt(%rip), %rdi
-	mov $0, %rax
-	call printf
-	xor %rax, %rax
-	
-	# constant
-	push $6
-	
-	# constant
-	push $7
+	# variable expr
+	push -16(%rbp)
 	
 	# mult
-	pop %rax
 	pop %rbx
+	pop %rax
 	imul %rax, %rbx
 	push %rbx
 	
-	# varset b
-	pop -16(%rbp)
+	# print value
+	call print
 	
 	# variable expr
 	push -16(%rbp)
 	
-	# printf
-	pop %rsi
-	lea int_fmt(%rip), %rdi
-	mov $0, %rax
-	call printf
-	xor %rax, %rax
+	# constant
+	push $2
+	
+	# variable expr
+	push -16(%rbp)
+	
+	# mult
+	pop %rbx
+	pop %rax
+	imul %rax, %rbx
+	push %rbx
+	
+	# minus
+	pop %rbx
+	pop %rax
+	sub %rbx, %rax
+	mov %rax, %rbx
+	push %rbx
+	
+	# print value
+	call print
+	
+	# variable expr
+	push -16(%rbp)
 	
 	# constant
-	push $7
+	push $4
 	
-	# constant
-	push $14
+	# plus
+	pop %rbx
+	pop %rax
+	add %rax, %rbx
+	push %rbx
+	
+	# print value
+	call print
+	
+	# variable expr
+	push -16(%rbp)
+	
+	# variable expr
+	push -16(%rbp)
 	
 	# division
-	pop %rax
 	pop %rbx
-	xor %rdx, %rdx
+	pop %rax
+	cqo
 	idivq %rbx
 	mov %rax, %rbx
 	push %rbx
 	
-	# varset b
-	pop -16(%rbp)
+	# print value
+	call print
 	
 	# variable expr
 	push -16(%rbp)
 	
-	# printf
-	pop %rsi
-	lea int_fmt(%rip), %rdi
-	mov $0, %rax
-	call printf
-	xor %rax, %rax
-	
 	# constant
-	push $3
+	push $1024
 	
 	# uminus
 	pop %rax
@@ -93,101 +176,24 @@ main:
 	push %rax
 	
 	# constant
-	push $15
+	push $2
 	
 	# division
-	pop %rax
 	pop %rbx
-	xor %rdx, %rdx
+	pop %rax
+	cqo
 	idivq %rbx
 	mov %rax, %rbx
 	push %rbx
 	
-	# varset b
-	pop -16(%rbp)
-	
-	# variable expr
-	push -16(%rbp)
-	
-	# printf
-	pop %rsi
-	lea int_fmt(%rip), %rdi
-	mov $0, %rax
-	call printf
-	xor %rax, %rax
-	
-	# constant
-	push $2
-	
-	# constant
-	push $1
-	
 	# plus
-	pop %rax
 	pop %rbx
+	pop %rax
 	add %rax, %rbx
 	push %rbx
 	
-	# constant
-	push $3
-	
-	# constant
-	push $3
-	
-	# division
-	pop %rax
-	pop %rbx
-	xor %rdx, %rdx
-	idivq %rbx
-	mov %rax, %rbx
-	push %rbx
-	
-	# constant
-	push $2
-	
-	# constant
-	push $7
-	
-	# plus
-	pop %rax
-	pop %rbx
-	add %rax, %rbx
-	push %rbx
-	
-	# constant
-	push $5
-	
-	# mult
-	pop %rax
-	pop %rbx
-	imul %rax, %rbx
-	push %rbx
-	
-	# plus
-	pop %rax
-	pop %rbx
-	add %rax, %rbx
-	push %rbx
-	
-	# minus
-	pop %rax
-	pop %rbx
-	sub %rbx, %rax
-	mov %rax, %rbx
-	push %rbx
-	
-	# varset b
-	pop -16(%rbp)
-	
-	# variable expr
-	push -16(%rbp)
-	
-	# printf
-	pop %rsi
-	lea int_fmt(%rip), %rdi
-	mov $0, %rax
-	call printf
-	xor %rax, %rax
+	# print value
+	call print
 	
 	# just in case final return
 	mov $0, %rax
