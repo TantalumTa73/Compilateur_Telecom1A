@@ -1,7 +1,9 @@
-int u ;
 int u;
+int v;
 
 int main ( int a ) {
-    read(u);
+
+    u = 5;
+    v = 7;
     print(u);
 }

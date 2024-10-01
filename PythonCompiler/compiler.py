@@ -249,13 +249,14 @@ def define_function(funcname, body, arg):
 
                 if element["name"] == "read":
                     add_line("# read value")
-                    add_line("push %rax")
+                    # add_line("push %rax")
                     add_line("call scan")
-                    add_line("push %rax")
+                    # add_line("push %rax")
                     # print(LOCAL_VARIABLES)
                     location = get_variable_location(element['expr']['name'], funcname)
                     # print(location)
-                    add_line(f"pop {location}")
+                    # add_line(f"pop {location}")
+                    add_line(f"mov %rax, {location}")
                     add_line()
                     continue
 
@@ -339,7 +340,14 @@ if __name__ == "__main__":
         # reduced_element(element)
         if element["action"] == "gvardef":
             set_section("bss")
-            CURRENT_ASM += f"{element['name']}: .quad\n"
+            add_line(f".align {SIZE}")
+            add_line(f".type {element['name']}, @object")
+            add_line(f".size {element['name']}, {SIZE}")
+            add_line(f"{element['name']}:", indent=False)
+            add_line(f".zero {SIZE}")
+            # CURRENT_ASM += f".align {SIZE}\n"
+            # CURRENT_ASM += f".size {element['name']}, {SIZE}\n"
+            # CURRENT_ASM += f"{element['name']}: .quad\n"
             continue
 
         if element["action"] == "varset":

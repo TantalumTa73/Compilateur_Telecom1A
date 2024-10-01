@@ -45,9 +45,8 @@ scan:
         push %rbp                
         mov %rsp, %rbp           
         
-        # Pop the last element from the stack into rsi (argument for printf)
-        # mov 16(%rbp), %rsi     
-        sub $16, %rsp            
+        # set space for an intern variable    
+        sub $8, %rsp            
     
         # Align the stack for printf
         mov %rsp, %rax           
@@ -56,14 +55,16 @@ scan:
     
 .call_scanf:
         # Load the format string into rdi (first argument for printf)
-        leaq 8(%rsp), %rsi
-        leaq int_fmt_scan(%rip), %rdi  
+        # pushq $0
         movq $0, %rax             
+        leaq (%rsp), %rsi
+        leaq int_fmt_scan(%rip), %rdi  
     
         # Call printf
         call scanf
         
-        mov 8(%rsp), %rax 
+        # save value in rax
+        mov (%rsp), %rax 
 
         # Epilogue
         mov %rbp, %rsp
@@ -77,8 +78,16 @@ scan:
 
 
 	.bss
-u: .quad
-u: .quad
+	.align 8
+	.type u, @object
+	.size u, 8
+u:
+	.zero 8
+	.align 8
+	.type v, @object
+	.size v, 8
+v:
+	.zero 8
 
 	.text
 main:
@@ -90,11 +99,19 @@ main:
 	mov %rax, -8(%rbp)
 	sub $8, %rsp
 	
-	# read value
-	push %rax
-	call scan
-	push %rax
-	pop u(%rip)
+	# constant
+	push $5
+	
+	# varset of var umain
+	pop %rax
+	mov %rax, u(%rip)
+	
+	# constant
+	push $7
+	
+	# varset of var vmain
+	pop %rax
+	mov %rax, v(%rip)
 	
 	# variable expr glob u
 	push u(%rip)
