@@ -1,4 +1,5 @@
 int u ;
+int u;
 
 int main ( int a ) {
     read(u);
