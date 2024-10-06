@@ -15,8 +15,9 @@ Token JsonReader::readFile(){
         return Token();
     }
 
-    Token root = Token(0, 0, 0, 0);
+    Token root = Token(0, 0, -1, -1);
     root.set_attribute("name", "__root__");
+    root.set_attribute("action", "gfundef");
     Token *token_ptr = &root;
 
     // v_cout << "Main at " << token_ptr << "\n";

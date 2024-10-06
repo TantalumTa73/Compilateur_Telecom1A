@@ -20,7 +20,7 @@ class InterpreterException : public std::exception {
             std::string msg
         ) ;
         InterpreterException( Token token, std::string msg ) ;
-        InterpreterException( SimplifiedToken token, std::string msg ) ;
+        InterpreterException( TkPtr token, std::string msg ) ;
 
         const char* what() const throw();
 };

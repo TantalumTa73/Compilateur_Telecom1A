@@ -1,11 +1,12 @@
-#include <unordered_map> // dictionary
 #include <iostream>
 
 #include "json_reader.hpp"
-#include "json_simplifier.hpp"
 #include "token.hpp"
+#include "simplified_token.hpp"
 #include "interpreter.hpp"
 #include "exception.hpp"
+#include "_test.hpp"
+
 
 int main(int argc, char *argv[]) {
     
@@ -24,11 +25,18 @@ int main(int argc, char *argv[]) {
         v_cout << "Invalid file extension\n";
         v_cout << "Invalid file extension\n";
         v_cout << "Invalid file extension\n\n";
+        return 1 ;
     }
 
+    // testing();
+    // return 0;
+    /////////////////////
+
     JsonReader reader(filename);
+
     Token token = reader.readFile();
-    Token simplified = simplify(token);
+    // token.print();
+    TkPtr simplified = simplify(token);
     Interpreter interpreter(simplified);
     interpreter.run();
 
