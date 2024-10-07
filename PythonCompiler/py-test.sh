@@ -6,5 +6,5 @@ dune build
 cd ..
 cd PythonCompiler
 python3 compiler.py ../TestFiles/simple.json
-gcc out.s -g
+gcc ../TestFiles/simple.s -g
 ./a.out

@@ -7,13 +7,16 @@ LOCAL_VARIABLES = {}
 VARIABLE_OFFSET = 0
 FUNCTIONS = {}
 
+FUNCTION_VARIABLE_DEFINITIONS = {}
+FUNCTION_VARIABLE_SIZE = 0
+
 SIZE = 8
 COMMENT = "#"
 
 CURRENT_ASM = ""
 START_ASM = ""
 
-CURRENT_SECTION = None
+CURRENT_SECTION = "text"
 CODE_FRAGMENTS = {
 
 }
@@ -51,42 +54,78 @@ def set_section(section):
     CURRENT_SECTION = section
 
 
-def evaluate_expression(expr):
+def set_variable(varname: str, funcname):
+
+    add_line(f"# varset of var {varname + funcname}")
+    if varname + funcname in LOCAL_VARIABLES:
+        add_line(f"pop -{LOCAL_VARIABLES[varname + funcname]}(%rbp)")
+        add_line()
+    else:
+        add_line(f"pop %rax")
+        add_line(f"mov %rax, {varname}(%rip)")
+        add_line()
+
+
+def get_variable_location(varname: str, funcname: str):
+
+    if varname + funcname in LOCAL_VARIABLES:
+        return f"-{LOCAL_VARIABLES[varname + funcname]}(%rbp)"
+    else:
+        return f"{varname}(%rip)"
+
+
+
+def get_variable(varname: str, funcname: str):
+
+    """
+    push variable onto the stack
+    """
+
+    location = get_variable_location(varname, funcname)
+
+    if varname + funcname in LOCAL_VARIABLES:
+        add_line(f"{COMMENT} variable expr {varname + funcname}")
+        add_line(f"push {location}")
+    else:
+        add_line(f"{COMMENT} variable expr glob {varname}")
+        add_line(f"push {location}")
+    add_line()
+
+
+def evaluate_expression(expr, funcname):
     
     operators = {
         "plus": "add %rax, %rbx",
         "minus": "sub %rbx, %rax\n\tmov %rax, %rbx",
         "mult": "imul %rax, %rbx",
-        "division": "xor %rdx, %rdx\n\tidivq %rbx\n\tmov %rax, %rbx",
+        "division": "cqo\n\tidivq %rbx\n\tmov %rax, %rbx",
         "modulo": "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx",
     }
     
     if "action" in expr:
 
         if expr["action"] == "function":
-            evaluate_expression(expr["expr"])      
+            evaluate_expression(expr["expr"], funcname)      
             
-            add_line("push %rax")
+            add_line(f"{COMMENT} calling function as expr")
             add_line(f"call {expr['name']}")
             add_line(f"add ${SIZE}, %rsp")
             add_line("push %rax")
             add_line()
 
     if "type" not in expr:
-        # reduced_element(expr)
-        # print("----")
         return
 
     if expr["type"] == "operation":
 
         if expr["operator"] in operators.keys():
             
-            evaluate_expression(expr["right"]) # second argument should be pushed first
-            evaluate_expression(expr["left"])
+            evaluate_expression(expr["left"], funcname)
+            evaluate_expression(expr["right"], funcname) # second argument should be pushed second
 
             add_line(f"{COMMENT} {expr['operator']}")         
+            add_line("pop %rbx") # popping in reverse order
             add_line("pop %rax")
-            add_line("pop %rbx")
 
             add_line(operators[expr["operator"]])
 
@@ -95,7 +134,7 @@ def evaluate_expression(expr):
 
         if expr["operator"] == "uminus":
 
-            evaluate_expression(expr["right"])
+            evaluate_expression(expr["right"], funcname)
 
             add_line(f"{COMMENT} uminus")
             add_line("pop %rax")
@@ -107,26 +146,17 @@ def evaluate_expression(expr):
 
     if expr["type"] == "cst":
 
-        add_line(f"{COMMENT} constant")
+        add_line(f"{COMMENT} constant expr")
         add_line(f"push ${expr['value']}")
         add_line("")
         return
 
     if expr["type"] == "var":
-
-        add_line(f"{COMMENT} variable expr")
-
-        print(LOCAL_VARIABLES)
-        if expr['name'] in LOCAL_VARIABLES:
-            add_line(f"push -{LOCAL_VARIABLES[expr['name']]}(%rbp)")
-        else:
-            add_line(f"push [{expr['name']}]")
-
-        add_line()
+        get_variable(expr["name"], funcname)
         return
     
     if expr["type"] == "parenthesis":
-        evaluate_expression(expr["inner"])
+        evaluate_expression(expr["inner"], funcname)
         return
     
     reduced_element(expr)
@@ -135,9 +165,6 @@ def evaluate_expression(expr):
 def end_function_here():
 
     global LOCAL_VARIABLES
-
-    add_line(f"{COMMENT} removing all local variable")
-    add_line(f"add ${len(LOCAL_VARIABLES.keys()) * SIZE}, %rsp")
 
     add_line("mov %rbp, %rsp")
     add_line("pop %rbp")
@@ -148,8 +175,8 @@ def end_function_here():
 
 def define_function(funcname, body, arg):
 
-    global LOCAL_VARIABLES, VARIABLE_OFFSET
-    LOCAL_VARIABLES = {}
+    global LOCAL_VARIABLES, VARIABLE_OFFSET, FUNCTION_VARIABLE_SIZE
+    FUNCTION_VARIABLE_SIZE = 0
 
     set_section("text")
     add_line(f"{funcname}:", indent=False)
@@ -157,12 +184,12 @@ def define_function(funcname, body, arg):
     add_line("mov %rsp, %rbp")
     add_line()
 
-    LOCAL_VARIABLES[arg] = SIZE
-    VARIABLE_OFFSET += SIZE
+    FUNCTION_VARIABLE_SIZE += SIZE
+    LOCAL_VARIABLES[arg + funcname] = FUNCTION_VARIABLE_SIZE
 
-    add_line(f"{COMMENT} get argument, variable {arg}")
+    add_line(f"{COMMENT} get argument, variable {arg + funcname}")
     add_line(f"mov {2*SIZE}(%rbp), %rax")
-    add_line(f"mov %rax, -{LOCAL_VARIABLES[arg]}(%rbp)")
+    add_line(f"mov %rax, -{LOCAL_VARIABLES[arg + funcname]}(%rbp)")
     add_line(f"sub ${SIZE}, %rsp")
     add_line()
     
@@ -171,7 +198,7 @@ def define_function(funcname, body, arg):
         if "action" in element:
 
             if element["action"] == "return":
-                evaluate_expression(element["expr"])
+                evaluate_expression(element["expr"], funcname)
                 add_line(f"{COMMENT} return")
                 add_line("pop %rax")
                 add_line()
@@ -180,50 +207,42 @@ def define_function(funcname, body, arg):
                 break
         
             if element["action"] == "gvardef":
-                add_line(f"{COMMENT} space for var {element['name']}")
+                add_line(f"{COMMENT} space for var {element['name'] + funcname}")
                 add_line(f"sub ${SIZE}, %rsp")
-                VARIABLE_OFFSET += SIZE
-                LOCAL_VARIABLES[element["name"]] = VARIABLE_OFFSET
+                FUNCTION_VARIABLE_SIZE += SIZE
+                LOCAL_VARIABLES[element["name"] + funcname] = FUNCTION_VARIABLE_SIZE
                 add_line()
                 continue
 
             if element["action"] == "varset":
-                evaluate_expression(element["expr"])
-                add_line(f"{COMMENT} varset {element['name']}")
-                add_line(f"pop -{LOCAL_VARIABLES[element['name']]}(%rbp)")
-                add_line()
+                evaluate_expression(element["expr"], funcname)
+                set_variable(element['name'], funcname)
                 continue
-            # if element[""]
 
             if element["action"] == "function":
 
-                evaluate_expression(element["expr"])
+                if element["name"] != "read":
+                    evaluate_expression(element["expr"], funcname)
 
-                add_line(f"{COMMENT} printf")
+                if element["name"] == "print":
+                    add_line("# print value")
+                    add_line("call print")
+                    add_line()
+                    continue
 
-                add_line("pop %rsi")
-                # add_line("mov $-2, %rsi")
-                if VARIABLE_OFFSET % 16 != 0:
-                    add_line("sub $8, %rsp")
+                if element["name"] == "read":
+                    add_line("# read value")
+                    add_line("call scan")
+                    location = get_variable_location(element['expr']['name'], funcname)
+                    add_line(f"mov %rax, {location}")
+                    add_line()
+                    continue
 
-                add_line("lea int_fmt(%rip), %rdi")
-                add_line("mov $0, %rax")
-                add_line("call printf")
-                add_line("xor %rax, %rax")
+                add_line("# function call, no varset")
+                add_line(f"call {element['name']}")
+                add_line(f"add ${SIZE}, %rsp")      
+                add_line()          
 
-                if VARIABLE_OFFSET % 16 != 0:
-                    add_line("add $8, %rsp")
-
-                add_line()
-
-
-
-
-
-        reduced_element(element)
-
-        # if "expr" in element:
-        #     evaluate_expression(element["expr"])
 
     add_line(f"{COMMENT} just in case final return")
     add_line("mov $0, %rax") 
@@ -241,44 +260,41 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise Exception("Missing a filename.json to open")
 
-    # print(sys.argv[1])
     with open(sys.argv[1], "r") as f:
         data = json.load(f)
 
+    template = "template.s"
+    if len(sys.argv) >= 3:
+        template = sys.argv[2]
 
-    set_section("data")
-    add_line("int_fmt:", indent=False)
-    add_line('.string "%d\\n"')
+    with open(template, "r") as f:
+        CURRENT_ASM = f.read()
 
-    set_section("text")
-    add_line(".globl main")
 
+    to_add_when_calling = []
+    
 
     for element in data:
         
-        reduced_element(element)
         if element["action"] == "gvardef":
             set_section("bss")
-            CURRENT_ASM += f"\t{element['name']} resp ${SIZE // 4}\n"
+            add_line(f".align {SIZE}")
+            add_line(f".type {element['name']}, @object")
+            add_line(f".size {element['name']}, {SIZE}")
+            add_line(f"{element['name']}:", indent=False)
+            add_line(f".zero {SIZE}")
+            continue
 
-        if element["action"] == "gvarset":
-            pass
+        if element["action"] == "varset":
+            to_add_when_calling.append(element) 
+            continue
 
         if element["action"] == "gfundef":
-            define_function(element["name"], element["body"], element["arg"])
+            body = element["body"]
+            if element["name"] == "main":
+                body = to_add_when_calling + body
+            define_function(element["name"], body, element["arg"])
+            continue
 
-
-    # add_line("", indent=True, start_asm=True)
-    # add_line("push $0", indent=True, start_asm=True)
-    # add_line("call main", indent=True, start_asm=True)
-    # add_line("", indent=True, start_asm=True)
-    # add_line("mov $60, %rax", indent=True, start_asm=True)
-    # add_line("xor %rdi, %rdi", indent=True, start_asm=True)
-    # add_line("syscall", indent=True, start_asm=True)
-
-
-    # CURRENT_ASM += START_ASM
-    print(CURRENT_ASM)
-
-    with open("out.s", "w") as f:
+    with open(sys.argv[1].replace(".json", ".s"), "w") as f:
         f.write(CURRENT_ASM)
