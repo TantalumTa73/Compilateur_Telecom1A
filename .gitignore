@@ -1,18 +1,21 @@
+# system folders
 .DS_Store
 .vscode
 
 log.txt
 
+# test files
 _test/**
-TestFiles/*.json
-TestFiles/*.s
 
-**/*.exe
+# build files
 **/_build
 **/build
 
-**/expr2json.exe
-**/a.out
-**/*tester.sh
+# executables
+**/*.json
+**/*.exe
+**/*.s
+**/*.out
 
+# Temporary test files
 TestFiles/_*
