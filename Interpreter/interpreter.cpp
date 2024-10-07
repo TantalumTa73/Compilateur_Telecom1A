@@ -219,7 +219,7 @@ void Interpreter::call_function(FunctionCall token){
     } else if (token.name == "print"){
         v_cout << "Printing " << arg << std::endl;
         std::cout << arg << std::endl;
-    } else if (token.name == "input"){
+    } else if (token.name == "input" || token.name == "read"){
         v_cout << "Need Input for" << arg << std::endl;
         
         int input;
@@ -247,6 +247,7 @@ void Interpreter::call_function(FunctionCall token){
     }
 
 }
+
 
 void Interpreter::run() {
 
