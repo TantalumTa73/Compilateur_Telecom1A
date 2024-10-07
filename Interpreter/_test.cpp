@@ -75,9 +75,9 @@ void add_v(std::vector<SimplifiedToken*> &v){
     VarDef ret = VarDef(tk,"var def (ret)");
     
     // SimplifiedToken ret_tk = VarDef(tk,"var def (ret_tk)");
-    SimplifiedToken *ret_p = &ret;
+    // SimplifiedToken *ret_p = &ret;
     // SimplifiedToken ret_cp = ret;
-    SimplifiedToken &ret_ref = ret;
+    // SimplifiedToken &ret_ref = ret;
     // VarDef *ret_p2 = static_cast<VarDef*>(&ret_tk);
     // VarDef ret2 = *ret_p2;
     std::unique_ptr<SimplifiedToken> ret_p3 = std::make_unique<VarDef>(ret);
@@ -121,19 +121,19 @@ void add_v(std::vector<std::unique_ptr<SimplifiedToken>> &v){
 
 }
 
-void match_f(std::unique_ptr<SimplifiedToken> &e){
-    std::cout << "SimplifiedToken\n";
-}
-void match_f(std::unique_ptr<VarDef> &e){
-    std::cout << "VarDef\n";
-}
-void match_f(std::unique_ptr<Return> &e){
-    std::cout << "Return\n";
-}
+// void match_f(std::unique_ptr<SimplifiedToken> &e){
+//     std::cout << "SimplifiedToken\n";
+// }
+// void match_f(std::unique_ptr<VarDef> &e){
+//     std::cout << "VarDef\n";
+// }
+// void match_f(std::unique_ptr<Return> &e){
+//     std::cout << "Return\n";
+// }
 
-void match_tk(Operator* e){ std::cout << "Operator\n";}
-void match_tk(Return* e){ std::cout << "Return\n";}
-void match_tk(VarDef* e){ std::cout << "VarDef\n";}
+// void match_tk(Operator* e){ std::cout << "Operator\n";}
+// void match_tk(Return* e){ std::cout << "Return\n";}
+// void match_tk(VarDef* e){ std::cout << "VarDef\n";}
 // void match_tk(SimplifiedToken* e){ std::cout << "SimplifiedToken\n";}
 
 void match_tk2(SimplifiedToken* e){
@@ -155,7 +155,7 @@ void vect_smart_ptr_test(){
     for (auto& e : v){
         std::cout << "e: " ;
         e->print();
-        match_f(e);
+        // match_f(e);
     }
 
     std::cout << "\n";

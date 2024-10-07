@@ -45,7 +45,7 @@ Interpreter::Interpreter(TkPtr root_) {
 
 
     stack_context = std::vector<std::string>();
-    for (auto e : stack){
+    for (uint i = 0 ; i < stack.size() ; i++){
         stack_context.push_back("__root__");
     }
 
@@ -189,7 +189,9 @@ void Interpreter::get_value(Constant token){
 
 void Interpreter::get_value(Return token){
     int value = pop();
-    v_cout << "Return " << value << " in " << actual_function << std::endl;
+    v_cout << "Return " << value << " in " << actual_function ;
+    v_cout << " (" << token.start_line << "," << token.start_char << ")";
+    v_cout << std::endl;
     push(value);
     return ;
 }

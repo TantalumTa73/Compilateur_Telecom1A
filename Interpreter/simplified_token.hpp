@@ -53,7 +53,7 @@ class SimplifiedToken {
 class VarDef : public SimplifiedToken {
     public:
         std::string var_name ;
-        VarDef(Token t, std::string var_name) : var_name(var_name), SimplifiedToken(t,VAR_DEF) {}
+        VarDef(Token t, std::string var_name) : SimplifiedToken(t,VAR_DEF), var_name(var_name) {}
         
         void print(std::string indent = ""){
             v_cout << indent << "VarDef: " << var_name << "\n";
@@ -67,7 +67,7 @@ class FunctionDef : public SimplifiedToken {
         std::string arg_name ;
         std::vector<TkPtr> body ;
         FunctionDef(Token t, std::string fun_name, std::string arg_name, std::vector<TkPtr> body) : 
-            fun_name(fun_name), arg_name(arg_name), body(body), SimplifiedToken(t,FUNCTION_DEF) {}
+            SimplifiedToken(t,FUNCTION_DEF), fun_name(fun_name), arg_name(arg_name), body(body) {}
         
         void print(std::string indent = ""){
             v_cout << indent << "FunctionDef: " << fun_name << "(" << arg_name << ")" << std::endl;
@@ -80,7 +80,7 @@ class FunctionDef : public SimplifiedToken {
 class VarSet : public SimplifiedToken {
     public:
         std::string var_name ;
-        VarSet(Token t, std::string var_name) : var_name(var_name), SimplifiedToken(t, VAR_SET) {}
+        VarSet(Token t, std::string var_name) : SimplifiedToken(t, VAR_SET), var_name(var_name) {}
 
         void print(std::string indent = ""){
             v_cout << indent << "VarSet: " << var_name << "\n";
@@ -92,7 +92,7 @@ class FunctionCall : public SimplifiedToken {
         std::string name ;
         std::string arg_name ;
         FunctionCall(Token t, std::string name, std::string arg_name) : 
-            name(name), arg_name(arg_name), SimplifiedToken(t,FUNCTION_CALL) {}
+            SimplifiedToken(t,FUNCTION_CALL), name(name), arg_name(arg_name) {}
 
         void print(std::string indent = ""){
             v_cout << indent << "FunctionCall: " << name << "(" << arg_name << ")\n";
@@ -103,7 +103,7 @@ class FunctionCall : public SimplifiedToken {
 class Constant : public SimplifiedToken {
     public:
         int value;
-        Constant(Token t, int value) : value(value), SimplifiedToken(t, CONSTANT) {}
+        Constant(Token t, int value) : SimplifiedToken(t, CONSTANT), value(value) {}
         void print(std::string indent = "") {
             v_cout << indent << "Constant : " << value << std::endl;
         }
@@ -112,7 +112,7 @@ class Constant : public SimplifiedToken {
 class VarGet : public SimplifiedToken {
     public:
         std::string var_name;
-        VarGet(Token t, std::string var_name) : var_name(var_name), SimplifiedToken(t, VAR_GET) {}
+        VarGet(Token t, std::string var_name) : SimplifiedToken(t, VAR_GET), var_name(var_name) {}
         void print(std::string indent = "") {
             v_cout << indent << "VarGet : " << var_name << std::endl;
         }
@@ -123,7 +123,7 @@ class Operator : public SimplifiedToken {
         std::string operator_name;
         int nb_args;
         Operator(Token t, std::string op_name, int n) : 
-            operator_name(op_name), nb_args(n), SimplifiedToken(t, OPERATOR) {}
+            SimplifiedToken(t, OPERATOR), operator_name(op_name), nb_args(n) {}
         void print(std::string indent = "") {
             v_cout << indent << "Operator: " << operator_name << ", Args: " << nb_args << std::endl;
         }
