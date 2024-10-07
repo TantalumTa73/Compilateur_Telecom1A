@@ -5,7 +5,12 @@ set -e
 _cfilename="${1:-file.c}"
 _jsonfilename="${_cfilename%".c"}.json"
 
-cd ../..
+
+if [ -z "$2" ]; then
+    cd .
+else
+    cd ../..
+fi
 
 touch TestFiles/_test.c
 touch TestFiles/_res1.txt
