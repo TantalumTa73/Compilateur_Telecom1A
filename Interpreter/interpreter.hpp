@@ -28,12 +28,6 @@ class Interpreter {
 
         std::unordered_map<std::string, Function> functions ;
 
-        // List of tokens subclasses
-        // VarDef VarSet VarGet
-        // FunctionDef FunctionCall 
-        // Constant Operator Return
-
-        void print_opt(std::string actual_function, std::string var_name) ;
 
         void def_var(VarDef token) ;
         void set_var(VarSet token) ;

@@ -5,44 +5,37 @@
 #include "simplified_token.hpp"
 #include "exception.hpp"
 
-// SimplifiedToken simplify(Token token){
-TkPtr simplify(Token token){
-// SimplifiedToken* simplify(Token token){
 
+TkPtr simplify(Token token){
 
     if        (token.get_attribute("name") == "__root__"){
         return new FunctionDef(token, "__root__", "__arg__", simplify(token.childs));
-        // return std::make_unique<FunctionDef>( FunctionDef(
-        //     token, token.get_attribute("name"), token.get_attribute("arg"), simplify(token.childs)));
-        return nullptr;
+
     } else if (token.get_attribute("action") == "gfundef"){
-        return new FunctionDef(token, token.get_attribute("name"), token.get_attribute("arg"), simplify(token.childs));
-        // return std::make_unique<FunctionDef>( FunctionDef(token, token.get_attribute("name"), token.get_attribute("arg"), simplify(token.childs)));
-        return nullptr;
+        return new FunctionDef(token, token.get_attribute("name"), 
+            token.get_attribute("arg"), simplify(token.childs));
+
     } else if (token.get_attribute("action") == "gvardef"){
         return new VarDef(token, token.get_attribute("name"));
-        // return std::make_unique<VarDef>( VarDef(token, token.get_attribute("name")));
+
     } else if (token.get_attribute("action") == "varset"){
         return new VarSet(token, token.get_attribute("name"));
-        // return std::make_unique<VarSet>( VarSet(token, token.get_attribute("name")));
+
     } else if (token.get_attribute("action") == "function"){
-        // assert(token.childs.size() > 0);
-        // return new FunctionCall(token, token.get_attribute("name"), token.childs[0].get_attribute("name"));
         return new FunctionCall(token, token.get_attribute("name"), "");
-        // return std::make_unique<FunctionCall>( FunctionCall(token, token.get_attribute("name"), token.childs[0].get_attribute("name")));
+
     } else if (token.get_attribute("type") == "var"){
         return new VarGet(token, token.get_attribute("name"));
-        // return std::make_unique<VarGet>( VarGet(token, token.get_attribute("name")));
+
     } else if (token.get_attribute("type") == "cst"){
         return new Constant(token, std::stoi(token.get_attribute("value")));
-        // return std::make_unique<Constant>( Constant(token, std::stoi(token.get_attribute("value"))));
+
     } else if (token.get_attribute("type") == "operation"){
         int nb_arg = token.get_attribute("operator") == "uminus" ? 1 : 2;
         return new Operator(token, token.get_attribute("operator"), nb_arg);
-        // return std::make_unique<Operator>( Operator(token, token.get_attribute("name"), nb_arg));
+
     } else if (token.get_attribute("action") == "return"){
         return new Return(token);
-        // return std::make_unique<Return>( Return(token));
     }
 
     token.print();
@@ -67,7 +60,6 @@ std::vector<TkPtr> simplify(std::vector<Token> tokens){
         if (
             t.get_attribute("action") != "gfundef" &&
             t.get_attribute("action") != "gvardef" &&
-            // t.get_attribute("action") != "function" &&
             t.childs.size() > 0 &&
             t.get_attribute("name") != "__root__"
         ){
@@ -76,14 +68,13 @@ std::vector<TkPtr> simplify(std::vector<Token> tokens){
             tokens.push_back(t);
             for (Token child : childs) tokens.push_back(child) ;
     
-        } else if (t.get_attribute("type")=="parenthesis"){        
+        } else if (t.get_attribute("type")=="parenthesis"){
+            // parenthesis are ignored    
         } else {
             new_tokens.push_back(simplify(t));
         }
-
     }
 
-    
 
     return new_tokens;
 }

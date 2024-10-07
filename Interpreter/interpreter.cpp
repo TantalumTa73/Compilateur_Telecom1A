@@ -114,15 +114,9 @@ void Interpreter::set_var(VarSet token){
     v_cout << "Set variable " << token.var_name << " to " << value ;
     v_cout << " in " << actual_function << std::endl;
 
-    bool found = functions.find(actual_function) != functions.end() ;
-    bool has_var = functions[actual_function].get_var(token.var_name).has_value();
-    bool in_root = functions["__root__"].get_var(token.var_name).has_value();
-
-
     if (
-        // functions.find(actual_function) != functions.end() && 
-        // functions[actual_function].get_var(token.var_name).has_value()
-        found && has_var
+        functions.find(actual_function) != functions.end() && 
+        functions[actual_function].get_var(token.var_name).has_value()
     ){
         
         functions[actual_function].set_var(token.var_name, value);
@@ -158,8 +152,6 @@ void Interpreter::def_var(VarDef token){
 }
 
 void Interpreter::get_value(Operator token){
-
-    // v_cout << "\t Operation\n" ;
 
     std::string op = token.operator_name;
 
@@ -209,14 +201,6 @@ void Interpreter::def_function(FunctionDef token){
     Function f = Function(token);
     functions.insert(std::make_pair(token.fun_name, f));
 
-    return ;
-}
-
-void Interpreter::print_opt(std::string actual_function, std::string var_name){
-    std::optional<int> opt = functions[actual_function].get_var(var_name);
-    v_cout << "Value: " << opt.has_value() ;
-    if (opt.has_value()) v_cout << " -> " << opt.value() ;
-    v_cout << std::endl;  
     return ;
 }
 
@@ -277,14 +261,11 @@ void Interpreter::run() {
     v_cout << "\nDefining\n";
 
     while (true) {
-        // v_cout << "Stack size: " << stack.size() << std::endl;
         actual_token = stack.back();
         actual_function = stack_context.back();
         stack.pop_back();
         stack_context.pop_back();
 
-        assert(actual_token != nullptr);
-        v_cout << "type : " << actual_token->type << std::endl;
         
         if (actual_token->type == VAR_DEF) {
             VarDef *tk = static_cast<VarDef*>(actual_token);
@@ -341,9 +322,6 @@ void Interpreter::run() {
             break;
         }
 
-        // if (!defining){
-        //     v_cout << "last_value_: " << last_values.back() << std::endl;
-        // }
 
     }
 

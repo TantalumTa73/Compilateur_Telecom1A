@@ -3,7 +3,9 @@
 
 log.txt
 
+_test/**
 TestFiles/*.json
+TestFiles/*.s
 
 **/*.exe
 **/_build

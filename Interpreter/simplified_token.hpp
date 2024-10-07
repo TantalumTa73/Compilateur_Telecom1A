@@ -7,9 +7,8 @@
 #include "token.hpp"
 
 class SimplifiedToken ; 
-// using TkPtr = std::unique_ptr<SimplifiedToken>;
-
 using TkPtr = SimplifiedToken*;
+
 
 enum TkType {
     VOID,
@@ -55,11 +54,9 @@ class VarDef : public SimplifiedToken {
     public:
         std::string var_name ;
         VarDef(Token t, std::string var_name) : var_name(var_name), SimplifiedToken(t,VAR_DEF) {}
-        // VarDef(SimplifiedToken t, std::string var_name) : 
-        //     var_name(var_name), SimplifiedToken(VAR_DEF,t.start_line, t.start_char, t.end_line, t.end_char) {}
-
+        
         void print(std::string indent = ""){
-            v_cout << indent << "VarDef :" << var_name << "\n";
+            v_cout << indent << "VarDef: " << var_name << "\n";
         }
 
 };
@@ -71,15 +68,11 @@ class FunctionDef : public SimplifiedToken {
         std::vector<TkPtr> body ;
         FunctionDef(Token t, std::string fun_name, std::string arg_name, std::vector<TkPtr> body) : 
             fun_name(fun_name), arg_name(arg_name), body(body), SimplifiedToken(t,FUNCTION_DEF) {}
-        // FunctionDef(int l1, int c1, int l2, int c2, std::string fun_name, std::string arg_name, std::vector<SimplifiedToken> body) : 
-        //     fun_name(fun_name), arg_name(arg_name), body(body), SimplifiedToken(l1, c1, l2, c2) {}
-
+        
         void print(std::string indent = ""){
             v_cout << indent << "FunctionDef: " << fun_name << "(" << arg_name << ")" << std::endl;
-            // int i = 0;
             for (auto& t : body){
                 t->print(indent+"\t");
-                // if (i++ > 10) break ;
             }
         }
 };
@@ -145,6 +138,4 @@ class Return : public SimplifiedToken {
 };
 
 TkPtr simplify(Token token);
-// SimplifiedToken simplify(Token token);
-
 std::vector<TkPtr> simplify(std::vector<Token> token);
