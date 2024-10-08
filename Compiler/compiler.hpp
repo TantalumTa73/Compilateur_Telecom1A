@@ -3,9 +3,10 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <optional>
 
 #include "../Interpreter/token.hpp"
-#include "../Interpreter/functions.hpp"
+#include "functions.hpp"
 
 class Compiler {
     public:
@@ -16,19 +17,19 @@ class Compiler {
         void run();
 
     private:
-        std::ofstream file;
         Token root;
         Token actual_token;
         std::string actual_function;
         std::string cfilename;
-        std::unordered_map<int, std::string> registers_name;
+        std::unordered_map<std::string, std::optional<int>> registers_name;
         std::unordered_map<std::string, Function> functions;
         std::vector<int> active_registers; 
         int nb_children;
+        int rsp;
 
-        void w_init();
-        void w_print(std::string str);
-        void w_init_var(std::string str);
-        void w_set_var(std::string str, int value);
-        void w_arithm();
+        void init_registers();
+        void init_compiling();
+        int depth_function(Function f);
+        void call_function(std::string fun_name, std::string arg_name, int val);
+
 };

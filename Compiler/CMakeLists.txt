@@ -7,14 +7,10 @@ project(${PROJECT_NAME})
 file(GLOB libs_file CONFIGURE_DEPENDS 
     ../Interpreter/exception.cpp
     ../Interpreter/exception.hpp
-    ../Interpreter/functions.cpp
-    ../Interpreter/functions.hpp
     ../Interpreter/json_reader.cpp
     ../Interpreter/json_reader.hpp
     ../Interpreter/token.cpp
     ../Interpreter/token.hpp
-    interpreter.cpp
-    interpreter.hpp
     *.cpp
     *.hpp
 )

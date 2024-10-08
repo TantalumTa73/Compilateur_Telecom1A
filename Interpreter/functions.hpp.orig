@@ -9,6 +9,7 @@ class Function {
 
     public:
 
+<<<<<<< HEAD
         std::string fun_name ;
         std::string arg_name ;
         std::vector<TkPtr> body ;

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../Interpreter/json_reader.hpp"
-#include "../Interpreter/functions.hpp"
+#include "functions.hpp"
 #include "../Interpreter/exception.hpp"
 #include "../Interpreter/token.hpp"
 #include "compiler.hpp"
