@@ -43,6 +43,7 @@ int main ( int a ) {
     print(3*b);
 
     u = f(2);
+    print(u);
 
     print(v);
     read(v);

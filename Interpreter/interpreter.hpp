@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "token.hpp"
+#include "simplified_token.hpp"
 #include "functions.hpp"
 
 
@@ -12,26 +12,36 @@ class Interpreter {
     public:
 
         Interpreter();
-        Interpreter(Token root) ;
+        Interpreter(TkPtr root) ;
+        ~Interpreter() = default;
 
         void run() ;
 
     private:
-        int last_value ;
+        std::vector<int> last_values ;
 
-        Token actual_token ;
+        TkPtr actual_token ;
         std::string actual_function ;
 
-        std::vector<Token> stack;
+        std::vector<TkPtr> stack;
         std::vector<std::string> stack_context;
 
         std::unordered_map<std::string, Function> functions ;
 
-        int get_value(Token token) ;
 
-        int get_var(std::string var_name) ;
-        void set_var(std::string var_name, int value) ;
-        void def_var(std::string var_name);
-        void call_function(std::string function_name, int arg) ;
+        void def_var(VarDef token) ;
+        void set_var(VarSet token) ;
+        void get_var(VarGet token) ;
+
+        void def_function(FunctionDef token) ;
+        void call_function(FunctionCall token) ;
+
+        void get_value(Constant token) ;
+        void get_value(Operator token) ;
+        void get_value(Return token) ;
+
+
+        void push(int value) ;
+        int pop() ;
 
 };

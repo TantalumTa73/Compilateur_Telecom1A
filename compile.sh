@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# ./Bash/interpret-cpp.sh $1 $2
+
+# ./Bash/compile-py.sh $1
+
 _cfilename="${1:-file.c}"
 cd ParserLexer
 eval $(opam env)

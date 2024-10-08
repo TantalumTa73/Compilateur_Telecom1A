@@ -3,22 +3,20 @@
 #include <unordered_map>
 #include <optional>
 
-#include "token.hpp"
+#include "simplified_token.hpp"
 
 class Function {
 
     public:
 
-        const std::string name;
-        const std::string arg_name;
+        std::string fun_name ;
+        std::string arg_name ;
+        std::vector<TkPtr> body ;
 
-        const std::vector<Token> body;
-        
-        // int arg_value;
-        int layer;
+        int layer; // Only for compiler
 
         Function() ;
-        Function(std::string name_, std::string arg_name_, std::vector<Token> body_) ;
+        Function(FunctionDef &f) ;
 
         std::optional<int> get_var(std::string var_name);
         void set_var(std::string var_name, int value);

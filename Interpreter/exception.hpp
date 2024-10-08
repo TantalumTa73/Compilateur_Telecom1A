@@ -2,6 +2,7 @@
 #include <string>
 
 #include "token.hpp"
+#include "simplified_token.hpp"
 
 class InterpreterException : public std::exception {
     private:
@@ -16,10 +17,10 @@ class InterpreterException : public std::exception {
         InterpreterException(
             int start_line, int start_char,
             int end_line, int end_char,
-            // const char* msg
             std::string msg
         ) ;
         InterpreterException( Token token, std::string msg ) ;
+        InterpreterException( TkPtr token, std::string msg ) ;
 
         const char* what() const throw();
 };

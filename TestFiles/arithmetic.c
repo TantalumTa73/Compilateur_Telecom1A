@@ -19,4 +19,6 @@ int main(int a){
 
     a = 10 % 3;
     print(a);
+
+    return 0 ;
 }
