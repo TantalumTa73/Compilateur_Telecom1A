@@ -54,11 +54,18 @@ def set_section(section):
     CURRENT_SECTION = section
 
 
+def variable_identifier(varname: str, funcname: str):
+    return varname + funcname
+
+
+
 def set_variable(varname: str, funcname):
 
-    add_line(f"# varset of var {varname + funcname}")
-    if varname + funcname in LOCAL_VARIABLES:
-        add_line(f"pop -{LOCAL_VARIABLES[varname + funcname]}(%rbp)")
+
+    varname_id = variable_identifier(varname, funcname)
+    if varname_id in LOCAL_VARIABLES:
+        add_line(f"# varset of var {varname_id}")
+        add_line(f"pop -{LOCAL_VARIABLES[varname_id]}(%rbp)")
         add_line()
     else:
         add_line(f"pop %rax")
