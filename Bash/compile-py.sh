@@ -1,8 +1,12 @@
 #!/bin/bash
 
-_cfilename="${1:-file.c}"
+c_file="${1:-file.c}"
+json_file="${c_file%".c"}.json"
+x86_file="${c_file%".c"}.s"
+
+echo "Compiling $c_file to $x86_file (json: $json_file)"
 
 ./Bash/build-dune.sh
-./Bash/parse.sh $_cfilename
+./Bash/parse.sh $c_file
 
-python3 PythonCompiler/compiler.py ${_cfilename%".c"}.json PythonCompiler/template.s
+python3 PythonCompiler/compiler.py $json_file "PythonCompiler/template.s"
