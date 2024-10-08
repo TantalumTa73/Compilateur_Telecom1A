@@ -1,10 +1,8 @@
 #!/bin/bash
 
 _cfilename="${1:-file.c}"
-cd ParserLexer
-eval $(opam env)
-dune build
-cd ..
-cp ParserLexer/expr2json.exe .
-./expr2json.exe "$_cfilename"
+
+./Bash/build-dune.sh
+./Bash/parse $_cfilename
+
 python3 PythonCompiler/compiler.py ${_cfilename%".c"}.json PythonCompiler/template.s

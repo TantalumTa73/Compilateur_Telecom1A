@@ -2,6 +2,7 @@
 .DS_Store
 .vscode
 
+# logs
 log.txt
 
 # test files
@@ -10,6 +11,8 @@ _test/**
 # build files
 **/_build
 **/build
+**/tmp
+**/_tmp
 
 # executables
 **/*.json
