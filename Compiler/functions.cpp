@@ -2,20 +2,21 @@
 #include <optional>
 
 #include "functions.hpp"
+#include "data.hpp"
 
 Function::Function() : 
-    name(""), arg(0), body(std::vector<Token>()) {
-    set_var("", 0);
+    name(""), body(std::vector<Token>()) {
     vars = std::unordered_map<std::string, Variable>();
-    depth_shift = 0;
+    var_offset = -2 * SIZE;
+    arg_offset = SIZE;
     return ;
 }
 
-Function::Function(std::string name_, std::string arg_, std::vector<Token> body_) : 
-    name(name_), arg(arg_), body(body_) {
-    set_var(arg_, 0);
+Function::Function(std::string name_, std::vector<Token> body_) : 
+    name(name_), body(body_) {
     vars = std::unordered_map<std::string, Variable>();
-    depth_shift = 0;
+    var_offset = -2 * SIZE;
+    arg_offset = SIZE;
     return ;
 }
 
@@ -31,17 +32,24 @@ std::optional<int> Function::get_var(std::string var_name) {
     }
 }
 
-void Function::set_var(std::string var_name, int value) {
+void Function::set_var(std::string var_name, int value, bool is_arg) {
     if (auto search = vars.find(var_name); search != vars.end()) {
        vars[var_name].val = value; 
     }
     else {
         Variable new_var;
+        int offset = is_arg ? arg_offset : var_offset;
         new_var.name = var_name;
         new_var.val = value;
-        new_var.depth_shift = depth_shift; 
+        new_var.offset = offset;
+        new_var.is_arg = is_arg;
         vars.insert({var_name, new_var});
-        depth_shift -= 8;
+
+        if (is_arg) {
+            arg_offset += SIZE;
+        } else {
+            var_offset -= SIZE;
+        }
     }
     return;
 }

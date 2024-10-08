@@ -24,12 +24,15 @@ class Compiler {
         std::unordered_map<std::string, std::optional<int>> registers_name;
         std::unordered_map<std::string, Function> functions;
         std::vector<int> active_registers; 
-        int nb_children;
-        int rsp;
+        std::vector<Token> stack; 
 
         void init_registers();
         void init_compiling();
-        int depth_function(Function f);
-        void call_function(std::string fun_name, std::string arg_name, int val);
+        void reverse_push_childs(); // into the stack
+        void call_function(std::string fun_name);
+        void define_function(std::string fun_name);
+        void define_variable(std::string var_name);
+        void set_variable(std::string var_name);
+        void evaluate_expr(Token token, std::string fun_name);
 
 };
