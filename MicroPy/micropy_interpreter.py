@@ -19,7 +19,7 @@ class Variable:
 
     def __init__(self, value, inherit_from = None, index: int = 0) -> None:
         self.value = value
-        self.can_be_modified = False
+        self.is_global = False
         self.inherit_from = inherit_from
         self.index = index
 
@@ -46,18 +46,18 @@ class Variable:
         return self.__repr__()
 
     def set_global(self):
-        self.can_be_modified = True
+        self.is_global = True
     
     def set_non_global(self):
-        self.can_be_modified = False
+        self.is_global = False
 
 
 
-def get_variable_object(data, depth: int = 0, to_be_modified = False):
+def get_variable_object(data, depth: int = 0):
 
     if data["type"] == "array access":
 
-        obj = get_variable_object(data["array"], depth, to_be_modified)
+        obj = get_variable_object(data["array"], depth)
         array_index = evaluate_expression(data["index"], depth)
         return Variable(None, obj, array_index)
 
@@ -70,7 +70,7 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
         if depth < len(cur_vars) and varname in cur_vars[depth]:
             return cur_vars[depth][varname] 
         
-        if varname in cur_vars[0]:
+        if varname in cur_vars[0] and cur_vars[0][varname].is_global:
             return cur_vars[0][varname]
 
         cur_vars[depth][varname] = Variable(None)
@@ -153,7 +153,7 @@ def evaluate(line, depth: int = 0):
         return
     
     if line["type"] == "varset":
-        var = get_variable_object(line["left_value"], depth, True)
+        var = get_variable_object(line["left_value"], depth)
         value = evaluate_expression(line["value"], depth)
         var.vset(value)
         return True

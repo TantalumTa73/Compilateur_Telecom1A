@@ -1,6 +1,7 @@
 x = 1
 
 def f(a):
+    x = 2
     x = x + 1
     print(x)
     return a
