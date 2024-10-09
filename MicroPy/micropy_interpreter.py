@@ -205,6 +205,12 @@ def evaluate(line, depth: int = 0):
             return
         evaluate(line["body"], depth)
 
+    if line["type"] == "while":
+    
+        while evaluate_expression(line["condition"], depth):
+            evaluate(line["body"], depth)
+
+
 
 
 

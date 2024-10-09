@@ -14,6 +14,7 @@
 %token EQ EQQ
 %token NEWLINE BEGIN END
 %token LEQ GEQ LE GE NEQ
+%token WHILE
 
 /* Définitions des priorités et associativités des tokens */
 %left OR
@@ -64,6 +65,7 @@ stmt:
 | IF ; e = expr ; COLON ; b = suite { Sif(e, b, $loc) }
 | ELIF ; e = expr ; COLON ; b = suite { Selif(e, b, $loc) }
 | ELSE ; COLON ; b = suite { Selse(b, $loc) }
+| WHILE ; e = expr ; COLON ; b = suite { Swhile(e, b, $loc) }
 ;
 
 expr:

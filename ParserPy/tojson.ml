@@ -89,6 +89,13 @@ and to_json_stmt = function
                 "body", to_json_stmt b ;
                 pos p
              ])
+   | Swhile (e, b, p) ->
+         `Assoc([
+                  "type", `String "while" ;
+                  "condition", to_json_expr e ;
+                  "body", to_json_stmt b ;
+                  pos p
+               ])
 
 and to_json_expr = function
   | Const(c, p) ->

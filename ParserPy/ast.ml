@@ -15,6 +15,7 @@ and stmt =
   | Sif of expr*stmt*ppos
   | Selif of expr*stmt*ppos
   | Selse of stmt*ppos
+  | Swhile of expr*stmt*ppos
 and const = 
   | Int of string * ppos
   | Str of string * ppos
