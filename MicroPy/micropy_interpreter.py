@@ -162,7 +162,7 @@ def evaluate(line, depth: int = 0):
 
         if funname == "print":
             print(*args)
-            return
+            return 
 
         return evaluate_function(funname, args, depth + 1)
     
@@ -215,6 +215,19 @@ def evaluate(line, depth: int = 0):
 
 
 def evaluate_function(name, args, depth: int = 0):
+
+    if name == "len":
+        return len(args[0])
+    
+    if name == "type":
+        if isinstance(args[0], int):
+            return "int"
+        if isinstance(args[0], str):
+            return "string"
+        if isinstance(args[0], list):
+            return "list"
+        if isinstance(args[0], bool):   
+            return "bool"
 
     cur_vars.append({})
 
