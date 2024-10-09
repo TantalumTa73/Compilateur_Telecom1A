@@ -97,12 +97,18 @@ def evaluate_expression(expr, depth: int = 0):
         "Sub": lambda x, y: x - y,
         "Mul": lambda x, y: x * y,
         "Div": lambda x, y: x // y,
+        "Mod": lambda x, y: x % y,
         "==": lambda x, y: x == y,
         ">=": lambda x, y: x >= y,
         "<=": lambda x, y: x <= y,
         ">": lambda x, y: x > y,
         "<": lambda x, y: x < y,
+        "&&": lambda x, y: x and y,
+        "||": lambda x, y: x or y,
     }
+
+    if expr["type"] == "not":
+        return not evaluate_expression(expr["value"], depth)
 
     if expr["type"] == "binop":
         v1 = evaluate_expression(expr["v1"], depth)
@@ -113,6 +119,9 @@ def evaluate_expression(expr, depth: int = 0):
         return evaluate_expression(expr["value"], depth)
     
     if expr["type"] == "int":
+        return expr["value"]
+    
+    if expr["type"] == "bool":
         return expr["value"]
     
     if expr["type"] == "list":
