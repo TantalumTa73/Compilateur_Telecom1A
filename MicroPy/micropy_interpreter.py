@@ -8,14 +8,24 @@ cur_funcs = {}
 
 class Variable:
 
-    def __init__(self, value) -> None:
+    def __init__(self, value, inherit_from = None, index: int = 0) -> None:
         self.value = value
         self.can_be_modified = False
+        self.inherit_from = inherit_from
+        self.index = index
 
     def vget(self):
         return self.value
     
     def vset(self, new_value):
+
+        self.inherit_from: Variable
+        if self.inherit_from is not None:
+            previous_array = self.inherit_from.vget()
+            previous_array[self.index] = new_value
+            # self.inherit_from.vset()
+            # [self.index] = new_value
+
         self.value = new_value
 
     def __repr__(self) -> str:
@@ -35,6 +45,13 @@ class Variable:
 def get_variable_object(data, depth: int = 0, to_be_modified = False):
 
     # print(data)
+
+    if data["type"] == "array access":
+
+        obj = get_variable_object(data["array"], depth, to_be_modified)
+        array_index = evaluate_expression(data["index"], depth)
+        return Variable(None, obj, array_index)
+
     
     if data["type"] == "var":
         
@@ -123,6 +140,7 @@ def evaluate(line, depth: int = 0):
     
     if line["type"] == "varset":
         # print(line.keys())
+        # print(line)
         var = get_variable_object(line["left_value"], depth, True)
         value = evaluate_expression(line["value"], depth)
         var.vset(value)
@@ -146,32 +164,18 @@ def evaluate(line, depth: int = 0):
 
 def evaluate_function(name, args, depth: int = 0):
 
-    # print(cur_vars)
     cur_vars.append({})
-    # print(cur_vars)
-    # print(depth)
-
 
     arg_names, func_json = cur_funcs[name]
     for arg_name, arg_value in zip(arg_names, args):
         cur_vars[depth][arg_name] = Variable(arg_value)
 
-    # print(arg_names, func_json)
-
     for line in func_json["body"]:
-        # print(line)
-        # print(cur_vars)
 
         if line["type"] == "return":
             return evaluate_expression(line["value"], depth)
 
         evaluate(line, depth)
-
-    # _, body = cur_funcs[name]
-    # for arg in args:
-    #     cur_vars[depth][arg] = Variable(None)
-    # for line in body:
-    #     evaluate(line, depth)
 
     cur_vars.pop()
 
