@@ -15,6 +15,10 @@ class Variable:
         self.index = index
 
     def vget(self):
+
+        if self.inherit_from is not None:
+            return self.inherit_from.vget()[self.index]
+
         return self.value
     
     def vset(self, new_value):
@@ -122,6 +126,9 @@ def evaluate_expression(expr, depth: int = 0):
         return expr["value"]
     
     if expr["type"] == "bool":
+        return expr["value"]
+    
+    if expr["type"] == "string":
         return expr["value"]
     
     if expr["type"] == "list":
