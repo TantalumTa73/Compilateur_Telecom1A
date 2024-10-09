@@ -69,7 +69,7 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
     
     if data["type"] == "var":
         
-        print(cur_vars)
+        # print(cur_vars)
 
         varname = data["name"]
         if depth < len(cur_vars) and varname in cur_vars[depth]:
