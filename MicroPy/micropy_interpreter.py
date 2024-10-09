@@ -6,6 +6,8 @@ import time
 cur_vars = [{}]
 cur_funcs = {}
 
+LAST_IF_VALUE = None
+
 
 class ReturnException(Exception):
     
@@ -81,6 +83,7 @@ def evaluate_expression(expr, depth: int = 0):
         "Div": lambda x, y: x // y,
         "Mod": lambda x, y: x % y,
         "==": lambda x, y: x == y,
+        "!=": lambda x, y: x != y,
         ">=": lambda x, y: x >= y,
         "<=": lambda x, y: x <= y,
         ">": lambda x, y: x > y,
@@ -128,6 +131,8 @@ def evaluate_expression(expr, depth: int = 0):
 
 
 def evaluate(line, depth: int = 0):
+
+    global LAST_IF_VALUE
 
     if line["type"] == "fundef":
         cur_funcs[line["name"]] = (line["args"], line["body"])
@@ -178,6 +183,28 @@ def evaluate(line, depth: int = 0):
         for i in range(set_length):
             var_object.vset(given_set[i])
             evaluate(line["body"], depth)
+
+    if line["type"] == "if":
+        condition = evaluate_expression(line["condition"], depth)
+        LAST_IF_VALUE = condition
+        if condition:
+            evaluate(line["body"], depth)
+        return
+
+    if line["type"] == "elif":
+        if LAST_IF_VALUE:
+            return
+        condition = evaluate_expression(line["condition"], depth)
+        LAST_IF_VALUE = condition
+        if condition:
+            evaluate(line["body"], depth)
+        return
+    
+    if line["type"] == "else":
+        if LAST_IF_VALUE:
+            return
+        evaluate(line["body"], depth)
+
 
 
 

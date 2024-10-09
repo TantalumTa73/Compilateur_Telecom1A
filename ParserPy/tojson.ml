@@ -69,6 +69,27 @@ and to_json_stmt = function
                "value", to_json_expr e ;
                pos p
            ]) 
+   | Sif (e, b, p) ->
+     `Assoc([
+               "type", `String "if" ;
+               "condition", to_json_expr e ;
+               "body", to_json_stmt b ;
+               pos p
+           ]) 
+   | Selif (e, b, p) ->
+     `Assoc([
+               "type", `String "elif" ;
+               "condition", to_json_expr e ;
+               "body", to_json_stmt b ;
+               pos p
+           ])
+   | Selse (b, p) ->
+       `Assoc([
+                "type", `String "else" ;
+                "body", to_json_stmt b ;
+                pos p
+             ])
+
 and to_json_expr = function
   | Const(c, p) ->
      `Assoc([

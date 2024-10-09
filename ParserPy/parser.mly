@@ -7,7 +7,7 @@
 %token <string> CST
 %token <string> STR
 %token <string> IDENT
-%token AND DEF FOR TRUE FALSE IN NOT OR RETURN NONE
+%token AND DEF FOR TRUE FALSE IN NOT OR RETURN NONE IF ELIF ELSE
 %token EOF COLON
 %token LP RP COMMA LB RB
 %token PLUS MINUS TIMES DIV MOD
@@ -61,6 +61,9 @@ simple_stmt:
 stmt:
 | s = simple_stmt ; NEWLINE  { s }
 | FOR ; s = IDENT ; IN ; e = expr ; COLON ; b = suite  {Sfor(s,e,b, $loc) }
+| IF ; e = expr ; COLON ; b = suite { Sif(e, b, $loc) }
+| ELIF ; e = expr ; COLON ; b = suite { Selif(e, b, $loc) }
+| ELSE ; COLON ; b = suite { Selse(b, $loc) }
 ;
 
 expr:

@@ -1,5 +1,8 @@
-def a(n):
-    return n+1
+a = 6
 
-for i in [1, 2, 3]:
-    print(a(i))
+if (a == 5):
+    print(2)
+elif a > 5:
+    print(3)
+else:
+    print(a + 1)
