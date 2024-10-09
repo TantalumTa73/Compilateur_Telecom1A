@@ -64,14 +64,17 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
     
     if data["type"] == "var":
         
+        # print(cur_vars)
+
         varname = data["name"]
         if depth < len(cur_vars) and varname in cur_vars[depth]:
             return cur_vars[depth][varname] 
-        elif varname in cur_vars[0] and (not to_be_modified or cur_vars[0][varname].can_be_modified):
+        
+        if varname in cur_vars[0]:
             return cur_vars[0][varname]
-        else:
-            cur_vars[depth][varname] = Variable(None)
-            return cur_vars[depth][varname]
+
+        cur_vars[depth][varname] = Variable(None)
+        return cur_vars[depth][varname]
 
 
 def evaluate_expression(expr, depth: int = 0):
@@ -98,6 +101,7 @@ def evaluate_expression(expr, depth: int = 0):
     if expr["type"] == "binop":
         v1 = evaluate_expression(expr["v1"], depth)
         v2 = evaluate_expression(expr["v2"], depth)
+        # print(expr["v1"], v1, v2)
         return operators[expr["binop"]](v1, v2)
     
     if expr["type"] == "const":
@@ -116,6 +120,8 @@ def evaluate_expression(expr, depth: int = 0):
         return [evaluate_expression(x, depth) for x in expr["content"]]
 
     if expr["type"] == "var":
+        # print(expr)
+        # print(cur_vars)
         return get_variable_object(expr, depth).vget()
     
     if expr["type"] == "left_value":
@@ -240,8 +246,8 @@ def evaluate_function(name, args, depth: int = 0):
         try:
             evaluate(line, depth)
         except ReturnException as r:
+            cur_vars.pop()
             return r.args[0]
-
 
     cur_vars.pop()
 
