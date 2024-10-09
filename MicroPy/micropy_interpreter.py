@@ -135,7 +135,6 @@ def evaluate_expression(expr, depth: int = 0):
         return [evaluate_expression(x, depth) for x in expr["content"]]
 
     if expr["type"] == "var":
-        # print("aaaaaaa", expr)
         return get_variable_object(expr, depth).vget()
     
     if expr["type"] == "left_value":
@@ -160,12 +159,9 @@ def evaluate(line, depth: int = 0):
         return evaluate(line["stmt"])
     
     if line["type"] == "varset":
-        # print(line.keys())
-        # print(line)
         var = get_variable_object(line["left_value"], depth, True)
         value = evaluate_expression(line["value"], depth)
         var.vset(value)
-        # set_variable(line["name"], evaluate_expression(line["value"]))
         return
     
     if line["type"] == "expr":
@@ -173,14 +169,16 @@ def evaluate(line, depth: int = 0):
     
     if line["type"] == "call":
 
-        # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaa", line)
-        # print("6+++++++++++++++++++", line)
+        funname = line["funname"]
+        args = [evaluate_expression(x, depth) for x in line["args"]]
 
-        if line["funname"] == "print":
-            print(*[evaluate_expression(x, depth) for x in line["args"]])
+        if funname == "print":
+            print(*args)
             return
 
-        # return evaluate_expression(line["expr"])
+        
+        return evaluate_function(funname, args, depth + 1)
+        # return evaluate_expression(line["expr"], depth)
     
 
 def evaluate_function(name, args, depth: int = 0):
