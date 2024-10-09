@@ -6,6 +6,13 @@ import time
 cur_vars = [{}]
 cur_funcs = {}
 
+
+class ReturnException(Exception):
+    
+    def __init__(self, return_value) -> None:
+        super().__init__(return_value)
+
+
 class Variable:
 
     def __init__(self, value, inherit_from = None, index: int = 0) -> None:
@@ -27,8 +34,6 @@ class Variable:
         if self.inherit_from is not None:
             previous_array = self.inherit_from.vget()
             previous_array[self.index] = new_value
-            # self.inherit_from.vset()
-            # [self.index] = new_value
 
         self.value = new_value
 
@@ -47,8 +52,6 @@ class Variable:
 
 
 def get_variable_object(data, depth: int = 0, to_be_modified = False):
-
-    # print(data)
 
     if data["type"] == "array access":
 
@@ -69,32 +72,7 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
             return cur_vars[depth][varname]
 
 
-
-# def set_variable(data, value, depth: int = 0):
-
-#     if data["type"] == "array access":
-#         return 
-
-#     if depth < len(current_variables) and name in current_variables[depth]:
-#         current_variables[depth][name].vset(value)
-#     elif name in current_variables[0] and current_variables[0][name].can_be_modified:
-#         current_variables[0][name].vset(value)
-#     else:
-#         current_variables[depth][name] = Variable(value)
-
-
-# def get_variable(name: int, depth: int = 0):
-
-#     if depth < len(current_variables) and name in current_variables[depth]:
-#         current_variables[depth][name].vget()
-#     elif name in current_variables[0]:
-#         current_variables[0][name].vget()
-
-
-
 def evaluate_expression(expr, depth: int = 0):
-
-    # print(expr, depth)
 
     operators = {
         "Add": lambda x, y: x + y,
@@ -158,11 +136,16 @@ def evaluate(line, depth: int = 0):
     if line["type"] == "stmt":
         return evaluate(line["stmt"])
     
+    if line["type"] == "stmt list":
+        for stmt in line["body"]:
+            evaluate(stmt, depth)
+        return
+    
     if line["type"] == "varset":
         var = get_variable_object(line["left_value"], depth, True)
         value = evaluate_expression(line["value"], depth)
         var.vset(value)
-        return
+        return True
     
     if line["type"] == "expr":
         return evaluate(line["value"], depth)
@@ -176,10 +159,27 @@ def evaluate(line, depth: int = 0):
             print(*args)
             return
 
-        
         return evaluate_function(funname, args, depth + 1)
-        # return evaluate_expression(line["expr"], depth)
     
+    if line["type"] == "return":
+        return_value = evaluate_expression(line["value"], depth)
+        raise ReturnException(return_value)
+
+    if line["type"] == "for":
+
+        var = line["varname"]
+        given_set = evaluate_expression(line["in_set"], depth)
+        set_length = len(given_set)
+
+        cur_vars[depth][var] = Variable(None)
+        var_object = cur_vars[depth][var]
+
+
+        for i in range(set_length):
+            var_object.vset(given_set[i])
+            evaluate(line["body"], depth)
+
+
 
 def evaluate_function(name, args, depth: int = 0):
 
@@ -191,10 +191,11 @@ def evaluate_function(name, args, depth: int = 0):
 
     for line in func_json["body"]:
 
-        if line["type"] == "return":
-            return evaluate_expression(line["value"], depth)
+        try:
+            evaluate(line, depth)
+        except ReturnException as r:
+            return r.args[0]
 
-        evaluate(line, depth)
 
     cur_vars.pop()
 
