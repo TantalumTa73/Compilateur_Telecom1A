@@ -150,7 +150,7 @@ if __name__ == "__main__":
     for line in data:
         evaluate(line)
 
-    print(cur_vars)
+    # print(cur_vars)
 
 
     
