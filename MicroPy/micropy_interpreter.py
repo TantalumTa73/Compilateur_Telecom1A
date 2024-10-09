@@ -25,10 +25,15 @@ class Variable:
 
     def vget(self):
 
-        if self.inherit_from is not None:
-            return self.inherit_from.vget()[self.index]
+        r_value = self.value
 
-        return self.value
+        if self.inherit_from is not None:
+            r_value = self.inherit_from.vget()[self.index]
+
+        if r_value is None:
+            raise UnboundLocalError(f"local variable referenced before assignement")
+        
+        return r_value
     
     def vset(self, new_value):
 
@@ -53,24 +58,24 @@ class Variable:
 
 
 
-def get_variable_object(data, depth: int = 0):
+def get_variable_object(data, depth: int = 0, to_be_modified = False):
 
     if data["type"] == "array access":
 
-        obj = get_variable_object(data["array"], depth)
+        obj = get_variable_object(data["array"], depth, to_be_modified)
         array_index = evaluate_expression(data["index"], depth)
         return Variable(None, obj, array_index)
 
     
     if data["type"] == "var":
         
-        # print(cur_vars)
+        print(cur_vars)
 
         varname = data["name"]
         if depth < len(cur_vars) and varname in cur_vars[depth]:
             return cur_vars[depth][varname] 
         
-        if varname in cur_vars[0] and cur_vars[0][varname].is_global:
+        if varname in cur_vars[0] and ((not to_be_modified) or cur_vars[0][varname].is_global):
             return cur_vars[0][varname]
 
         cur_vars[depth][varname] = Variable(None)
@@ -153,7 +158,7 @@ def evaluate(line, depth: int = 0):
         return
     
     if line["type"] == "varset":
-        var = get_variable_object(line["left_value"], depth)
+        var = get_variable_object(line["left_value"], depth, True)
         value = evaluate_expression(line["value"], depth)
         var.vset(value)
         return True
