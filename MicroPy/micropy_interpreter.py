@@ -97,6 +97,11 @@ def evaluate_expression(expr, depth: int = 0):
         "Sub": lambda x, y: x - y,
         "Mul": lambda x, y: x * y,
         "Div": lambda x, y: x // y,
+        "==": lambda x, y: x == y,
+        ">=": lambda x, y: x >= y,
+        "<=": lambda x, y: x <= y,
+        ">": lambda x, y: x > y,
+        "<": lambda x, y: x < y,
     }
 
     if expr["type"] == "binop":
