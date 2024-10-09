@@ -122,6 +122,9 @@ def evaluate_expression(expr, depth: int = 0):
     if expr["type"] == "string":
         return expr["value"]
     
+    if expr["type"] == "none":
+        return None
+    
     if expr["type"] == "list":
         return [evaluate_expression(x, depth) for x in expr["content"]]
 
