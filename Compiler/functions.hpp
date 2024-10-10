@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <optional>
 
-#include "../Interpreter/token.hpp"
+#include "token.hpp"
 
 struct Variable {
 

@@ -4,7 +4,6 @@
 
 #include "write_assembly.hpp"
 #include "data.hpp"
-#include "../Interpreter/token.hpp"
 
 void add_line(std::string str = "", bool indent = true, bool comment = false){
     if (indent)
@@ -35,12 +34,22 @@ void w_init_f(std::string str){
     add_line("mov %rsp, %rbp");
 }
 
-void w_ret(){
+void w_ret(bool main){
+    if (main) {
+        add_line("xor %rax, %rax");
+        add_line("ret");
+        return;
+    }
+    add_line("pop %rax");
+    add_line("");
+    add_line("mov %rbp, %rsp");
+    add_line("pop %rbp");
     add_line("ret");
+    add_line();
 }
 
 void w_init_var(){
-    add_line("subq $" + std::to_string(SIZE) + ", %rsp");
+    add_line("sub $" + std::to_string(SIZE) + ", %rsp");
 }
 
 void w_init_global_var(std::string str, int val){
@@ -53,28 +62,35 @@ void w_init_global_var(std::string str, int val){
         
 }
 
-void w_set_var(std::string str, int val, int offset){
-
+void w_set_var(int val){
+    add_line("pop " + std::to_string(val) + "(%rbp)");
 }
 
-void w_get_var(std::string str){
+void w_set_global_var(std::string str){
+        add_line("pop %rax");
+        add_line("mov %rax, " + str + "(%rip)");
+        add_line();
+}
 
+void w_get_var(int val){
+    add_line("push $" + std::to_string(val) + "(%rbp)");
 }
 
 void w_push_cst(int val){
-    add_line("pushq $" + std::to_string(val));
+    add_line("push $" + std::to_string(val));
+}
+
+void w_call_function(std::string str){
+    add_line("calling function as expr", true, true);
+    add_line("call " + str);
+    add_line("add $" + std::to_string(SIZE) + ", %rsp");
+    add_line("push %rax");
+    add_line();
 }
 
 void w_print(std::string str){
 }
 
 void w_op(std::string op_name){
-    operators["plus"] = "add %rax, %rbx";
-    operators["minus"] = "sub %rbx, %rax\n\tmove %rax, %rbx";
-    operators["mult"] = "imul %rax, %rbx";
-    operators["division"] = "cqo\n\tidivq %rbx\n\tmov %rax, %rbx";
-    operators["modulo"] = "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx";
-
-    }
-
+    add_line(operators[op_name]);
 }
