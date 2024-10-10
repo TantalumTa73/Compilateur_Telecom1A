@@ -159,7 +159,12 @@ def evaluate(line, depth: int = 0):
 
         LAST_IF_VALUE.append(False)
         for stmt in line["body"]:
-            evaluate(stmt, depth)
+            try:
+                evaluate(stmt, depth)
+            except ReturnException as r:
+                LAST_IF_VALUE.pop()
+                raise r
+
         LAST_IF_VALUE.pop()
         return
     
@@ -218,7 +223,6 @@ def evaluate(line, depth: int = 0):
         return
     
     if line["type"] == "else":
-        # print(LAST_IF_VALUE)
         if LAST_IF_VALUE[-1]:
             return
         evaluate(line["body"], depth)
