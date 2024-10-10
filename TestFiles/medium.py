@@ -1,20 +1,15 @@
-def is_prime(n):
-    if n <= 1:
-        return False
-    i = 2
-    while i < n:
-        if n % i == 0:
-            return False
-        i = i + 1
-    return True
+x = 0
 
-def find_primes_up_to(limit):
-    primes = []
-    i = 2
-    while i <= limit:
-        if is_prime(i):
-            print(i)
-        i = i + 1
-    return primes
-
-primes_up_to_10 = find_primes_up_to(100)
+if x > 0:
+    if x > 5:
+        if x > 6:
+            if x == 7:
+                print("X is exactly 7!")  # This should be printed
+            else:
+                print("X is greater than 6 but not 7")
+        else:
+            print("X is greater than 5 but not 6")
+    else:
+        print("X is positive but less than or equal to 5")
+else:
+    print("X is non-positive")

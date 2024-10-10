@@ -6,7 +6,7 @@ import time
 cur_vars = [{}]
 cur_funcs = {}
 
-LAST_IF_VALUE = None
+LAST_IF_VALUE = [False]
 
 
 class ReturnException(Exception):
@@ -156,8 +156,11 @@ def evaluate(line, depth: int = 0):
         return evaluate(line["stmt"], depth)
     
     if line["type"] == "stmt list":
+
+        LAST_IF_VALUE.append(False)
         for stmt in line["body"]:
             evaluate(stmt, depth)
+        LAST_IF_VALUE.pop()
         return
     
     if line["type"] == "varset":
@@ -200,22 +203,23 @@ def evaluate(line, depth: int = 0):
 
     if line["type"] == "if":
         condition = evaluate_expression(line["condition"], depth)
-        LAST_IF_VALUE = condition
+        LAST_IF_VALUE[-1] = condition
         if condition:
             evaluate(line["body"], depth)
         return
 
     if line["type"] == "elif":
-        if LAST_IF_VALUE:
+        if LAST_IF_VALUE[-1]:
             return
         condition = evaluate_expression(line["condition"], depth)
-        LAST_IF_VALUE = condition
+        LAST_IF_VALUE[-1] = condition
         if condition:
             evaluate(line["body"], depth)
         return
     
     if line["type"] == "else":
-        if LAST_IF_VALUE:
+        # print(LAST_IF_VALUE)
+        if LAST_IF_VALUE[-1]:
             return
         evaluate(line["body"], depth)
 
