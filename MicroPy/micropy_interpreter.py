@@ -129,8 +129,7 @@ def evaluate_expression(expr, depth: int = 0):
         return [evaluate_expression(x, depth) for x in expr["content"]]
 
     if expr["type"] == "var":
-        # print(expr)
-        # print(cur_vars)
+        # print(expr, cur_vars, depth)
         return get_variable_object(expr, depth).vget()
     
     if expr["type"] == "left_value":
@@ -141,7 +140,7 @@ def evaluate_expression(expr, depth: int = 0):
         return array_object.vget()[evaluate_expression(expr["index"], depth)]
 
     if expr["type"] == "call":
-        args = [evaluate_expression(x) for x in expr["args"]]
+        args = [evaluate_expression(x, depth) for x in expr["args"]]
         return evaluate_function(expr["funname"], args, depth + 1)
 
 
@@ -154,7 +153,7 @@ def evaluate(line, depth: int = 0):
         return
     
     if line["type"] == "stmt":
-        return evaluate(line["stmt"])
+        return evaluate(line["stmt"], depth)
     
     if line["type"] == "stmt list":
         for stmt in line["body"]:

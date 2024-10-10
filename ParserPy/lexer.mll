@@ -41,7 +41,7 @@
      foo 0 |> List.map (String.make 1)|> String.concat ""
 }
 
-let letter = ['a'-'z' 'A'-'Z']
+let letter = ['a'-'z' 'A'-'Z' '_']
 let digit = ['0'-'9']
 let ident = letter (letter | digit)*
 let integer = ['0'-'9']+
