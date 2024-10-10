@@ -17,5 +17,3 @@ echo "json file : $_jsonfilename"  >> log.txt
 
 ./ParserLexer/expr2json.exe "$_cfilename"  >> log.txt
 ./Compiler/build/main $_jsonfilename >> log.txt
-gcc $_sfilename -o $_exefilename
-./$_exefilename

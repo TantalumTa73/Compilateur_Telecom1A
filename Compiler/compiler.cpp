@@ -55,7 +55,7 @@ void Compiler::init_compiling(){
     operators["mult"] = "imul %rax, %rbx\n";
     operators["division"] = "cqo\n\tidivq %rbx\n\tmov %rax, %rbx\n";
     operators["modulo"] = "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx\n";
-    operators["uminus"] = "pop %rax\n\tneg %rax\n\tpush %rax\n"
+    operators["uminus"] = "pop %rax\n\tneg %rax\n\tpush %rax\n";
 
     called_fun_names.push_back(GLOBAL);
 
@@ -180,7 +180,7 @@ void Compiler::run(){
             pop_called_token();
         }
         else if (actual_token.get_attribute("type") == "parenthesis"){
-            push_children();
+            push_children(true);
         }
 
     }
