@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "../Interpreter/json_reader.hpp"
+#include "json_reader.hpp"
 #include "functions.hpp"
-#include "../Interpreter/exception.hpp"
-#include "../Interpreter/token.hpp"
+#include "exception.hpp"
+#include "token.hpp"
 #include "compiler.hpp"
 
 int main(int argc, char** argv)

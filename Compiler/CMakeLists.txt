@@ -5,12 +5,6 @@ set(PROJECT_NAME Compiler)
 project(${PROJECT_NAME})
 
 file(GLOB libs_file CONFIGURE_DEPENDS 
-    ../Interpreter/exception.cpp
-    ../Interpreter/exception.hpp
-    ../Interpreter/json_reader.cpp
-    ../Interpreter/json_reader.hpp
-    ../Interpreter/token.cpp
-    ../Interpreter/token.hpp
     *.cpp
     *.hpp
 )
