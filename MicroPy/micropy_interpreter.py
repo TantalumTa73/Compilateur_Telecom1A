@@ -214,6 +214,7 @@ def evaluate(line, depth: int = 0):
         return
 
     if line["type"] == "elif":
+        # print(LAST_IF_VALUE)
         if LAST_IF_VALUE[-1]:
             return
         condition = evaluate_expression(line["condition"], depth)
@@ -252,6 +253,7 @@ def evaluate_function(name, args, depth: int = 0):
             return "bool"
 
     cur_vars.append({})
+    LAST_IF_VALUE.append(False)
 
     arg_names, func_json = cur_funcs[name]
     for arg_name, arg_value in zip(arg_names, args):
@@ -263,9 +265,11 @@ def evaluate_function(name, args, depth: int = 0):
             evaluate(line, depth)
         except ReturnException as r:
             cur_vars.pop()
+            LAST_IF_VALUE.pop()
             return r.args[0]
 
     cur_vars.pop()
+    LAST_IF_VALUE.pop()
 
 
 
