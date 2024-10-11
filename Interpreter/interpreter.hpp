@@ -18,7 +18,7 @@ class Interpreter {
         void run() ;
 
     private:
-        std::vector<int> last_values ;
+        std::vector<int> value_stack ;
 
         TkPtr actual_token ;
         std::string actual_function ;

@@ -18,7 +18,7 @@ Interpreter::Interpreter() {
     stack = std::vector<TkPtr>();
     stack_context = std::vector<std::string>();
 
-    last_values = std::vector<int>();
+    value_stack = std::vector<int>();
 
     return;
 }
@@ -49,24 +49,24 @@ Interpreter::Interpreter(TkPtr root_) {
         stack_context.push_back("__root__");
     }
 
-    last_values = std::vector<int>();
+    value_stack = std::vector<int>();
 
     return;
 }
 
 
 void Interpreter::push(int value){
-    last_values.push_back(value);
+    value_stack.push_back(value);
     return ;
 }
 
 int Interpreter::pop(){
 
-    if (last_values.size() == 0){
+    if (value_stack.size() == 0){
         throw InterpreterException(actual_token, "No value to pop");
     }
-    int value = last_values.back();
-    last_values.pop_back();
+    int value = value_stack.back();
+    value_stack.pop_back();
     return value;
 }
 
@@ -220,11 +220,13 @@ void Interpreter::call_function(FunctionCall token){
         v_cout << "Printing " << arg << std::endl;
         std::cout << arg << std::endl;
     } else if (token.name == "input" || token.name == "read"){
-        v_cout << "Need Input for" << arg << std::endl;
+        v_cout << "Need Input for " << arg << std::endl;
+        v_cout << "\'read\' not implemented yet\n";
         
         int input;
         std::cin >> input;
         push(input);
+        // set_var(VarSet(Token(0,0,0,0), ""));
 
         v_cout << "Input: " << input << std::endl;
 
