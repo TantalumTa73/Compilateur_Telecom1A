@@ -50,18 +50,23 @@ void Compiler::init_compiling(){
     stack = std::vector<Token>();
     //init_registers();
 
-    operators["plus"] = "add %rax, %rbx\n";
-    operators["minus"] = "sub %rbx, %rax\n\tmove %rax, %rbx\n";
-    operators["mult"] = "imul %rax, %rbx\n";
-    operators["division"] = "cqo\n\tidivq %rbx\n\tmov %rax, %rbx\n";
-    operators["modulo"] = "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx\n";
-    operators["uminus"] = "pop %rax\n\tneg %rax\n\tpush %rax\n";
-
+    Function empty_f = Function();
+    functions.insert({PRINT, empty_f});
+    functions.insert({READ, empty_f});
     called_fun_names.push_back(GLOBAL);
 
-    std::string sfilename = cfilename.substr(0, cfilename.size()) + ".s";
-    file.open(sfilename, std::ios::out);
-    w_init_template();
+    std::string sfilename = cfilename.substr(0, cfilename.size() - 1) + "s";
+    init(sfilename);
+}
+
+std::optional<Variable> Compiler::get_var(std::string var_name){
+    for (auto fun_name : called_fun_names){
+        std::optional<Variable> var = functions[fun_name].get_var(var_name);
+        if (var != std::nullopt){
+            return var;
+        }
+    }
+    return std::nullopt;
 }
 
 void Compiler::push_children(bool can_reverse){
@@ -76,6 +81,11 @@ void Compiler::push_children(bool can_reverse){
 void Compiler::define_function(std::string fun_name){
     Function f = Function(fun_name, actual_token.children);
     functions.insert({fun_name, f});
+    // avoid a function that doesn't have return
+    Token safe_ret_token = Token();
+    safe_ret_token.set_attribute("action", "return");
+    safe_ret_token.set_attribute("name", "return");
+    stack.push_back(safe_ret_token);
     push_children(true);
 
     w_init_f(fun_name);
@@ -95,18 +105,22 @@ void Compiler::define_variable(std::string var_name){
 void Compiler::push_called_token(){
     int n = actual_token.children.size();
     actual_token.unpushed_children = n;
-    if (n == 0)
-        return;
+    std::cout << actual_token.get_attribute("name") << " has " << std::to_string(n) << "untreated children";
     called_tokens.push_back(actual_token);
+    if (n == 0){
+        pop_called_token();
+        return;
+    } else {
     push_children(false);
+    }
 }
 
 void Compiler::pop_called_token(){
     if (called_tokens.size() <= 0)
         return;
     Token token = called_tokens.back();
+    token.unpushed_children -= 1;
     if (token.unpushed_children > 0) {
-        token.unpushed_children -= 1;
         return;
     }
     called_tokens.pop_back();
@@ -133,24 +147,37 @@ void Compiler::pop_called_token(){
 }
 
 void Compiler::call_function(std::string fun_name){
-    if (auto search = functions.find(fun_name); search == functions.end()) {
-        std::cout << "fun_name unknown (call_function)";
+    if (auto search = functions.find(fun_name); search == functions.end()){
+        std::cout << fun_name << " unknown <-- call_function";
         return;
     }
     called_fun_names.push_back(fun_name);
     push_called_token();
-    if (actual_token.unpushed_children == 0)
-        w_call_function(fun_name);
+    if (actual_token.unpushed_children == 0){
+        if (fun_name == READ){
+            std::optional<Variable> var_opt = get_var(actual_token.children[0].get_attribute("name"));
+            if (var_opt == std::nullopt){
+                std::cout << actual_token.children[0].get_attribute("name") << " not found <-- call_function\n";
+                return;
+            }
+            w_call_read(fun_name, var_opt.value().offset, var_opt.value().fun_name == GLOBAL); 
+        } else {
+            std::cout << "calling " << fun_name << "\n";
+            w_call_function(fun_name);
+        }
+    }
 }
 
 void Compiler::run(){
-    stack.push_back(root);
     init_compiling();
+    stack.push_back(root);
+    called_fun_names.push_back(GLOBAL);
 
     while (stack.size() > 0){
         actual_token = stack.back();
         stack.pop_back();
         std::string token_name = actual_token.get_attribute("name");
+        std::cout << token_name << " pop\n";
 
         if (actual_token.get_attribute("action") == "gvardef"){
             define_variable(token_name);
@@ -182,8 +209,6 @@ void Compiler::run(){
         else if (actual_token.get_attribute("type") == "parenthesis"){
             push_children(true);
         }
-
     }
-
-    file.close();
+    end();
 }

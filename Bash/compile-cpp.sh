@@ -1,9 +1,9 @@
 #!/bin/bash
 
 _cfilename="${1:-file.c}"
-_jsonfilename="${_cfilename%".c"}.json"
-_sfilename="${_cfilename%".c"}.s"
-_exefilename="${_cfilename%".c"}"
+_jsonfilename="$./{_cfilename%".c"}.json"
+_sfilename="$./{_cfilename%".c"}.s"
+_exefilename="./${_cfilename%".c"}"
 
 
 echo ""  >> log.txt
@@ -16,4 +16,4 @@ echo "json file : $_jsonfilename"  >> log.txt
 
 
 ./ParserLexer/expr2json.exe "$_cfilename"  >> log.txt
-./Compiler/build/main $_jsonfilename >> log.txt
+./Compiler/build/main $_cfilename >> log.txt

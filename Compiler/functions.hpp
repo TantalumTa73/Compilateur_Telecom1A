@@ -9,6 +9,7 @@ struct Variable {
 
     public:
         std::string name;
+        std::string fun_name;
         int val;
         int offset;
         bool is_arg;
@@ -25,7 +26,7 @@ class Function {
         Function();
         Function(std::string name_, std::vector<Token> body_);
 
-        std::optional<int> get_var(std::string var_name);
+        std::optional<Variable> get_var(std::string var_name);
         void set_var(std::string var_name, int value, bool is_arg);
         int get_nb_var();
 

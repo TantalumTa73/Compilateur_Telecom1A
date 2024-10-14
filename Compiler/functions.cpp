@@ -24,9 +24,9 @@ int Function::get_nb_var() {
     return vars.size();
 }
 
-std::optional<int> Function::get_var(std::string var_name) {
+std::optional<Variable> Function::get_var(std::string var_name) {
     if (auto search = vars.find(var_name); search != vars.end()) {
-        return vars[var_name].val;
+        return vars[var_name];
     } else {
         return std::nullopt;;
     }
@@ -40,6 +40,7 @@ void Function::set_var(std::string var_name, int value, bool is_arg) {
         Variable new_var;
         int offset = is_arg ? arg_offset : var_offset;
         new_var.name = var_name;
+        new_var.fun_name = name;
         new_var.val = value;
         new_var.offset = offset;
         new_var.is_arg = is_arg;
