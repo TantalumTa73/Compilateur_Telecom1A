@@ -6,10 +6,13 @@ open Ast
 
    
 let pos ((s,e):ppos) =
-  "pos", `Assoc [ "start_line",`Int s.pos_lnum ;
-                 "start_char",`Int (s.pos_cnum-s.pos_bol) ;
-                 "end_line",`Int e.pos_lnum ;
-                 "end_char",`Int (e.pos_cnum-e.pos_bol) ]
+  "pos", `Assoc [
+      "type", `String "pos" ;
+      "start_line",`Int s.pos_lnum ;
+      "start_char",`Int (s.pos_cnum-s.pos_bol) ;
+      "end_line",`Int e.pos_lnum ;
+      "end_char",`Int (e.pos_cnum-e.pos_bol) 
+   ]
   
    
 (* localise une erreur en indiquant la ligne et la colonne *)
