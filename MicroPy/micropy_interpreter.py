@@ -45,7 +45,7 @@ class Variable:
         self.value = new_value
 
     def __repr__(self) -> str:
-        return str(self.value)
+        return "v." + str(self.value)
     
     def __str__(self) -> str:
         return self.__repr__()
@@ -58,7 +58,9 @@ class Variable:
 
 
 
-def get_variable_object(data, depth: int = 0, to_be_modified = False):
+def get_variable_object(data, depth: int, to_be_modified: bool = False):
+    
+    # print(1)
 
     if data["type"] == "array access":
 
@@ -70,6 +72,7 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
     if data["type"] == "var":
 
         varname = data["name"]
+        # print(varname, depth)
         if depth < len(cur_vars) and varname in cur_vars[depth]:
             return cur_vars[depth][varname] 
         
@@ -78,10 +81,13 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
 
         cur_vars[depth][varname] = Variable(None)
         return cur_vars[depth][varname]
+    
+    if data["type"] == "left_value":
+
+        return get_variable_object(data["value"], depth, to_be_modified)
 
 
-def evaluate_expression(expr, depth: int = 0):
-
+def evaluate_expression(expr, depth: int): #A modifier pour cpp
     operators = {
         "Add": lambda x, y: x + y,
         "Sub": lambda x, y: x - y,
@@ -136,7 +142,7 @@ def evaluate_expression(expr, depth: int = 0):
         return evaluate_expression(expr["value"], depth)
     
     if expr["type"] == "array access":
-        array_object = get_variable_object(expr["array"])
+        array_object = get_variable_object(expr["array"], depth)
         return array_object.vget()[evaluate_expression(expr["index"], depth)]
 
     if expr["type"] == "call":
@@ -144,9 +150,10 @@ def evaluate_expression(expr, depth: int = 0):
         return evaluate_function(expr["funname"], args, depth + 1)
 
 
-def evaluate(line, depth: int = 0):
+def evaluate(line, depth: int):
 
     global LAST_IF_VALUE
+    # print(line["type"], line.keys())
 
     if line["type"] == "fundef":
         cur_funcs[line["name"]] = (line["args"], line["body"])
@@ -182,7 +189,7 @@ def evaluate(line, depth: int = 0):
         funname = line["funname"]
         args = [evaluate_expression(x, depth) for x in line["args"]]
 
-        if funname == "print":
+        if funname == "print": #A modifier pour cpp
             print(*args)
             return 
 
@@ -200,7 +207,6 @@ def evaluate(line, depth: int = 0):
 
         cur_vars[depth][var] = Variable(None)
         var_object = cur_vars[depth][var]
-
 
         for i in range(set_length):
             var_object.vset(given_set[i])
@@ -237,12 +243,14 @@ def evaluate(line, depth: int = 0):
 
 
 
-def evaluate_function(name, args, depth: int = 0):
+def evaluate_function(name, args, depth: int):
+
+    # print(name, args, depth)
 
     if name == "len":
         return len(args[0])
     
-    if name == "type":
+    if name == "type": #A modifier pour cpp
         if isinstance(args[0], int):
             return "int"
         if isinstance(args[0], str):
@@ -259,6 +267,7 @@ def evaluate_function(name, args, depth: int = 0):
     for arg_name, arg_value in zip(arg_names, args):
         cur_vars[depth][arg_name] = Variable(arg_value)
 
+    # print(cur_vars)
     for line in func_json["body"]:
 
         try:
@@ -281,7 +290,7 @@ if __name__ == "__main__":
         data = json.load(f)
 
     for line in data:
-        evaluate(line)
+        evaluate(line, 0)
 
     # print(cur_vars)
 

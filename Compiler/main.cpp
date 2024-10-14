@@ -5,6 +5,7 @@
 #include "exception.hpp"
 #include "token.hpp"
 #include "compiler.hpp"
+#include "data.hpp"
 
 int main(int argc, char** argv)
 {
@@ -14,7 +15,7 @@ int main(int argc, char** argv)
         return 1; 
     }
     std::string cfilename = argv[1];
-    std::string jsonfilename = cfilename.substr(0, cfilename.size()) + ".json";
+    std::string jsonfilename = cfilename.substr(0, cfilename.size() - 1) + "json";
     JsonReader reader(jsonfilename);
     Token token = reader.readFile();
     Compiler compiler(token, cfilename);
