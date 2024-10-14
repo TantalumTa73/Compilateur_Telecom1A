@@ -250,7 +250,7 @@ def evaluate_function(name, args, depth: int):
     if name == "len":
         return len(args[0])
     
-    if name == "type":
+    if name == "type": #A modifier pour cpp
         if isinstance(args[0], int):
             return "int"
         if isinstance(args[0], str):
