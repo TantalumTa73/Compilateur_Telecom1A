@@ -87,8 +87,7 @@ def get_variable_object(data, depth: int, to_be_modified: bool = False):
         return get_variable_object(data["value"], depth, to_be_modified)
 
 
-def evaluate_expression(expr, depth: int):
-
+def evaluate_expression(expr, depth: int): #A modifier pour cpp
     operators = {
         "Add": lambda x, y: x + y,
         "Sub": lambda x, y: x - y,
@@ -190,7 +189,7 @@ def evaluate(line, depth: int):
         funname = line["funname"]
         args = [evaluate_expression(x, depth) for x in line["args"]]
 
-        if funname == "print":
+        if funname == "print": #A modifier pour cpp
             print(*args)
             return 
 
