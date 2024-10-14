@@ -58,7 +58,7 @@ class Variable:
 
 
 
-def get_variable_object(data, depth: int = 0, to_be_modified = False):
+def get_variable_object(data, depth: int, to_be_modified: bool = False):
     
     # print(1)
 
@@ -87,7 +87,7 @@ def get_variable_object(data, depth: int = 0, to_be_modified = False):
         return get_variable_object(data["value"], depth, to_be_modified)
 
 
-def evaluate_expression(expr, depth: int = 0):
+def evaluate_expression(expr, depth: int):
 
     operators = {
         "Add": lambda x, y: x + y,
@@ -151,7 +151,7 @@ def evaluate_expression(expr, depth: int = 0):
         return evaluate_function(expr["funname"], args, depth + 1)
 
 
-def evaluate(line, depth: int = 0):
+def evaluate(line, depth: int):
 
     global LAST_IF_VALUE
     # print(line["type"], line.keys())
@@ -244,7 +244,7 @@ def evaluate(line, depth: int = 0):
 
 
 
-def evaluate_function(name, args, depth: int = 0):
+def evaluate_function(name, args, depth: int):
 
     # print(name, args, depth)
 
@@ -291,7 +291,7 @@ if __name__ == "__main__":
         data = json.load(f)
 
     for line in data:
-        evaluate(line)
+        evaluate(line, 0)
 
     # print(cur_vars)
 

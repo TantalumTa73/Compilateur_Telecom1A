@@ -2,9 +2,7 @@
 def sub(l, i, j):
     if i == j:
         return []
-    a = [l[i]]
-    b = sub(l, i + 1, j)
-    return a + b 
+    return [l[i]] + sub(l, i + 1, j) 
 
 def rev(l):
     if len(l) == 0:
