@@ -1,0 +1,40 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+test :
+
+
+prog :
+    fundef
+    stmt
+
+fundef : function definition
+    stmt   : line
+
+stmt
+    for    : for loop
+    return : return keyword
+    varset : variable set
+    expr   : expression
+    
+left_value : (var / list ) pointer
+
+expr   : expression
+
+    moins  : unitary operator
+    not    : unitary operator
+    binop  : binary operator
+    array access : array access
+
+    call   : function call
+    var    : variable
+    const  : literals
+
+const  : literals
+    list   : data type
+    int    : data type
+    string : data type
+    bool   : data type
+    none   : data type

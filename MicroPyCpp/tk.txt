@@ -1,0 +1,91 @@
+open Parser
+open Lexing
+open Lexer
+open Printf
+open Ast
+
+   
+let pos ((s,e):ppos) = [
+   "start_line",`Int s.pos_lnum ;
+   "start_char",`Int (s.pos_cnum-s.pos_bol) ;
+   "end_line",`Int e.pos_lnum ;
+   "end_char",`Int (e.pos_cnum-e.pos_bol)
+]
+  
+
+  
+
+
+let to_json_global_stmt = function
+| GFunDef(name, args, body, p) -> `Assoc([
+    "name", `String name ;
+    "args", `List (List.map (fun x-> `String x) args) ;
+    "body", to_json_stmt body ;
+    ])
+| Gstmt(s, p) -> `Assoc([
+    "stmt", to_json_stmt s ;
+    ])
+| Sfor (varname, in_set, body, p) -> `Assoc([
+    "varname", `String varname ;
+    "in_set", to_json_expr in_set ;
+    "body", to_json_stmt body ;
+    ])
+| Sblock(l,p) -> `Assoc([
+    "body", `List (List.map to_json_stmt l) ;
+    ])
+| Sreturn(e,p) -> `Assoc([
+    "value", to_json_expr e ;
+    ])
+| Sassign(l, e, p) -> `Assoc([
+    "left_value", to_json_left_value l ;
+    "value", to_json_expr e ;
+    ])     
+| Sval (e,p) -> `Assoc([
+    "value", to_json_expr e ;
+    ]) 
+(* and to_json_expr = function *)
+| Const(c, p) -> `Assoc([
+    "value", to_json_const c ;
+    ]) 
+| Val(lv, p) -> `Assoc([
+    "value", to_json_left_value lv ;
+    ]) 
+| Moins(e, p) -> `Assoc([
+    "value", to_json_expr e ;
+    ]) 
+| Not(e, p) -> `Assoc([
+    "value", to_json_expr e ;
+    ]) 
+| Op(op, e1, e2, p) -> `Assoc([
+    "binop", `String (str_op op) ;
+    "v1", to_json_expr e1 ;
+    "v2", to_json_expr e2 ;
+    ])
+| List(l, p) -> `Assoc([
+    "content", `List (List.map to_json_expr l) ;
+    ]) 
+| Ecall(s, args, p) -> `Assoc([
+    "funname", `String s ;
+    "args", `List (List.map to_json_expr args) ;
+    ]) 
+(* and to_json_left_value = function *)
+| Var(s,p) -> `Assoc([
+    "name", `String s ;
+    ])  
+| Tab(l,idx,p) -> `Assoc([
+    "array", to_json_left_value l ;
+    "index", to_json_expr idx ;
+    ])  
+(* and to_json_const = function *)
+| Int(i, p) -> `Assoc([
+    "value", `Int (int_of_string i) ;
+    ])   
+| Str(s, p) -> `Assoc([
+    "value", `String s ;
+    ])   
+| Bool(b, p) -> `Assoc([
+    "value", `Bool b ;
+    ])   
+| Non(p) -> `Assoc([
+    ])   
+    
