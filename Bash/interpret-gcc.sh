@@ -50,4 +50,6 @@ sed 's/read(/scanf(\"%d\",\&/g' < $file >> "${newcfilename}.txt"
 sed 's/print(/printf(\"%d\\n\",/g' < "${newcfilename}.txt" >> $newcfilename
 rm "${newcfilename}.txt"
 
+echo "gcc c file written"
+
 gcc $newcfilename -o $pathname/_tmp/$filename || (echo "gcc failed" ; exit 1)
