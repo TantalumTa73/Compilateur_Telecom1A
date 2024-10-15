@@ -40,6 +40,11 @@ class Variable:
         self.inherit_from: Variable
         if self.inherit_from is not None:
             previous_array = self.inherit_from.vget()
+            # if isinstance(previous_array[self.index], Variable):
+                # print(previous_array[self.index])
+                # previous_array[self.index].vset(new_value)
+            # else:    
+                # print(previous_array[self.index])
             previous_array[self.index] = new_value
 
         self.value = new_value
@@ -58,6 +63,9 @@ class Variable:
 
     def __getitem__(self, index):
         return self.vget()[index]
+    
+    def __setitem__(self, key, item):
+        self.vget()[key] = item 
 
 
 def len_var(l):
@@ -66,6 +74,17 @@ def len_var(l):
         return len(l.vget())
 
     return len(l)
+
+
+def printable(obj):
+
+    if isinstance(obj, Variable):
+        return printable(obj.vget())
+
+    if isinstance(obj, list):
+        return [printable(sub_obj) for sub_obj in obj]
+    
+    return obj
 
 
 
@@ -219,8 +238,9 @@ def evaluate(line, depth: int):
         args = [evaluate_expression(x, depth) for x in line["args"]]
 
         if funname == "print": #A modifier pour cpp 
-            printable_args = [v.vget() if isinstance(v, Variable) else v for v in args]
-            print(*printable_args)
+            # printable_args = [v.vget() if isinstance(v, Variable) else v for v in args]
+            # print(*printable_args)
+            print(printable(args))
             return 
 
         return evaluate_function(funname, args, depth + 1)
