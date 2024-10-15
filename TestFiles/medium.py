@@ -1,12 +1,11 @@
+def a(n):
+    if n == 1:
+        return 1
+    return n * a(n - 1)
 
-def sub(l, i, j):
-    if i == j:
-        return []
-    return [l[i]] + sub(l, i + 1, j) 
+for i in [1, 2, 3, 4, 5]:
+    print(i, a(i))
 
-def rev(l):
-    if len(l) == 0:
-        return []
-    return rev(sub(l, 1, len(l))) + [l[0]]
-
-print(rev([0, 1, 2, 3, 4]))
+print([0, 1][1])
+print(18)
+print([1, 2, 3, 4])

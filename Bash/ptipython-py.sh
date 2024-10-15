@@ -9,4 +9,4 @@ json_file="${py_file%".py"}.json"
 ./ParserPy/ptipython2json.exe "$py_file" >> log.txt
 
 python3 MicroPy/micropy_interpreter.py $json_file
-rm $json_file
+# rm $json_file

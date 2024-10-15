@@ -156,7 +156,7 @@ and to_json_left_value = function
   | Tab(l,idx,p) ->
      `Assoc([
                "type", `String "array access" ;
-               "array", to_json_left_value l ;
+               "array", to_json_expr l ;
                "index", to_json_expr idx ;
                pos p
            ])  

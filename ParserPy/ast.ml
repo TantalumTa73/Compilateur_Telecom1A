@@ -23,7 +23,7 @@ and const =
   | Non of ppos
 
 and left_value = 
-  | Tab of left_value*expr * ppos
+  | Tab of expr*expr * ppos
   | Var of string * ppos
 
 and expr =
