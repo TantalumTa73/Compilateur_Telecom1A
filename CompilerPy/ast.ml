@@ -1,6 +1,52 @@
 (* Syntaxe abstraite pour le langage ppython *)
+open Yojson
 
-type ppos = Lexing.position * Lexing.position
+type program = stmt list
+
+and ppos = Lexing.position*Lexing.position
+
+and stmt = 
+| Stmt of stmt_node*ppos
+
+
+and stmt_node =
+| Sif of expr*stmt*stmt
+| Sblock of stmt list
+| Sreturn of expr
+| Sassign of expr*expr
+| Sval of expr
+| Svardef of string*string
+| Sfundef of string*args list*stmt
+
+and left_value =
+| Var of string
+
+and expr =
+| Const of int
+| Val of left_value
+| UnOp of expr
+| BinOp of binop * expr*expr
+| Ecall of string*expr list
+
+and args =
+| TypeVar of string*string
+
+and binop = 
+| Add 
+| Sub 
+| Mul 
+| Div 
+| Mod 
+| Leq 
+| Le 
+| Geq 
+| Ge 
+| Neq 
+| Eq 
+| And 
+| Or
+
+(* type ppos = Lexing.position * Lexing.position
 
 type program = global_stmt list
  and global_stmt =
@@ -34,7 +80,6 @@ and expr =
   | Op of binop * expr*expr * ppos
   | List of expr list * ppos
   | Ecall of string*expr list * ppos
-  | ListCompr of expr*string*expr * ppos
 and binop = Add | Sub | Mul | Div | Mod | Leq | Le | Geq | Ge | Neq | Eq | And | Or
 
 let str_op = function
@@ -50,4 +95,4 @@ let str_op = function
   | Neq -> "!="
   | Eq -> "=="
   | And -> "&&"
-  | Or -> "||"
+  | Or -> "||" *)

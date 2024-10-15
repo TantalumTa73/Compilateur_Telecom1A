@@ -50,7 +50,7 @@ suite: b = simple_stmt ; NEWLINE { b }
 
 left_value:
 | s = IDENT { Var(s, $loc) }
-| l = left_value; LB ; e = expr ; RB { Tab(l,e,$loc) }
+| l = expr; LB ; e = expr ; RB { Tab(l,e,$loc) }
 ;
 
 simple_stmt: 
@@ -77,6 +77,7 @@ expr:
 | s = IDENT ; LP ; args = separated_list(COMMA,expr) ; RP { Ecall(s,args, $loc) }
 | LB ; args = separated_list(COMMA,expr) ; RB { List(args, $loc)}
 | LP ; e = expr ; RP { e }
+| LB ; e = expr ; FOR ; s = IDENT ; IN ; l = expr ; RB { ListCompr(e,s,l, $loc) }
 ;
 
 %inline op:

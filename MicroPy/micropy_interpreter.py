@@ -40,6 +40,11 @@ class Variable:
         self.inherit_from: Variable
         if self.inherit_from is not None:
             previous_array = self.inherit_from.vget()
+            # if isinstance(previous_array[self.index], Variable):
+                # print(previous_array[self.index])
+                # previous_array[self.index].vset(new_value)
+            # else:    
+                # print(previous_array[self.index])
             previous_array[self.index] = new_value
 
         self.value = new_value
@@ -55,6 +60,31 @@ class Variable:
     
     def set_non_global(self):
         self.is_global = False
+
+    def __getitem__(self, index):
+        return self.vget()[index]
+    
+    def __setitem__(self, key, item):
+        self.vget()[key] = item 
+
+
+def len_var(l):
+
+    if isinstance(l, Variable):
+        return len(l.vget())
+
+    return len(l)
+
+
+def printable(obj):
+
+    if isinstance(obj, Variable):
+        return printable(obj.vget())
+
+    if isinstance(obj, list):
+        return [printable(sub_obj) for sub_obj in obj]
+    
+    return obj
 
 
 
@@ -88,6 +118,10 @@ def get_variable_object(data, depth: int, to_be_modified: bool = False):
 
 
 def evaluate_expression(expr, depth: int): #A modifier pour cpp
+
+    # print(cur_vars)
+    # print(expr)
+
     operators = {
         "Add": lambda x, y: x + y,
         "Sub": lambda x, y: x - y,
@@ -108,8 +142,16 @@ def evaluate_expression(expr, depth: int): #A modifier pour cpp
         return not evaluate_expression(expr["value"], depth)
 
     if expr["type"] == "binop":
+        
         v1 = evaluate_expression(expr["v1"], depth)
         v2 = evaluate_expression(expr["v2"], depth)
+
+        if isinstance(v1, Variable):
+            v1 = v1.vget()
+
+        if isinstance(v2, Variable):
+            v2 = v2.vget()
+
         # print(expr["v1"], v1, v2)
         return operators[expr["binop"]](v1, v2)
     
@@ -132,7 +174,23 @@ def evaluate_expression(expr, depth: int): #A modifier pour cpp
         return None
     
     if expr["type"] == "list":
-        return [evaluate_expression(x, depth) for x in expr["content"]]
+        return Variable([evaluate_expression(x, depth) for x in expr["content"]])
+
+    if expr["type"] == "list comprehension":
+        
+        var = expr["varname"]
+
+        cur_vars[depth][var] = Variable(None)
+        var_object = cur_vars[depth][var]
+
+        given_list = evaluate_expression(expr["list"], depth)
+        output = []
+
+        for i in range(len(given_list.vget())):
+            var_object.vset(given_list[i])
+            output.append(evaluate_expression(expr["expr"], depth))
+        
+        return Variable(output)
 
     if expr["type"] == "var":
         # print(expr, cur_vars, depth)
@@ -142,8 +200,14 @@ def evaluate_expression(expr, depth: int): #A modifier pour cpp
         return evaluate_expression(expr["value"], depth)
     
     if expr["type"] == "array access":
+        
         array_object = get_variable_object(expr["array"], depth)
-        return array_object.vget()[evaluate_expression(expr["index"], depth)]
+        
+        if array_object is None:
+            array_object = evaluate_expression(expr["array"], depth)
+
+        # print(array_object, expr)
+        return array_object[evaluate_expression(expr["index"], depth)]
 
     if expr["type"] == "call":
         args = [evaluate_expression(x, depth) for x in expr["args"]]
@@ -189,8 +253,10 @@ def evaluate(line, depth: int):
         funname = line["funname"]
         args = [evaluate_expression(x, depth) for x in line["args"]]
 
-        if funname == "print": #A modifier pour cpp
-            print(*args)
+        if funname == "print": #A modifier pour cpp 
+            # printable_args = [v.vget() if isinstance(v, Variable) else v for v in args]
+            # print(*printable_args)
+            print(*printable(args))
             return 
 
         return evaluate_function(funname, args, depth + 1)
@@ -203,7 +269,7 @@ def evaluate(line, depth: int):
 
         var = line["varname"]
         given_set = evaluate_expression(line["in_set"], depth)
-        set_length = len(given_set)
+        set_length = len_var(given_set)
 
         cur_vars[depth][var] = Variable(None)
         var_object = cur_vars[depth][var]
@@ -248,17 +314,20 @@ def evaluate_function(name, args, depth: int):
     # print(name, args, depth)
 
     if name == "len":
-        return len(args[0])
+        return len_var(args[0])
     
     if name == "type": #A modifier pour cpp
+        if isinstance(args[0], Variable):
+            return evaluate_function("type", [args[0].vget()], depth)
+        if args[0] is False or args[0] is True:
+            return "bool"
         if isinstance(args[0], int):
             return "int"
         if isinstance(args[0], str):
             return "string"
         if isinstance(args[0], list):
             return "list"
-        if isinstance(args[0], bool):   
-            return "bool"
+
 
     cur_vars.append({})
     LAST_IF_VALUE.append(False)

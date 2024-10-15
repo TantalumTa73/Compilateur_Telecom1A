@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #define SIZE 8
-#define COMMENT "#"
+#define COMMENT ";"
 #define GLOBAL "__root__"
 #define PRINT "print"
 #define SCAN "scan"

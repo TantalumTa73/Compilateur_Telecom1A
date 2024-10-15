@@ -22,7 +22,20 @@ let localisation pos =
   eprintf "À la ligne %d, autour des positions %d-%d:\n"  l (c-1) c;;
   
   
-let rec to_json_program p =  `List (List.map to_json_global_stmt p )
+let rec to_json_program p =  `List (List.map to_json_stmt p )
+
+and to_json_stmt s =
+   | Stmt(sn, p) -> 
+
+and to_json_stmt_node sn =
+   | Sif(e, s1, s2) -> `Assoc([
+         "type", `String "if" ;
+         "condition", to_json_expr e ;
+         "body1", to_json_stmt s1 ;
+         "body2", to_json_stmt s2 ;
+         pos p
+      ])
+
 and to_json_global_stmt = function
   | GFunDef(name, args, body, p) ->
      `Assoc([
