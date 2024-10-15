@@ -27,7 +27,7 @@ class Compiler {
         std::vector<int> active_registers; 
         std::vector<Token> stack;
 
-        std::optional<Variable> get_var(std::string var_name);
+        Variable get_var(std::string var_name);
         void init_registers();
         void init_compiling();
         void push_children(bool can_reverse); // into the stack
