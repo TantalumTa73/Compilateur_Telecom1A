@@ -319,7 +319,7 @@ def evaluate_function(name, args, depth: int):
     if name == "type": #A modifier pour cpp
         if isinstance(args[0], Variable):
             return evaluate_function("type", [args[0].vget()], depth)
-        if args[0] is False or args[0] is False:   
+        if args[0] is False or args[0] is True:
             return "bool"
         if isinstance(args[0], int):
             return "int"
