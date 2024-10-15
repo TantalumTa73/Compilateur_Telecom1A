@@ -317,6 +317,8 @@ def evaluate_function(name, args, depth: int):
         return len_var(args[0])
     
     if name == "type": #A modifier pour cpp
+        if isinstance(args[0], Variable):
+            return evaluate_function("type", [args[0].vget()], depth)
         if isinstance(args[0], int):
             return "int"
         if isinstance(args[0], str):
