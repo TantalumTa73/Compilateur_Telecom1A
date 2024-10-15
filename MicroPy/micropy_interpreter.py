@@ -319,14 +319,15 @@ def evaluate_function(name, args, depth: int):
     if name == "type": #A modifier pour cpp
         if isinstance(args[0], Variable):
             return evaluate_function("type", [args[0].vget()], depth)
+        if args[0] is False or args[0] is False:   
+            return "bool"
         if isinstance(args[0], int):
             return "int"
         if isinstance(args[0], str):
             return "string"
         if isinstance(args[0], list):
             return "list"
-        if isinstance(args[0], bool):   
-            return "bool"
+
 
     cur_vars.append({})
     LAST_IF_VALUE.append(False)

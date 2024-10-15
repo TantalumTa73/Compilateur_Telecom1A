@@ -18,3 +18,4 @@ print(2 * 2)
 print(4 * 14 + 7 - 8 + 1)
 
 print([i + 1 for i in [0, 1, 2]])
+print(type(8), type(5 + 2), type("str"), type([1, 2]), type(False))

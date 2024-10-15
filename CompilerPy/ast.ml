@@ -1,8 +1,13 @@
 (* Syntaxe abstraite pour le langage ppython *)
 open Yojson
 
-type stmt = 
-| Stmt of stmt_node*(Lexing.position*Lexing.position)
+type program = stmt list
+
+and ppos = Lexing.position*Lexing.position
+
+and stmt = 
+| Stmt of stmt_node*ppos
+
 
 and stmt_node =
 | Sif of expr*stmt*stmt
