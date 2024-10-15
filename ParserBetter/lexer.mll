@@ -28,37 +28,61 @@ let space = [' ' '\t']
 
 
 rule token = parse
+  | '/''/'[^'\n']* { token lexbuf }
+  | '#'[^'\n']* { token lexbuf }
   | '\n'    { new_line lexbuf; token lexbuf }
   | space+  { token lexbuf }
   | ident as id { id_or_kwd id }
   | digit+ as d { CST (int_of_string d) }
+
   | ';'      { SEMICOLON }
-  (* | ','      { COMMA } *)
+  | ','      { COMMA }
   | '{'      { LB }
   | '}'      { RB }
   | '('      { LP }
   | ')'      { RP }
+  | '['      { LBR }
+  | ']'      { RBR }
+
+  | '<''<'     { LSHIFT }
+  | '>''>'     { RSHIFT }
+
+  | '+''+'   { PLUSPLUS }
+  | '-''-'   { MINUSMINUS }
+
+  | '+''='   { PLUSEQ }
+  | '-''='   { MINUSEQ }
+  | '*''='   { MULTEQ }
+  | '/''='   { DIVEQ }
+  | '%''='   { MODEQ }
 
   | '!''='   { NEQ }
   | '=''='   { EQQ }
-  | '='      { EQ }
   | '<''='   { LEQ }
   | '>''='   { GEQ }
+
+  | '-''>'   { ARROW }
+  | '&''&'   { AND }
+  | '|''|'   { OR }
+
+  | '='      { EQ }
   | '<'      { LE }
   | '>'      { GE }
 
-  | '*'      { MULT }
   | '+'      { PLUS }
   | '-'      { MINUS }
   | '/'      { DIV }
   | '%'      { MOD }
 
-  | '&''&'   { AND }
-  | '|''|'   { OR }
   | '!'      { NOT }
+  | '~'      { INV }
+  | '^'      { XOR }
+  | '|'      { BOR }
 
-  (* | '^'      { XOR } *)
-  (* | '~'      { INV } *)
+  | '&'      { AMPERSAND }
+  | '*'      { STAR }
+  | '.'      { DOT }
+  
 
   | eof      { EOF }
   | _ as c   { raise (Lexing_error c) }

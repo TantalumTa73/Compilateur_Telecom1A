@@ -6,23 +6,24 @@ type program =
   global_stmt list
 
 and global_stmt =
-  | GFunDef of string * string * formal list * stmt * ppos
+  | GFunDef of string * string * arg list * stmt * ppos
   | GVarDef of string * string * ppos
   | GVarDefS of string * string * expr * ppos
 
-and formal =
-  | Formal of string * string
+and arg =
+  | Arg of string * string * ppos
 
 and stmt =  
   | Sscope of stmt list  * ppos
   | Sreturn of expr * ppos
+  | SreturnVoid of ppos
 
-  | Sfor of string * expr * stmt * ppos
+  | Sfor of stmt * expr * stmt * stmt * ppos (* s1 ; cond ; s2 {} *)
   | Swhile of expr * stmt * ppos
 
   | SvarDef of string * string * ppos
   | SvarDefS of string * string * expr * ppos
-  | SvarSet of left_value * expr * ppos
+  | SvarSet of left_value * assingop *expr * ppos
   | Sexpr of expr * ppos
 
   | Sif of expr*stmt*ppos
@@ -43,45 +44,90 @@ and expr =
   | List of expr list * ppos
   | FunCall of string * expr list * ppos
 
+  | LeftValOp of leftvalop * left_value * ppos
   | Uniop of uniop * expr * ppos
   | Binop of binop * expr * expr * ppos
+  | Ternop of expr * expr * expr * ppos
+
+and leftvalop =
+  | POSTINCR
+  | POSTDECR
+  | PREINCR
+  | PREDECR
+  | GetAdress
+
 
 and binop = 
   Add | Sub | Mul | Div | Mod | 
-  Leq | Le | Geq | Ge | Neq | Eq | 
-  And | Or | Xor
+  Leq | Le | Geq | Ge | Neq | IsEq | 
+  And | Or | 
+  Xor | Lshift | Rshift | BAnd | BOr
 
 and uniop =
+  (* | StructGet
+  | StructPtrGet *)
+  | Dereference
   | Neg 
   | Not
   | Inv
 
+and assingop =
+  | Eq
+  | AddEq
+  | SubEq
+  | MulEq
+  | DivEq
+  | ModEq
+
 let str_binop = function
-  | Add -> "Add"
-  | Sub -> "Sub"
-  | Mul -> "Mul"
-  | Div -> "Div"
-  | Mod -> "Mod"
+  | Add -> "+"
+  | Sub -> "-"
+  | Mul -> "*"
+  | Div -> "/"
+  | Mod -> "%"
   | Leq -> "<="
   | Le -> "<"
   | Geq -> ">="
   | Ge -> ">"
   | Neq -> "!="
-  | Eq -> "=="
+  | IsEq -> "=="
   | And -> "&&"
   | Or -> "||"
   | Xor -> "^"
+  | Lshift -> "<<"
+  | Rshift -> ">>"
+  | BAnd -> "&"
+  | BOr -> "|"
 
 let str_uniop = function
   | Neg -> "-"
   | Not -> "!"
   | Inv -> "~"
+  | Dereference -> "*x"
+  (* | StructGet -> "."
+  | StructPtrGet -> "->" *)
+
+let str_leftvalop = function
+  | POSTINCR -> "x++"
+  | POSTDECR -> "x--"
+  | PREINCR -> "++x"
+  | PREDECR -> "--x"
+  | GetAdress -> "&x"
+
+let str_assingop = function
+  | Eq -> "="
+  | AddEq -> "+="
+  | SubEq -> "-="
+  | MulEq -> "*="
+  | DivEq -> "/="
+  | ModEq -> "%="
 
 let pos ((s,e):ppos) =
-  [ "start_line",`Int s.pos_lnum ;
+  []
+  (* [ "start_line",`Int s.pos_lnum ;
     "start_char",`Int (s.pos_cnum-s.pos_bol) ;
     "end_line",`Int e.pos_lnum ;
-    "end_char",`Int (e.pos_cnum-e.pos_bol) ]
+    "end_char",`Int (e.pos_cnum-e.pos_bol) ] *)
 
 let rec toJSONexpr = function
   | Const(c, p) -> `Assoc ([
@@ -97,6 +143,10 @@ let rec toJSONexpr = function
     "type", `String "fun_call" ;
     "name", `String f ;
     "args", `List (List.map toJSONexpr l) ] @ pos p)
+  | LeftValOp(o, lv, p) -> `Assoc ([
+    "type", `String "left_val_op" ;
+    "left_value", toJSONleft_value lv ;
+    "op", `String (str_leftvalop o) ] @ pos p)
   | Uniop(o, e, p) -> `Assoc ([
     "type", `String "uniop" ;
     "uniop", `String (str_uniop o) ;
@@ -106,6 +156,11 @@ let rec toJSONexpr = function
     "binop", `String (str_binop o) ;
     "v1", toJSONexpr e1 ;
     "v2", toJSONexpr e2 ] @ pos p)
+  | Ternop(e1, e2, e3, p) -> `Assoc ([
+    "type", `String "ternop" ;
+    "cond", toJSONexpr e1 ;
+    "v1", toJSONexpr e2 ;
+    "v2", toJSONexpr e3 ] @ pos p)
 
 and toJSONlitteral = function
   | Int(i, p) -> `Assoc ([
@@ -126,11 +181,15 @@ and toJSONstmt = function
   | Sreturn(e, p) -> `Assoc ([
     "type", `String "return" ;
     "value", toJSONexpr e ] @ pos p)
-  | Sfor(v, e, s, p) -> `Assoc ([
+  | SreturnVoid(p) -> `Assoc ([
+    "type", `String "return" ;
+    "value", `Assoc([]) ] @ pos p)
+  | Sfor(i, c, u, b, p) -> `Assoc ([
     "type", `String "for" ;
-    "varname", `String v ;
-    "in_set", toJSONexpr e ;
-    "body", toJSONstmt s ] @ pos p)
+    "init", toJSONstmt i ;
+    "condition", toJSONexpr c ;
+    "update", toJSONstmt u ;
+    "body", toJSONstmt b ] @ pos p)
   | Swhile(e, s, p) -> `Assoc ([
     "type", `String "while" ;
     "condition", toJSONexpr e ;
@@ -145,9 +204,10 @@ and toJSONstmt = function
     "var_type", `String t ;
     "name", `String n ;
     "value", toJSONexpr e ] @ pos p)
-  | SvarSet(l, e, p) -> `Assoc ([
+  | SvarSet(l, op , e, p) -> `Assoc ([
     "type", `String "varset" ;
     "left_value", toJSONleft_value l ;
+    "op", `String (str_assingop op) ;
     "value", toJSONexpr e ] @ pos p)
   | Sexpr(e, p) -> `Assoc ([
     "type", `String "expr" ;
@@ -162,19 +222,24 @@ and toJSONstmt = function
     "body", toJSONstmt s1 ;
     "else", toJSONstmt s2 ] @ pos p)
   
+and toJSONformal = function
+  | Arg(t, n, p) -> `Assoc ([
+    "type", `String "arg" ;
+    "var_type", `String t ;
+    "name", `String n ] @ pos p)
 
 and toJSONgstmt = function
   | GFunDef(t,n, a, b, p) -> `Assoc ([
     "type", `String "fundef" ;
     "return_type", `String t ;
     "name", `String n ;
-    (* "args", `List (List.map (fun x -> `String x) a) ; *)
+    "args", `List (List.map toJSONformal a) ;
     "body", toJSONstmt b ] @ pos p)
   | GVarDef(t, n, p) -> `Assoc ([
     "type", `String "vardef" ;
     "var_type", `String t ;
     "name", `String n ;
-    "value", `String "" ] @ pos p)
+    "value", `Assoc ([]) ] @ pos p)
   | GVarDefS(t, n, e, p) -> `Assoc ([
     "type", `String "vardef" ;
     "var_type", `String t ;

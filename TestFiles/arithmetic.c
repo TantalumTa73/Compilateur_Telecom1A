@@ -2,7 +2,7 @@ int x ;
 
 int main(int a){
 
-    x = (1+2) ;
+    x =(1+2) ;
     print(x);
 
     a = 10 + 5;

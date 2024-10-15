@@ -1,5 +1,5 @@
 int b;
-b = 3;
+// b = 3;
 
 int main(int a) {
     a = 1 ;

@@ -12,5 +12,5 @@ echo "json file : $_jsonfilename"  >> log.txt
 # ./Bash/build-interpret.sh
 
 
-./ParserLexer/expr2json.exe "$_cfilename"  >> log.txt
+./ParserBetter/expr2json.exe "$_cfilename"  >> log.txt
 # ./Interpreter/build/main $_jsonfilename $2
