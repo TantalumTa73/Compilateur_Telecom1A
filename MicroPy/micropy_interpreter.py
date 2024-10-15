@@ -176,6 +176,22 @@ def evaluate_expression(expr, depth: int): #A modifier pour cpp
     if expr["type"] == "list":
         return Variable([evaluate_expression(x, depth) for x in expr["content"]])
 
+    if expr["type"] == "list comprehension":
+        
+        var = expr["varname"]
+
+        cur_vars[depth][var] = Variable(None)
+        var_object = cur_vars[depth][var]
+
+        given_list = evaluate_expression(expr["list"], depth)
+        output = []
+
+        for i in range(len(given_list.vget())):
+            var_object.vset(given_list[i])
+            output.append(evaluate_expression(expr["expr"], depth))
+        
+        return Variable(output)
+
     if expr["type"] == "var":
         # print(expr, cur_vars, depth)
         return get_variable_object(expr, depth).vget()
@@ -191,7 +207,7 @@ def evaluate_expression(expr, depth: int): #A modifier pour cpp
             array_object = evaluate_expression(expr["array"], depth)
 
         # print(array_object, expr)
-        return array_object.vget()[evaluate_expression(expr["index"], depth)]
+        return array_object[evaluate_expression(expr["index"], depth)]
 
     if expr["type"] == "call":
         args = [evaluate_expression(x, depth) for x in expr["args"]]

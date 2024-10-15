@@ -146,6 +146,14 @@ and to_json_expr = function
                "args", `List (List.map to_json_expr args) ;
                pos p
            ]) 
+   | ListCompr(e, i, l, p) ->
+       `Assoc([
+                "type", `String "list comprehension" ;
+                "expr", to_json_expr e ;
+                "varname", `String i ;
+                "list", to_json_expr l ;
+                pos p
+             ])
 and to_json_left_value = function
   | Var(s,p) ->
      `Assoc([

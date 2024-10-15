@@ -14,3 +14,7 @@ def f(n):
     return 2*n + 1 + 7 // 7
 
 print(1 + 2 + [f(1)][0])
+print(2 * 2)
+print(4 * 14 + 7 - 8 + 1)
+
+print([i + 1 for i in [0, 1, 2]])
