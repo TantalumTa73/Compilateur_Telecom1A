@@ -240,7 +240,7 @@ def evaluate(line, depth: int):
         if funname == "print": #A modifier pour cpp 
             # printable_args = [v.vget() if isinstance(v, Variable) else v for v in args]
             # print(*printable_args)
-            print(printable(args))
+            print(*printable(args))
             return 
 
         return evaluate_function(funname, args, depth + 1)
