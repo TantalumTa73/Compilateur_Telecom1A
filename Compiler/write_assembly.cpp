@@ -36,7 +36,7 @@ void add_line(std::string str = "", bool indent = true, bool comment = false){
 void set_section(std::string str){
     add_line();
     if (str != current_section_w) {
-        add_line("." + str);
+        add_line(".section ." + str, false);
         add_line();
         current_section_w = str;
     }
@@ -46,13 +46,12 @@ void w_init_template(){
    std::ifstream src("Compiler/template.s");
    std::string line;
    while (getline(src, line)) {
-        add_line(line);
+        add_line(line, false, false);
    }
    src.close();
 }
 
 void w_init_f(std::string str){
-    if (str == GLOBAL) { return; }
     add_line("init function " + str, true, true);
     set_section("text");
     add_line(str + ":", false);
@@ -87,7 +86,7 @@ void w_init_global_var(std::string str){
     add_line("init global variable", true, true);
     set_section("bss");
     add_line(".align " + std::to_string(SIZE));
-    add_line(".type" + str + ", @object");
+    add_line(".type " + str + ", @object");
     add_line(".size " + str + ", " + std::to_string(SIZE));
     add_line(str + ":", false);
     add_line(".zero " + std::to_string(SIZE));
@@ -97,7 +96,8 @@ void w_init_global_var(std::string str){
 
 void w_set_var(int val){
     add_line("set local variable", true, true);
-    add_line("pop " + std::to_string(val) + "(%rbp)");
+    add_line("pop %rax");
+    add_line("mov %rax, " + std::to_string(val) + "(%rbp)");
     add_line();
 }
 

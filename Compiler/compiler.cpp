@@ -42,6 +42,7 @@ void Compiler::init_registers(){
 }
 
 void Compiler::init_compiling(){
+    std::cout << "init compiling\n";
     //registers_name = std::unordered_map<std::string, std::optional<int>>();
     functions = std::unordered_map<std::string, Function>(); 
     called_tokens = std::vector<Token>();
@@ -59,17 +60,21 @@ void Compiler::init_compiling(){
     init(sfilename);
 }
 
-std::optional<Variable> Compiler::get_var(std::string var_name){
+Variable Compiler::get_var(std::string var_name){
+    std::cout << "entering in get_var (compiler.cpp)\n";
+    std::cout << "called_fun_names' size : " << std::to_string(called_fun_names.size()) << "\n"; 
     for (auto fun_name : called_fun_names){
-        std::optional<Variable> var = functions[fun_name].get_var(var_name);
-        if (var != std::nullopt){
-            return var;
+        if (functions[fun_name].vars.find(var_name) != functions[fun_name].vars.end()){
+            std::cout << var_name << "'s offset : " << std::to_string(functions[fun_name].vars[var_name].offset) << " in (compiler.cpp)\n";
+            return functions[fun_name].vars[var_name];
         }
     }
-    return std::nullopt;
+    std::cout << var_name << " not found (compiler.cpp)\n";
+    return Variable();
 }
 
 void Compiler::push_children(bool can_reverse){
+    std::cout << "entering in push_children (compiler.cpp)\n";
     std::vector<Token> body = actual_token.children;
     if (can_reverse)
         reverse(body.begin(), body.end());
@@ -79,8 +84,14 @@ void Compiler::push_children(bool can_reverse){
 }
 
 void Compiler::define_function(std::string fun_name){
+    std::cout << "entering in define_function (compiler.cpp)\n";
     Function f = Function(fun_name, actual_token.children);
     functions.insert({fun_name, f});
+
+    if (fun_name == "main"){
+        called_fun_names.push_back(fun_name);
+    }
+
     // avoid a function that doesn't have return
     Token safe_ret_token = Token();
     safe_ret_token.set_attribute("action", "return");
@@ -88,13 +99,16 @@ void Compiler::define_function(std::string fun_name){
     stack.push_back(safe_ret_token);
     push_children(true);
 
+    if (fun_name == GLOBAL) { return; }
+
     w_init_f(fun_name);
     std::string arg_name = actual_token.get_attribute("arg"); 
-    f.set_var(arg_name, 0, true);
+    functions[fun_name].init_var(arg_name, true);
 }
 
 void Compiler::define_variable(std::string var_name){
-    functions[called_fun_names.back()].set_var(var_name, 0, false);
+    std::cout << "entering in define_variable (compiler.cpp)\n";
+    functions[called_fun_names.back()].init_var(var_name, false);
     if (called_fun_names.back() == GLOBAL) {
         w_init_global_var(var_name);
     } else {
@@ -103,19 +117,20 @@ void Compiler::define_variable(std::string var_name){
 }
 
 void Compiler::push_called_token(){
+    std::cout << "entering in push_called_token (compiler.cpp)\n";
     int n = actual_token.children.size();
     actual_token.unpushed_children = n;
-    std::cout << actual_token.get_attribute("name") << " has " << std::to_string(n) << "untreated children";
     called_tokens.push_back(actual_token);
     if (n == 0){
         pop_called_token();
         return;
     } else {
-    push_children(false);
+        push_children(false);
     }
 }
 
 void Compiler::pop_called_token(){
+    std::cout << "entering in pop_called_token (compiler.cpp)\n";
     if (called_tokens.size() <= 0)
         return;
     Token token = called_tokens.back();
@@ -137,16 +152,19 @@ void Compiler::pop_called_token(){
     }
     else if (token.get_attribute("action") == "varset")
     {
-        if (called_fun_names.back() == GLOBAL){
+        Variable var1 = get_var(token_name);
+        if (var1.fun_name == GLOBAL){
             w_set_global_var(token_name);
         } else {
-            w_set_var(functions[called_fun_names.back()].vars[token_name].offset);
+            std::cout << var1.name << "'s offset : " << var1.offset << "\n";
+            w_set_var(var1.offset);
         }
     }
     pop_called_token();
 }
 
 void Compiler::call_function(std::string fun_name){
+    std::cout << "entering in call_function (compiler.cpp)\n";
     if (auto search = functions.find(fun_name); search == functions.end()){
         std::cout << fun_name << " unknown <-- call_function";
         return;
@@ -155,12 +173,12 @@ void Compiler::call_function(std::string fun_name){
     push_called_token();
     if (actual_token.unpushed_children == 0){
         if (fun_name == READ){
-            std::optional<Variable> var_opt = get_var(actual_token.children[0].get_attribute("name"));
-            if (var_opt == std::nullopt){
+            Variable var1 = get_var(actual_token.children[0].get_attribute("name"));
+            if (var1.name == ""){
                 std::cout << actual_token.children[0].get_attribute("name") << " not found <-- call_function\n";
                 return;
             }
-            w_call_read(fun_name, var_opt.value().offset, var_opt.value().fun_name == GLOBAL); 
+            w_call_read(fun_name, var1.offset, var1.fun_name == GLOBAL); 
         } else {
             std::cout << "calling " << fun_name << "\n";
             w_call_function(fun_name);
@@ -171,7 +189,6 @@ void Compiler::call_function(std::string fun_name){
 void Compiler::run(){
     init_compiling();
     stack.push_back(root);
-    called_fun_names.push_back(GLOBAL);
 
     while (stack.size() > 0){
         actual_token = stack.back();
@@ -203,7 +220,8 @@ void Compiler::run(){
         }
         else if (actual_token.get_attribute("type") == "var")
         {
-            w_get_var(functions[called_fun_names.back()].vars[token_name].offset);
+            Function f = functions[called_fun_names.back()];
+            std::cout << f.vars[token_name].name << "\n";
             pop_called_token();
         }
         else if (actual_token.get_attribute("type") == "parenthesis"){

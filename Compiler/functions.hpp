@@ -10,9 +10,10 @@ struct Variable {
     public:
         std::string name;
         std::string fun_name;
-        int val;
         int offset;
         bool is_arg;
+        Variable();
+        Variable(std::string name, std::string fun_name, int offset, bool is_arg);
 };
 
 class Function {
@@ -27,7 +28,7 @@ class Function {
         Function(std::string name_, std::vector<Token> body_);
 
         std::optional<Variable> get_var(std::string var_name);
-        void set_var(std::string var_name, int value, bool is_arg);
+        void init_var(std::string var_name, bool is_arg);
         int get_nb_var();
 
     private:
