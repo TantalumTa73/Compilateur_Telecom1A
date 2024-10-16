@@ -49,13 +49,13 @@ and expr =
   | Binop of binop * expr * expr * ppos
   | Ternop of expr * expr * expr * ppos
 
+
 and leftvalop =
   | POSTINCR
   | POSTDECR
   | PREINCR
   | PREDECR
   | GetAdress
-
 
 and binop = 
   Add | Sub | Mul | Div | Mod | 

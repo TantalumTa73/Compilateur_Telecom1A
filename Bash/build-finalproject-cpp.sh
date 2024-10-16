@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cmake Interpreter -B Interpreter/build  >> log.txt
-make -C Interpreter/build/  >> log.txt
+cmake FinalProjectCpp -B FinalProjectCpp/build  >> log.txt
+make -C FinalProjectCpp/build/  >> log.txt
