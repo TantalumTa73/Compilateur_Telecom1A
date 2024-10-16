@@ -11,7 +11,7 @@ echo "------------------------------------"  >> log.txt
 echo "c file    : $_cfilename"  >> log.txt
 echo "json file : $_jsonfilename"  >> log.txt
 
-./Bash/build-dune.sh
+./Bash/build-dune-c.sh
 ./Bash/build-compiler.sh
 
 
