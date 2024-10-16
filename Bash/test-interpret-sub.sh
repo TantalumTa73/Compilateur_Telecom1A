@@ -35,9 +35,9 @@ touch $log_gcc
 echo "running test.sh : Start"
 
 ./ParserLexer/expr2json.exe "$path/$c_file" >> log.txt || (echo "ParserLexer failed" ; exit 1)
-./Interpreter/build/main "$path/$json_file" < ./TestFiles/_tmp/_value.txt > $log_c   || (echo "Interpreter failed" ; exit 1)
+./Interpreter/build/main "$path/$json_file" < ./TestC/_tmp/_value.txt > $log_c   || (echo "Interpreter failed" ; exit 1)
 ./Bash/interpret-gcc.sh $path/$c_file       >> log.txt || (echo "interpret-gcc failed" ; exit 1)
-$gcc_exe < ./TestFiles/_tmp/_value.txt      > $log_gcc || (echo "file return exit error" ;)
+$gcc_exe < ./TestC/_tmp/_value.txt      > $log_gcc || (echo "file return exit error" ;)
 
 echo "running test.sh : End"
 

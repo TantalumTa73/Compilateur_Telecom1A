@@ -4,6 +4,6 @@
 ./Bash/build-interpret.sh
 
 
-cmake TestFiles -B TestFiles/build -D mode=interpret \
-  && cmake --build TestFiles/build \
-  && ctest --test-dir TestFiles/build
+cmake TestC -B TestC/build -D mode=interpret \
+  && cmake --build TestC/build \
+  && ctest --test-dir TestC/build

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cmake TestFiles -B TestFiles/build -D mode=dune \
-  && cmake --build TestFiles/build \
-  && ctest --test-dir TestFiles/build
+cmake TestC -B TestC/build -D mode=dune \
+  && cmake --build TestC/build \
+  && ctest --test-dir TestC/build

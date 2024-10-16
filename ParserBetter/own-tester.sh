@@ -1,3 +1,3 @@
 dune build
-./expr2json.exe ../TestFiles/operation.c 
-cat ../TestFiles/operation.json | jq --indent 4
+./expr2json.exe ../TestC/operation.c 
+cat ../TestC/operation.json | jq --indent 4
