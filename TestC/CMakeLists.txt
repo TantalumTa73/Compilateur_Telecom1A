@@ -6,7 +6,7 @@ message(NOTICE "cmake execution of ${PROJECT_NAME}")
 
 file(GLOB test_files "${CMAKE_SOURCE_DIR}/*.c")
 # file(REMOVE test_files "${CMAKE_SOURCE_DIR}/_test.c")
-# file(REMOVE test_files "${CMAKE_SOURCE_DIR}/TestFiles/_test.c")
+# file(REMOVE test_files "${CMAKE_SOURCE_DIR}/TestC/_test.c")
 
 enable_testing()
 

@@ -1,0 +1,34 @@
+
+
+Files hierarchy :
+
+define.hpp : USEFUL MACROS
+
+JSON.hpp : JSON class
+JSON.cpp : JSON.read()
+
+?.hpp : Token types, data types
+
+Token.hpp : Token class
+Token.cpp : Token.fromJSON()
+
+    subclass/ :
+        gstmt.hpp : GStmt class
+        stmt.hpp : Stmt class
+        expr.hpp : Expr class
+        litteral.hpp : Litteral class
+        leftval.hpp : LeftVal class
+        arg.hpp : Arg class
+
+Scope.hpp : Scope class
+    --> variable, array
+
+Memory.hpp : Memory class ????
+
+Interpreter.hpp : Interpreter class
+Interpreter.cpp : Interpreter.interpret()
+
+Compiler.hpp : Compiler subclass of Interpreter
+Compiler.cpp : Compiler.compile()
+
+main.cpp : main function
