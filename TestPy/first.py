@@ -1,2 +1,2 @@
-1
-2
+print(type(1 == 1), type(0), type(1), type(""), type("0"), type(1 - 2), type(False == False), type(False), type(True), type([]), type(2), type(1+True),type(0 and True), type(False and 0))
+print(len("44444"))

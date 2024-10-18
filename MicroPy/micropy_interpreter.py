@@ -71,7 +71,7 @@ class Variable:
 def len_var(l):
 
     if isinstance(l, Variable):
-        return len(l.vget())
+        return len_var(l.vget())
 
     return len(l)
 
