@@ -123,142 +123,140 @@ let str_assingop = function
   | ModEq -> "%="
 
 let pos ((s,e):ppos) =
-  []
   (* [ "start_line",`Int s.pos_lnum ;
-    "start_char",`Int (s.pos_cnum-s.pos_bol) ;
-    "end_line",`Int e.pos_lnum ;
-    "end_char",`Int (e.pos_cnum-e.pos_bol) ] *)
+  "start_char",`Int (s.pos_cnum-s.pos_bol) ;
+  "end_line",`Int e.pos_lnum ;
+  "end_char",`Int (e.pos_cnum-e.pos_bol) ] *)
+  []
 
-let rec toJSONexpr = function
-  | Const(c, p) -> `Assoc ([
-    "type", `String "const" ;
-    "value", toJSONlitteral c ] @ pos p)
-  | VarGet(lv, p) -> `Assoc ([
-    "type", `String "var_get" ;
-    "value", toJSONleft_value lv ] @ pos p)
-  | List(l, p) -> `Assoc ([
-    "type", `String "list" ;
-    "content", `List (List.map toJSONexpr l) ] @ pos p)
-  | FunCall(f, l, p) -> `Assoc ([
-    "type", `String "fun_call" ;
-    "name", `String f ;
-    "args", `List (List.map toJSONexpr l) ] @ pos p)
-  | LeftValOp(o, lv, p) -> `Assoc ([
-    "type", `String "left_val_op" ;
-    "left_value", toJSONleft_value lv ;
-    "op", `String (str_leftvalop o) ] @ pos p)
-  | Uniop(o, e, p) -> `Assoc ([
-    "type", `String "uniop" ;
-    "uniop", `String (str_uniop o) ;
+let rec toJSON (p:program) : Yojson.t =
+  `List (List.map toJSONgstmt p)
+
+and toJSONgstmt = function
+  | GFunDef(t,n, a, b, p) -> `Assoc ([
+    "action", `String "fundef" ;
+    "type", `String t ;
+    "name", `String n ;
+    "args", `List (List.map toJSONarg a) ;
+    "body", toJSONstmt b ] @ pos p)
+  | GVarDef(t, n, p) -> `Assoc ([
+    "action", `String "gvardef" ;
+    "type", `String t ;
+    "name", `String n ;
+    "value", `Assoc ([]) ] @ pos p)
+  | GVarDefS(t, n, e, p) -> `Assoc ([
+    "action", `String "gvardef" ;
+    "type", `String t ;
+    "name", `String n ;
     "value", toJSONexpr e ] @ pos p)
-  | Binop(o, e1, e2, p) -> `Assoc ([
-    "type", `String "binop" ;
-    "binop", `String (str_binop o) ;
-    "v1", toJSONexpr e1 ;
-    "v2", toJSONexpr e2 ] @ pos p)
-  | Ternop(e1, e2, e3, p) -> `Assoc ([
-    "type", `String "ternop" ;
-    "cond", toJSONexpr e1 ;
-    "v1", toJSONexpr e2 ;
-    "v2", toJSONexpr e3 ] @ pos p)
 
-and toJSONlitteral = function
-  | Int(i, p) -> `Assoc ([
-    "type", `String "int" ;
-    "value", `Int i ] @ pos p)
-  | Char(s, p) -> `Assoc ([
-    "type", `String "char" ;
-    "value", `String s ] @ pos p)
-  | Bool(b, p) -> `Assoc ([
-    "type", `String "bool" ;
-    "value", `Bool b ] @ pos p)
+and toJSONarg = function
+  | Arg(t, n, p) -> `Assoc ([
+    "action", `String "arg" ;
+    "type", `String t ;
+    "name", `String n ] @ pos p)
 
-                          
 and toJSONstmt = function
   | Sscope(l, p) -> `Assoc ([
-    "type", `String "scope" ;
+    "action", `String "scope" ;
     "body", `List (List.map toJSONstmt l) ] @ pos p)
   | Sreturn(e, p) -> `Assoc ([
-    "type", `String "return" ;
+    "action", `String "return" ;
     "value", toJSONexpr e ] @ pos p)
   | SreturnVoid(p) -> `Assoc ([
-    "type", `String "return" ;
+    "action", `String "return" ;
     "value", `Assoc([]) ] @ pos p)
   | Sfor(i, c, u, b, p) -> `Assoc ([
-    "type", `String "for" ;
+    "action", `String "for" ;
     "init", toJSONstmt i ;
     "condition", toJSONexpr c ;
     "update", toJSONstmt u ;
     "body", toJSONstmt b ] @ pos p)
   | Swhile(e, s, p) -> `Assoc ([
-    "type", `String "while" ;
+    "action", `String "while" ;
     "condition", toJSONexpr e ;
     "body", toJSONstmt s ] @ pos p)
   | SvarDef(t, n, p) -> `Assoc ([
-    "type", `String "vardef" ;
-    "var_type", `String t ;
+    "action", `String "vardef" ;
+    "type", `String t ;
     "name", `String n ;
     "value", `String "" ] @ pos p)
   | SvarDefS(t, n, e, p) -> `Assoc ([
-    "type", `String "vardef" ;
-    "var_type", `String t ;
+    "action", `String "vardef" ;
+    "type", `String t ;
     "name", `String n ;
     "value", toJSONexpr e ] @ pos p)
   | SvarSet(l, op , e, p) -> `Assoc ([
-    "type", `String "varset" ;
+    "action", `String "varset" ;
     "left_value", toJSONleft_value l ;
     "op", `String (str_assingop op) ;
     "value", toJSONexpr e ] @ pos p)
   | Sexpr(e, p) -> `Assoc ([
-    "type", `String "expr" ;
+    "action", `String "expr" ;
     "value", toJSONexpr e ] @ pos p)
   | Sif(e, s, p) -> `Assoc ([
-    "type", `String "if" ;
+    "action", `String "if" ;
     "condition", toJSONexpr e ;
     "body", toJSONstmt s ] @ pos p)
   | SifElse(e, s1, s2, p) -> `Assoc ([
-    "type", `String "if_else" ;
+    "action", `String "ifelse" ;
     "condition", toJSONexpr e ;
     "body", toJSONstmt s1 ;
     "else", toJSONstmt s2 ] @ pos p)
+    
+and toJSONlitteral = function
+  | Int(i, p) -> `Assoc ([
+    "action", `String "int" ;
+    "value", `Int i ] @ pos p)
+  | Char(s, p) -> `Assoc ([
+    "action", `String "char" ;
+    "value", `String s ] @ pos p)
+  | Bool(b, p) -> `Assoc ([
+    "action", `String "bool" ;
+    "value", `Bool b ] @ pos p)
   
-and toJSONformal = function
-  | Arg(t, n, p) -> `Assoc ([
-    "type", `String "arg" ;
-    "var_type", `String t ;
-    "name", `String n ] @ pos p)
-
-and toJSONgstmt = function
-  | GFunDef(t,n, a, b, p) -> `Assoc ([
-    "type", `String "fundef" ;
-    "return_type", `String t ;
-    "name", `String n ;
-    "args", `List (List.map toJSONformal a) ;
-    "body", toJSONstmt b ] @ pos p)
-  | GVarDef(t, n, p) -> `Assoc ([
-    "type", `String "vardef" ;
-    "var_type", `String t ;
-    "name", `String n ;
-    "value", `Assoc ([]) ] @ pos p)
-  | GVarDefS(t, n, e, p) -> `Assoc ([
-    "type", `String "vardef" ;
-    "var_type", `String t ;
-    "name", `String n ;
-    "value", toJSONexpr e ] @ pos p)
-
 and toJSONleft_value = function
   | Var(n, p) -> `Assoc ([
-    "type", `String "var" ;
+    "action", `String "var" ;
     "name", `String n ] @ pos p)
   | Tab(l, e, p) -> `Assoc ([
-    "type", `String "tab" ;
+    "action", `String "array" ;
     "left_value", toJSONleft_value l ;
     "index", toJSONexpr e ] @ pos p)
 
-     
-                 
-let toJSON (p:program) : Yojson.t =
-  `List (List.map toJSONgstmt p)
+and toJSONexpr = function
+  | Const(c, p) -> `Assoc ([
+    "action", `String "const" ;
+    "value", toJSONlitteral c ] @ pos p)
+  | VarGet(lv, p) -> `Assoc ([
+    "action", `String "varget" ;
+    "value", toJSONleft_value lv ] @ pos p)
+  | List(l, p) -> `Assoc ([
+    "action", `String "list" ;
+    "content", `List (List.map toJSONexpr l) ] @ pos p)
+  | FunCall(f, l, p) -> `Assoc ([
+    "action", `String "funcall" ;
+    "name", `String f ;
+    "args", `List (List.map toJSONexpr l) ] @ pos p)
+  | LeftValOp(o, lv, p) -> `Assoc ([
+    "action", `String "leftvalop" ;
+    "left_value", toJSONleft_value lv ;
+    "op", `String (str_leftvalop o) ] @ pos p)
+  | Uniop(o, e, p) -> `Assoc ([
+    "action", `String "uniop" ;
+    "uniop", `String (str_uniop o) ;
+    "value", toJSONexpr e ] @ pos p)
+  | Binop(o, e1, e2, p) -> `Assoc ([
+    "action", `String "binop" ;
+    "binop", `String (str_binop o) ;
+    "v1", toJSONexpr e1 ;
+    "v2", toJSONexpr e2 ] @ pos p)
+  | Ternop(e1, e2, e3, p) -> `Assoc ([
+    "action", `String "ternop" ;
+    "cond", toJSONexpr e1 ;
+    "v1", toJSONexpr e2 ;
+    "v2", toJSONexpr e3 ] @ pos p)
+
 
 
   

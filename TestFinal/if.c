@@ -1,3 +1,3 @@
 int x ;
-int y ;
-int z() {}
+void x ;
+char x ;
