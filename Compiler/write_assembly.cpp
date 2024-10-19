@@ -36,8 +36,7 @@ void add_line(std::string str = "", bool indent = true, bool comment = false){
 void set_section(std::string str){
     add_line();
     if (str != current_section_w) {
-        add_line(".section ." + str, false);
-        add_line();
+        add_line("." + str);
         current_section_w = str;
     }
 }
