@@ -1,6 +1,6 @@
 #include "JSON.hpp"
 #include "token.hpp"
-#include "interpreter.hpp"
+#include "execution.hpp"
 
 extern int verbose;
 
@@ -23,6 +23,9 @@ int main(int argc, char** argv) {
 
     Tk token = Token::simplify(json) ;
     token->print();
+    Root* root = dynamic_cast<Root*>(token);
+
+    Execution execution = Execution(root);
 
     return 0;
 }
