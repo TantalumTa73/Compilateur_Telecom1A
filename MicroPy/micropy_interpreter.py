@@ -9,10 +9,15 @@ cur_funcs = {}
 LAST_IF_VALUE = [False]
 
 
+
 class ReturnException(Exception):
     
     def __init__(self, return_value) -> None:
         super().__init__(return_value)
+
+
+class NoneVar:
+    pass
 
 
 class Variable:
@@ -71,7 +76,7 @@ class Variable:
 def len_var(l):
 
     if isinstance(l, Variable):
-        return len(l.vget())
+        return len_var(l.vget())
 
     return len(l)
 
@@ -171,7 +176,7 @@ def evaluate_expression(expr, depth: int): #A modifier pour cpp
         return expr["value"]
     
     if expr["type"] == "none":
-        return None
+        return NoneVar()
     
     if expr["type"] == "list":
         return Variable([evaluate_expression(x, depth) for x in expr["content"]])
@@ -317,6 +322,9 @@ def evaluate_function(name, args, depth: int):
         return len_var(args[0])
     
     if name == "type": #A modifier pour cpp
+
+        if isinstance(args[0], NoneVar):
+            return "none"
         if isinstance(args[0], Variable):
             return evaluate_function("type", [args[0].vget()], depth)
         if args[0] is False or args[0] is True:
