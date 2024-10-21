@@ -10,11 +10,11 @@
 TkPtr simplify(Token token){
 
     if        (token.get_attribute("name") == "__root__"){
-        return new FunctionDef(token, "__root__", "__arg__", simplify(token.childs));
+        return new FunctionDef(token, "__root__", "__arg__", simplify(token.children));
 
     } else if (token.get_attribute("action") == "gfundef"){
         return new FunctionDef(token, token.get_attribute("name"), 
-            token.get_attribute("arg"), simplify(token.childs));
+            token.get_attribute("arg"), simplify(token.children));
 
     } else if (token.get_attribute("action") == "gvardef"){
         return new VarDef(token, token.get_attribute("name"));

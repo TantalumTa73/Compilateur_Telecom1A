@@ -1,13 +1,13 @@
-        .data
+.section .data
 int_fmt:
-        .string "%d\n"           # Format string for printing integers
+    .string "%d\n"           # Format string for printing integers
 int_fmt_scan:
-        .string "%d"
+    .string "%d"
 
-        .text
-        .globl print
-        extern printf               # Declare printf as an external function
-        .globl main
+.section .text
+.globl print
+.extern printf               # Declare printf as an external function
+.globl main
 
 print:
         # Prologue

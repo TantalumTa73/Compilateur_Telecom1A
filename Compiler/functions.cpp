@@ -1,9 +1,4 @@
-#include <string>
-#include <optional>
-#include <iostream>
-
 #include "functions.hpp"
-#include "data.hpp"
 
 Variable::Variable(){
     name = "";
@@ -19,16 +14,15 @@ Variable::Variable(std::string name, std::string fun_name, int offset, bool is_a
     this->is_arg = is_arg ;
 }
 
-Function::Function() : 
-    name(""), body(std::vector<Token>()) {
+Function::Function() {
     vars = std::unordered_map<std::string, Variable>();
     var_offset = -1 * SIZE;
     arg_offset = 2 * SIZE;
     return ;
 }
 
-Function::Function(std::string name_, std::vector<Token> body_) : 
-    name(name_), body(body_) {
+Function::Function(std::string name_)
+: name(name_) {
     vars = std::unordered_map<std::string, Variable>();
     var_offset = -1 * SIZE;
     arg_offset = 2 * SIZE;
@@ -37,14 +31,6 @@ Function::Function(std::string name_, std::vector<Token> body_) :
 
 int Function::get_nb_var() {
     return vars.size();
-}
-
-std::optional<Variable> Function::get_var(std::string var_name) {
-    if (auto search = vars.find(var_name); search != vars.end()) {
-        return vars[var_name];
-    } else {
-        return std::nullopt;;
-    }
 }
 
 void Function::init_var(std::string var_name, bool is_arg) {

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WRITE_ASSEMBLY_H
+#define WRITE_ASSEMBLY_H
 
 #include <string>
 #include <fstream>
@@ -14,8 +15,11 @@ void w_set_var(int val);
 void w_set_global_var(std::string str);
 void w_get_var(int val);
 void w_push_cst(int val);
+void w_push_local_var(int val);
+void w_push_global_var(std::string str);
 void w_call_function(std::string str);
 void w_call_read(std::string str, int val, bool is_global);
 void w_op(std::string op_name);
 void w_ret(bool main);
 void end();
+#endif

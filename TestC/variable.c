@@ -1,8 +1,8 @@
 int b;
-// b = 3;
+b = 3;
 
 int main(int a) {
-    a = 1 ;
+    a = 42 + 1;
     print(a) ;
 }
 
