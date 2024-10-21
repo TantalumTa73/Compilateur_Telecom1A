@@ -5,7 +5,9 @@ class Arg : public Token {
     public:
         string name;
         string type;
-        Arg(){
+        Arg() : Token(ARG) {
+        // Arg() {
+            // tk_type = ARG;
             name = "";
             type = "";
         };

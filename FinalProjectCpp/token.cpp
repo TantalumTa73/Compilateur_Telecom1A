@@ -13,28 +13,28 @@ void Token::print(string indent){
     std::cout << indent << "Token: " << "\n";
 }
 
-Token::Token(JSON* json){
-    // type = "" ;
+// Token::Token(JSON* json) {
+//     // type = "" ;
 
-    if (json == nullptr)
-        ERROR("Token : json is null");
+//     if (json == nullptr)
+//         ERROR("Token : json is null");
 
-    // vector<Tk> tokens = vector<Tk>();
-    // vector<string> keys = vector<string>();
+//     // vector<Tk> tokens = vector<Tk>();
+//     // vector<string> keys = vector<string>();
 
-    // Root* root = new Root();
+//     // Root* root = new Root();
 
-    // while (tokens.size() > 0){
-    //     Tk token = tokens.back();
-    //     tokens.pop_back();
+//     // while (tokens.size() > 0){
+//     //     Tk token = tokens.back();
+//     //     tokens.pop_back();
 
-    //     if (token->type == "GStmt"){
-    //         root->gstmts.push_back((GStmt*) token);
-    //     }
-    // }
-    // if (json->has_string("type")) type = json->get_string("type");
-    // else ERROR("Error in Token : no type\n");
-}
+//     //     if (token->type == "GStmt"){
+//     //         root->gstmts.push_back((GStmt*) token);
+//     //     }
+//     // }
+//     // if (json->has_string("type")) type = json->get_string("type");
+//     // else ERROR("Error in Token : no type\n");
+// }
 
 Token* Token::simplify(JSON* json){
 

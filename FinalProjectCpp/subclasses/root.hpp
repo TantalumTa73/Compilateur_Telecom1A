@@ -4,10 +4,10 @@
 class Root : public Token {
     public:
         vector<GStmt*> gstmts;
-        Root(){
+        Root() : Token(ROOT) {
             gstmts = vector<GStmt*>();
         }
-        Root(vector<GStmt*> gstmts){
+        Root(vector<GStmt*> gstmts) : Token(ROOT) {
             this->gstmts = gstmts;
         }
         void print(string indent = ""){

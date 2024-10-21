@@ -3,17 +3,17 @@
 
 class Stmt : public Token {
     public:
-        Stmt(){}
+        Stmt(TokenType t ) : Token(t) {}
         virtual void print(string indent = "") override;
 };
 
 class Sscope : public Stmt {
     public:
         vector<Stmt*> body;
-        Sscope(){
+        Sscope() : Stmt(SCOPE){
             body = vector<Stmt*>();
         };
-        Sscope(vector<Stmt*> body){
+        Sscope(vector<Stmt*> body) : Stmt(SCOPE){
             this->body = body;
         };
         void print(string indent = "") override;
@@ -22,10 +22,10 @@ class Sscope : public Stmt {
 class Sreturn : public Stmt {
     public:
         Expr* value;
-        Sreturn(){
+        Sreturn() : Stmt(RETURN){
             value = nullptr;
         };
-        Sreturn(Expr* value){
+        Sreturn(Expr* value) : Stmt(RETURN){
             this->value = value;
         };
         void print(string indent = "") override;
@@ -37,13 +37,14 @@ class Sfor : public Stmt {
         Expr* condition;
         Stmt* increment;
         Stmt* body;
-        Sfor(){
+        Sfor() : Stmt(FOR){
             init = nullptr;
             condition = nullptr;
             increment = nullptr;
             body = nullptr;
         };
-        Sfor(Stmt* init, Expr* condition, Stmt* increment, Stmt* body){
+        Sfor(Stmt* init, Expr* condition, Stmt* increment, Stmt* body)
+        : Stmt(FOR){
             this->init = init;
             this->condition = condition;
             this->increment = increment;
@@ -56,11 +57,11 @@ class Swhile : public Stmt {
     public:
         Expr* condition;
         Stmt* body;
-        Swhile(){
+        Swhile() : Stmt(WHILE){
             condition = nullptr;
             body = nullptr;
         };
-        Swhile(Expr* condition, Stmt* body){
+        Swhile(Expr* condition, Stmt* body) : Stmt(WHILE){
             this->condition = condition;
             this->body = body;
         };
@@ -72,12 +73,12 @@ class SvarDef : public Stmt {
         string type;
         string name;
         Expr* value;
-        SvarDef(){
+        SvarDef() : Stmt(VAR_DEF){
             type = "";
             name = "";
             value = nullptr;
         };
-        SvarDef(string type, string name, Expr* value){
+        SvarDef(string type, string name, Expr* value) : Stmt(VAR_DEF){
             this->type = type;
             this->name = name;
             this->value = value;
@@ -90,12 +91,12 @@ class SvarSet : public Stmt {
         LeftValue* left_value;
         string op;
         Expr* value;
-        SvarSet(){
+        SvarSet() : Stmt(VAR_SET){
             left_value = nullptr;
             op = "";
             value = nullptr;
         };
-        SvarSet(LeftValue* left_value, string op, Expr* value){
+        SvarSet(LeftValue* left_value, string op, Expr* value) : Stmt(VAR_SET){
             this->left_value = left_value;
             this->op = op;
             this->value = value;
@@ -106,10 +107,10 @@ class SvarSet : public Stmt {
 class Sexpr : public Stmt {
     public:
         Expr* value;
-        Sexpr(){
+        Sexpr() : Stmt(EXPR_STMT){
             value = nullptr;
         };
-        Sexpr(Expr* value){
+        Sexpr(Expr* value) : Stmt(EXPR_STMT){
             this->value = value;
         };
         void print(string indent = "") override;
@@ -119,11 +120,11 @@ class Sif : public Stmt {
     public:
         Expr* condition;
         Stmt* body;
-        Sif(){
+        Sif() : Stmt(IF){
             condition = nullptr;
             body = nullptr;
         };
-        Sif(Expr* condition, Stmt* body){
+        Sif(Expr* condition, Stmt* body) : Stmt(IF){
             this->condition = condition;
             this->body = body;
         };
@@ -135,12 +136,12 @@ class SifElse : public Stmt {
         Expr* condition;
         Stmt* body_if;
         Stmt* body_else;
-        SifElse(){
+        SifElse() : Stmt(IF_ELSE){
             condition = nullptr;
             body_if = nullptr;
             body_else = nullptr;
         };
-        SifElse(Expr* condition, Stmt* body_if, Stmt* body_else){
+        SifElse(Expr* condition, Stmt* body_if, Stmt* body_else) : Stmt(IF_ELSE){
             this->condition = condition;
             this->body_if = body_if;
             this->body_else = body_else;

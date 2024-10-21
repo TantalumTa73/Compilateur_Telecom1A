@@ -9,10 +9,11 @@ class Token {
 
     public:
 
-        TokenType type;
+        const TokenType tk_type;
 
-        Token(){}
-        Token(JSON* json);
+        Token() : tk_type(UNKNOW) {}
+        Token(TokenType t) : tk_type(t) {}
+        // Token(JSON* json);
 
         static Token* simplify(JSON* json);
     

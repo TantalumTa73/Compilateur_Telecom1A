@@ -6,6 +6,7 @@ enum TokenType {
     
     // Root
     ROOT,
+    UNKNOW,
 
     // GSmt
     // G_STMT,

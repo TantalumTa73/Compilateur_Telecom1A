@@ -19,24 +19,10 @@ int main(int argc, char** argv) {
     std::cout << "Verbose level: " << verbose << "\n\n";
 
     JSON* json = new JSON(argv[1]);
-    json->print();
+    // json->print();
 
     Tk token = Token::simplify(json) ;
     token->print();
-
-    // Token* tk = new Token();
-    // GStmt* gstmt = new GStmt();
-    // Token* gstmt_tk = new GStmt();
-    // GFunDef* gfun = new GFunDef();
-    // GStmt* gfun_gstmt = new GFunDef();
-    // Token* gfun_tk = new GFunDef();
-
-    // tk->print();
-    // gstmt->print();
-    // gstmt_tk->print();
-    // gfun->print();
-    // gfun_gstmt->print();
-    // gfun_tk->print();
 
     return 0;
 }
