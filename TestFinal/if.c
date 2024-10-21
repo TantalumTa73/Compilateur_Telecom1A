@@ -1,3 +1,3 @@
-int x ;
-void x ;
-char x ;
+int x(int a, int b){
+    int z ;
+}

@@ -180,7 +180,7 @@ and toJSONstmt = function
     "action", `String "vardef" ;
     "type", `String t ;
     "name", `String n ;
-    "value", `String "" ] @ pos p)
+    "value", `Assoc ([]) ] @ pos p)
   | SvarDefS(t, n, e, p) -> `Assoc ([
     "action", `String "vardef" ;
     "type", `String t ;
@@ -201,8 +201,8 @@ and toJSONstmt = function
   | SifElse(e, s1, s2, p) -> `Assoc ([
     "action", `String "ifelse" ;
     "condition", toJSONexpr e ;
-    "body", toJSONstmt s1 ;
-    "else", toJSONstmt s2 ] @ pos p)
+    "body_if", toJSONstmt s1 ;
+    "body_else", toJSONstmt s2 ] @ pos p)
     
 and toJSONlitteral = function
   | Int(i, p) -> `Assoc ([
@@ -233,7 +233,7 @@ and toJSONexpr = function
     "value", toJSONleft_value lv ] @ pos p)
   | List(l, p) -> `Assoc ([
     "action", `String "list" ;
-    "content", `List (List.map toJSONexpr l) ] @ pos p)
+    "values", `List (List.map toJSONexpr l) ] @ pos p)
   | FunCall(f, l, p) -> `Assoc ([
     "action", `String "funcall" ;
     "name", `String f ;
@@ -253,7 +253,7 @@ and toJSONexpr = function
     "v2", toJSONexpr e2 ] @ pos p)
   | Ternop(e1, e2, e3, p) -> `Assoc ([
     "action", `String "ternop" ;
-    "cond", toJSONexpr e1 ;
+    "condition", toJSONexpr e1 ;
     "v1", toJSONexpr e2 ;
     "v2", toJSONexpr e3 ] @ pos p)
 

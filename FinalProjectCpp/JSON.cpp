@@ -61,9 +61,9 @@ JSON::JSON(string filename){
     // vector<string> keys = vector<string>();
 
     tree.push_back(tree_node(this));
-    this->string_map["type"] = "__root__";
+    this->string_map["action"] = "__root__";
     
-    std::string name = "data";
+    std::string name = "gstmts";
     std::string value ;
     bool is_name;
     char c ;
@@ -168,3 +168,29 @@ void JSON::print(string indent){
     return ;
 }
         
+bool JSON::has_string(string key){
+    return string_map.find(key) != string_map.end();
+}
+bool JSON::has_int(string key){
+    return int_map.find(key) != int_map.end();
+}
+bool JSON::has_bool(string key){
+    return bool_map.find(key) != bool_map.end();
+}
+bool JSON::has_array(string key){
+    return array_map.find(key) != array_map.end();
+}
+bool JSON::has_object(string key){
+    return object_map.find(key) != object_map.end();
+}
+bool JSON::has_key(string key){
+    return has_string(key) || has_int(key) || has_bool(key) || has_array(key) || has_object(key);
+}
+
+bool JSON::is_null(){
+    return string_map.size() == 0 && 
+        int_map.size() == 0 && 
+        bool_map.size() == 0 && 
+        array_map.size() == 0 && 
+        object_map.size() == 0;
+}

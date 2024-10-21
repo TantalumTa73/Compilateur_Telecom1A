@@ -21,6 +21,9 @@ int main(int argc, char** argv) {
     JSON* json = new JSON(argv[1]);
     json->print();
 
+    Tk token = Token::simplify(json) ;
+    token->print();
+
     // Token* tk = new Token();
     // GStmt* gstmt = new GStmt();
     // Token* gstmt_tk = new GStmt();
@@ -34,7 +37,6 @@ int main(int argc, char** argv) {
     // gfun->print();
     // gfun_gstmt->print();
     // gfun_tk->print();
-
 
     return 0;
 }
