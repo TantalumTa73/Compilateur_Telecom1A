@@ -14,7 +14,7 @@ void init(std::string str){
     file.open(str, std::ios::out);
 
     operators["plus"] = "add %rax, %rbx\n";
-    operators["minus"] = "sub %rbx, %rax\n\tmove %rax, %rbx\n";
+    operators["minus"] = "sub %rbx, %rax\n\tmov %rax, %rbx\n";
     operators["mult"] = "imul %rax, %rbx\n";
     operators["division"] = "cqo\n\tidivq %rbx\n\tmov %rax, %rbx\n";
     operators["modulo"] = "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx\n";

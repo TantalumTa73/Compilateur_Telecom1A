@@ -6,7 +6,7 @@ std::vector<std::string> called_fun_names = std::vector<std::string>();
 bool verbose = false;
 
 
-// Raw Token --------------------------------------------------------------------------------------------------------------------------------
+// Raw Token --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RawToken::RawToken(){
     start_line = 0;
     start_char = 0;
@@ -50,7 +50,7 @@ void RawToken::add_child(RawToken child){
 }
 
 
-// Token --------------------------------------------------------------------------------------------------------------------------------
+// Token --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Token::Token(){
     start_line = 0;
     start_char = 0;
@@ -81,64 +81,70 @@ void Token::add_child(Token* child){
 }
 
 Variable Token::find_var(std::string var_name){
-    std::cout << "----------entering in find_var\n";
+    std::cout << "||||||||||||||||||||entering in find_var\n";
     std::cout << "  called_fun_names' size : " << std::to_string(called_fun_names.size()) << "\n"; 
     // to begin with the last called section
-    reverse(called_fun_names.begin(), called_fun_names.end());
-    for (auto fun_name : called_fun_names){
-        if (functions[fun_name].vars.find(var_name) != functions[fun_name].vars.end()){
-            std::cout << "  " << var_name << "'s offset : " << std::to_string(functions[fun_name].vars[var_name].offset) << " in (compiler.cpp)\n";
-            return functions[fun_name].vars[var_name];
+    for (auto it = called_fun_names.rbegin(); it != called_fun_names.rend(); it ++){
+        if (functions[*it].vars.find(var_name) != functions[*it].vars.end()){
+            std::cout << "  " << var_name << "'s offset : " << std::to_string(functions[*it].vars[var_name].offset) << " in (compiler.cpp)\n";
+            return functions[*it].vars[var_name];
         }
     }
-    reverse(called_fun_names.begin(), called_fun_names.end());
 
     std::cout << "  " << var_name << " not found (compiler.cpp)\n";
     return Variable();
 }
 
-// RETURN --------------------------------------------------------------------------------------------------------------------------------
+// RETURN --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ReturnToken::ReturnToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, RETURN) {}
 
 void ReturnToken::on_enter(){
-    std::cout << "----- entering in CallFunToken ------\n";
+    std::cout << "|||||||||| entering in CallFunToken ||||||||||\n";
 }
 
 void ReturnToken::after_all_children_processed(){
     w_ret(called_fun_names.back() == MAIN);
-    std::cout << "----- leaving from CallFunToken ------\n";
+    std::cout << "|||||||||| leaving from CallFunToken ||||||||||\n";
 }
 
 
-// DEF_VAR --------------------------------------------------------------------------------------------------------------------------------
+// DEF_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DefVarToken::DefVarToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, DEF_VAR) {}
 
-void DefVarToken::on_enter() {}
+void DefVarToken::on_enter() {
+    std::cout << "|||||||||| entering in DefVarToken ||||||||||\n";
+}
 
 void DefVarToken::after_all_children_processed(){
     functions[called_fun_names.back()].init_var(name, false);
+    std::cout << "initialize " << name << " in " << called_fun_names.back() << "\n"; 
+    std::cout << "called_fun_names' size :  " << std::to_string(called_fun_names.size());
     if (called_fun_names.back() == GLOBAL){
         w_init_global_var(name);
     } else {
         w_init_var();
     }
+    std::cout << "|||||||||| leaving from DefVarToken ||||||||||\n";
 }
 
 
-// DEF_FUNCTION --------------------------------------------------------------------------------------------------------------------------------
+// DEF_FUNCTION --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 DefFunToken::DefFunToken(std::string name, int start_line, int start_char, int end_line, int end_char, std::vector<std::string> arg_names) 
 : Token(name, start_line, start_char, end_line, end_char, DEF_FUN) {
     this->arg_names = arg_names;
 }
 
 void DefFunToken::on_enter(){
-    std::cout << "----- entering in DefFunToken ------\n";
+    std::cout << "|||||||||| entering in DefFunToken ||||||||||\n";
+    std::cout << "defining " << name << " function\n";
     Function f = Function(name);
     functions.insert({name, f});
 
     called_fun_names.push_back(name);
+    std::cout << "called_fun_names' back : " << called_fun_names.back() << "\n" ;
+    std::cout << "called_fun_names' back : " << called_fun_names.back() << "\n" ;
 
     if (name == GLOBAL) { return; }
 
@@ -152,16 +158,17 @@ void DefFunToken::on_enter(){
 void DefFunToken::after_all_children_processed(){
     // avoid a function that doesn't have return
     w_ret(called_fun_names.back() == MAIN);
-    std::cout << "----- leaving from DefFunToken ------\n";
+    called_fun_names.pop_back();
+    std::cout << "|||||||||| leaving from DefFunToken ||||||||||\n";
 }
 
 
-// CALL_FUN --------------------------------------------------------------------------------------------------------------------------------
+// CALL_FUN --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CallFunToken::CallFunToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, CALL_FUN) {}
 
 void CallFunToken::on_enter(){
-    std::cout << "----- entering in CallFunToken ------\n";
+    std::cout << "|||||||||| entering in CallFunToken ||||||||||\n";
     if (auto search = functions.find(name); search == functions.end()){
         std::cout << name << " unknown in functions";
         return;
@@ -170,16 +177,16 @@ void CallFunToken::on_enter(){
 
 void CallFunToken::after_all_children_processed(){
     w_call_function(name);
-    std::cout << "----- leaving from CallFunToken ------\n";
+    std::cout << "|||||||||| leaving from CallFunToken ||||||||||\n";
 }
 
 
-// SET_VAR --------------------------------------------------------------------------------------------------------------------------------
+// SET_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SetVarToken::SetVarToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, SET_VAR) {}
 
 void SetVarToken::on_enter(){
-    std::cout << "----- entering in SetVarToken ------\n";
+    std::cout << "|||||||||| entering in SetVarToken ||||||||||\n";
 }
 
 void SetVarToken::after_all_children_processed(){
@@ -191,16 +198,16 @@ void SetVarToken::after_all_children_processed(){
         std::cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
         w_set_var(variable_buffer.offset);
     }
-    std::cout << "----- leaving from SetVarToken ------\n";
+    std::cout << "|||||||||| leaving from SetVarToken ||||||||||\n";
 }
 
 
-// GET_VAR --------------------------------------------------------------------------------------------------------------------------------
+// GET_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 GetVarToken::GetVarToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, GET_VAR) {}
 
 void GetVarToken::on_enter() {
-    std::cout << "----- entering in GetVarToken ------\n";
+    std::cout << "|||||||||| entering in GetVarToken ||||||||||\n";
 }
 
 void GetVarToken::after_all_children_processed(){
@@ -210,11 +217,11 @@ void GetVarToken::after_all_children_processed(){
     } else {
         w_push_local_var(variable_buffer.offset);
     }
-    std::cout << "----- leaving from GetVarToken ------\n";
+    std::cout << "|||||||||| leaving from GetVarToken ||||||||||\n";
 }
 
 
-// CST --------------------------------------------------------------------------------------------------------------------------------
+// CST --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CstToken::CstToken(std::string name, int start_line, int start_char, int end_line, int end_char, int value) 
 : Token(name, start_line, start_char, end_line, end_char, CST){
     this->value = value;
@@ -227,23 +234,23 @@ void CstToken::on_enter(){
 void CstToken::after_all_children_processed() {}
 
 
-// OP --------------------------------------------------------------------------------------------------------------------------------
+// OP --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 OpToken::OpToken(std::string name, int start_line, int start_char, int end_line, int end_char, std::string op_name) 
 : Token(name, start_line, start_char, end_line, end_char, OP){
     this->op_name = op_name;
 }
 
 void OpToken::on_enter(){
-    std::cout << "----- entering in OpToken ------\n";
+    std::cout << "|||||||||| entering in OpToken ||||||||||\n";
 }
 
 void OpToken::after_all_children_processed(){
     w_op(op_name);
-    std::cout << "----- leaving from OpToken ------\n";
+    std::cout << "|||||||||| leaving from OpToken ||||||||||\n";
 }
 
 
-// PARENTHESIS --------------------------------------------------------------------------------------------------------------------------------
+// PARENTHESIS --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ParenthesisToken::ParenthesisToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, PARENTHESIS) {}
 
@@ -252,7 +259,7 @@ void ParenthesisToken::on_enter() {}
 void ParenthesisToken::after_all_children_processed() {}
 
 
-// PARENTHESIS --------------------------------------------------------------------------------------------------------------------------------
+// PARENTHESIS --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 UndefinedToken::UndefinedToken(std::string name, int start_line, int start_char, int end_line, int end_char) 
 : Token(name, start_line, start_char, end_line, end_char, PARENTHESIS) {}
 

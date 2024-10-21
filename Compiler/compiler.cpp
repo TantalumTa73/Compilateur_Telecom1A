@@ -50,7 +50,6 @@ void Compiler::init_compiling(){
 }
 
 void Compiler::reversed_children_push(){
-    std::cout << "entering in reversed_children_push (compiler.cpp)\n";
     std::vector<Token*> body = actual_token->children;
     reverse(body.begin(), body.end());
     for (auto t : body) { 
@@ -73,7 +72,6 @@ void Compiler::push_called_token(){
 }
 
 void Compiler::pop_called_token(){
-    std::cout << "entering in pop_called_token (compiler.cpp)\n";
     if (called_tokens.size() <= 0){
         return;
     }
