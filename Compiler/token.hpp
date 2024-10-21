@@ -64,7 +64,7 @@ class Token {
         void add_child(Token* child);
 
         virtual void on_enter() = 0;
-        virtual void after_all_children_processed() = 0;
+        virtual void on_exit() = 0;
 
     protected:
         Variable find_var(std::string var_name);
@@ -75,7 +75,7 @@ class ReturnToken : public Token{
         ReturnToken(std::string name, int start_line, int start_char, int end_line, int end_char);
 
         void on_enter() override;
-        void after_all_children_processed() override;
+        void on_exit() override;
 };
 
 class DefVarToken : public Token{
@@ -83,7 +83,7 @@ class DefVarToken : public Token{
         DefVarToken(std::string name, int start_line, int start_char, int end_line, int end_char);
 
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class DefFunToken : public Token{
@@ -93,28 +93,28 @@ class DefFunToken : public Token{
         DefFunToken(std::string name, int start_line, int start_char, int end_line, int end_char, std::vector<std::string> arg_names);
 
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class CallFunToken : public Token{
     public:
         CallFunToken(std::string name, int start_line, int start_char, int end_line, int end_char);
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class SetVarToken : public Token{
     public:
         SetVarToken(std::string name, int start_line, int start_char, int end_line, int end_char);
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class GetVarToken : public Token{
     public:
         GetVarToken(std::string name, int start_line, int start_char, int end_line, int end_char);
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class CstToken : public Token{
@@ -124,7 +124,7 @@ class CstToken : public Token{
         CstToken(std::string name, int start_line, int start_char, int end_line, int end_char, int value);
 
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class OpToken : public Token{
@@ -134,7 +134,7 @@ class OpToken : public Token{
         OpToken(std::string name, int start_line, int start_char, int end_line, int end_char, std::string op_name);
 
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class ParenthesisToken : public Token{
@@ -142,7 +142,7 @@ class ParenthesisToken : public Token{
         ParenthesisToken(std::string name, int start_line, int start_char, int end_line, int end_char);
 
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 
 class UndefinedToken : public Token{
@@ -150,6 +150,6 @@ class UndefinedToken : public Token{
         UndefinedToken(std::string name, int start_line, int start_char, int end_line, int end_char);
 
         void on_enter() override ;
-        void after_all_children_processed() override ;
+        void on_exit() override ;
 };
 #endif
