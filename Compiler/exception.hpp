@@ -1,3 +1,6 @@
+#ifndef EXCEPTION_H
+#define EXCEPTION_H
+
 #include <exception>
 #include <string>
 
@@ -22,3 +25,4 @@ class InterpreterException : public std::exception {
 
         const char* what() const throw();
 };
+#endif
