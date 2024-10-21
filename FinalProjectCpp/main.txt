@@ -17,7 +17,7 @@ Token.cpp : Token.fromJSON()
         stmt.hpp : Stmt class
         expr.hpp : Expr class
         litteral.hpp : Litteral class
-        leftval.hpp : LeftVal class
+        leftval.hpp : LeftValue class
         arg.hpp : Arg class
 
 Scope.hpp : Scope class

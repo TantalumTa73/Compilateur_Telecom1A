@@ -63,15 +63,20 @@ prog:
   | p = list(global_stmt) EOF { p }
 ;
 
+data_type:
+  | t = TYPE { t }
+  | t = TYPE STAR { t ^ "*" }
+;
+
 global_stmt:
-  | t = TYPE id = IDENT SEMICOLON { GVarDef(t,id, $loc) }
-  | t = TYPE id = IDENT EQ e = expr SEMICOLON { GVarDefS(t,id,e, $loc) }
-  | t = TYPE f = IDENT LP args = separated_list(COMMA, arg) RP body = stmt 
+  | t = data_type id = IDENT SEMICOLON { GVarDef(t,id, $loc) }
+  | t = data_type id = IDENT EQ e = expr SEMICOLON { GVarDefS(t,id,e, $loc) }
+  | t = data_type f = IDENT LP args = separated_list(COMMA, arg) RP body = stmt 
     { GFunDef(t,f,args,body, $loc) }
 ;
 
 arg:
-  | t = TYPE id = IDENT { Arg(t,id, $loc) }
+  | t = data_type id = IDENT { Arg(t,id, $loc) }
 ;
 
 left_value:
@@ -88,8 +93,8 @@ stmt:
     { Sfor(s1,cond,s2,body,$loc) }
   | WHILE LP cond = expr RP body = stmt { Swhile(cond, body,$loc) }
 
-  | t = TYPE id = IDENT SEMICOLON { SvarDef(t,id, $loc) }
-  | t = TYPE id = IDENT EQ e = expr SEMICOLON { SvarDefS(t,id,e, $loc) }
+  | t = data_type id = IDENT SEMICOLON { SvarDef(t,id, $loc) }
+  | t = data_type id = IDENT EQ e = expr SEMICOLON { SvarDefS(t,id,e, $loc) }
   | id = left_value o = assignop e = expr SEMICOLON { SvarSet(id,o,e, $loc) }
   | e = expr SEMICOLON { Sexpr(e, $loc) }
 

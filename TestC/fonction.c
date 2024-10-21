@@ -3,8 +3,8 @@
 int u ;
 int v;
 
-// v = 3 ;
-// u = 5 ; 
+v = 3 ;
+u = 5 ; 
 
 
 int g ( int b ) {

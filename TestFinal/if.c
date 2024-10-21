@@ -1,3 +1,3 @@
-int x ;
-int y ;
-int z() {}
+int x(int a, int b){
+    int z ;
+}

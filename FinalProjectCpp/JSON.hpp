@@ -17,6 +17,15 @@ class JSON {
         vector<JSON*>* get_array(string key);
         JSON* get_object(string key);
 
+        bool has_string(string key);
+        bool has_int(string key);
+        bool has_bool(string key);
+        bool has_array(string key);
+        bool has_object(string key);
+        bool has_key(string key);
+
+        bool is_null();
+
         void print(string indent = "");
 
     private:

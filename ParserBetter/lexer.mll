@@ -4,7 +4,7 @@
    
   exception Lexing_error of char
 
-  (* Sert à récupérer les identifiants ou les mots clef qui pourraient être des id*)
+  (* Find keyword and identifiers *)
   let id_or_kwd s = match s with
   | "for" -> FOR
   | "while" -> WHILE
@@ -16,7 +16,10 @@
   | "if" -> IF
   | "else" -> ELSE
 
+  | "void" -> TYPE "void"
   | "int" -> TYPE "int"
+  | "char" -> TYPE "char"
+  | "bool" -> TYPE "bool"
 
   | s -> IDENT s  
 }

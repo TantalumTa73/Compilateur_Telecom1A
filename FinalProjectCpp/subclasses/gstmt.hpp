@@ -1,29 +1,49 @@
-
+#pragma once
 #include "../token.hpp"
+// #include "arg.hpp"
 
 class GStmt : public Token {
     public:
-        GStmt();
-        GStmt(JSON* json);
-        virtual void print() override;
+        GStmt(){}
+        virtual void print(string indent = "") override;
 };
 
 class GFunDef : public GStmt {
     public:
         string name;
         string type;
-        vector<Arg*> args;
+        // vector<Arg*> args;
         Stmt* body;
-        GFunDef();
-        GFunDef(JSON* json);
-        void print() override;
+        GFunDef(){
+            name = "";
+            type = "";
+            // args = vector<Arg*>();
+            body = nullptr;
+        };
+        GFunDef(string type, string name, vector<Arg*> args, Stmt* body){
+            this->name = name;
+            this->type = type;
+            // this->args = args;
+            this->body = body;
+        };
+        void print(string indent = "") override;
 };
 
 class GVarDef : public GStmt {
     public:
-        string name;
         string type;
-        GVarDef();
-        GVarDef(JSON* json);
-        void print() override;
+        string name;
+        Expr* value;
+        GVarDef(){
+            type = "";
+            name = "";
+            value = nullptr;
+        };
+        GVarDef(string type, string name, Expr* value){
+            this->type = type;
+            this->name = name;
+            this->value = value;
+        };
+        void print(string indent = "") override;
 };
+
