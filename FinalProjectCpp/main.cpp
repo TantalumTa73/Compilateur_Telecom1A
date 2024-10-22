@@ -16,8 +16,8 @@ int main(int argc, char** argv) {
     
     file_name = argv[1];
 
-    std::cout << "Start execution of " << argv[1] << "\n";
-    std::cout << "Verbose level: " << verbose << "\n\n";
+    v_cout << "Start execution of " << argv[1] << "\n";
+    v_cout << "Verbose level: " << verbose << "\n\n";
 
     JSON* json = new JSON(argv[1]);
     // json->print();

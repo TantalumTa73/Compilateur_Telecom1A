@@ -32,8 +32,8 @@ class Context {
         int arg_offset;
 };
 
-extern std::unordered_map<std::string, Context> contexts ;
-extern std::vector<std::string> called_contexts ;
+extern std::unordered_map<string, Context> contexts ;
+extern vector<string> called_contexts ;
 
 Variable find_var(string name);
 

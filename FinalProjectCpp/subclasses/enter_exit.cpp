@@ -1,5 +1,6 @@
 #include "../token.hpp"
 #include "../context.hpp"
+#include "../write_assembly.hpp"
 
 #include "arg.hpp"
 #include "expr.hpp"

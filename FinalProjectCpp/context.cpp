@@ -17,7 +17,7 @@ Variable::Variable(string name, string fun_name, int offset, bool is_arg){
     this->is_arg = is_arg ;
 }
 
-Variable find_var(std::string var_name){
+Variable find_var(string var_name){
     v_cout << "||||||||||||||||||||entering in find_var\n";
     v_cout << "  called_contexts' size : " ;
     v_cout << std::to_string(called_contexts.size()) << "\n"; 

@@ -63,8 +63,8 @@ JSON::JSON(string filename){
     tree.push_back(tree_node(this));
     this->string_map["action"] = "__root__";
     
-    std::string name = "gstmts";
-    std::string value ;
+    string name = "gstmts";
+    string value ;
     bool is_name;
     char c ;
 
@@ -105,7 +105,7 @@ JSON::JSON(string filename){
             if (value != ""){
                 if (tree.back().vect != nullptr){
                     // tree.back().vect ;
-                    std::cout << "Error in JSON : \',\' in vect\n";
+                    v_cout << "Error in JSON : \',\' in vect\n";
                 } else if (tree.back().json != nullptr){
                     tree.back().json->string_map[name] = value;
                 }

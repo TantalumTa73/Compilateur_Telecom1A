@@ -5,8 +5,8 @@
 
 void Compiler::init_compiling(){
     
-    stack = std::vector<Token*>();
-    called_tokens = std::vector<Token*>();
+    stack = vector<Token*>();
+    called_tokens = vector<Token*>();
 
     Context empty_f = Context();
     contexts.insert({PRINT, empty_f});
@@ -19,10 +19,10 @@ void Compiler::init_compiling(){
 }
 
 void Compiler::reversed_children_push(){
-    std::vector<Token*> body = actual_token->children();
+    vector<Token*> body = actual_token->children();
     reverse(body.begin(), body.end());
     for (auto t : body) { 
-        // std::cout << "---> " << t->name << " <--- pushed in stack\n";
+        // v_cout << "---> " << t->name << " <--- pushed in stack\n";
         stack.push_back(t);
     }
 }
@@ -47,7 +47,7 @@ void Compiler::pop_called_token(){
 
     if (called_tokens.back()->remained_children <= 0) {
         called_tokens.back()->on_exit();
-        // std::cout << "---> " << actual_token->name << " <--- pop in  called_tokens\n";
+        // v_cout << "---> " << actual_token->name << " <--- pop in  called_tokens\n";
         called_tokens.pop_back();
         pop_called_token();
     }

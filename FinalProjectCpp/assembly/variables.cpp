@@ -13,7 +13,7 @@ void w_init_var(){
     add_line();
 }
 
-void w_init_global_var(std::string str){
+void w_init_global_var(string str){
     add_line("init global variable", true, true);
     set_section("bss");
     add_line(".align " + std::to_string(SIZE));
@@ -32,7 +32,7 @@ void w_set_var(int val){
     add_line();
 }
 
-void w_set_global_var(std::string str){
+void w_set_global_var(string str){
     add_line("set global variable", true, true);
         add_line("pop %rax");
         add_line("mov %rax, " + str + "(%rip)");

@@ -2,15 +2,15 @@
 #include "expr.hpp"
 
 void LeftValue::print(string indent){
-    cout << indent << "LeftValue" << endl;
+    v_cout << indent << "LeftValue" << endl;
 }
 
 void Var::print(string indent){
-    cout << indent << "Var : " << name << endl;
+    v_cout << indent << "Var : " << name << endl;
 }
 
 void Array::print(string indent){
-    cout << indent << "Array" << endl;
+    v_cout << indent << "Array" << endl;
     left_value->print(indent + "  ");
     index->print(indent + "  ");
 }

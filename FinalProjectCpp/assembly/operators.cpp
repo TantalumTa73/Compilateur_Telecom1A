@@ -54,7 +54,7 @@ void def_operators(){
 }
 
 
-void w_op(std::string op_name){
+void w_op(string op_name){
     add_line(op_name + " operation", true, true);
     add_line("pop %rbx");
     add_line("pop %rax");

@@ -10,7 +10,7 @@
 #include "subclasses/stmt.hpp"
 
 void Token::print(string indent){
-    std::cout << indent << "Token: " << "\n";
+    v_cout << indent << "Token: " << "\n";
 }
 
 // Token::Token(JSON* json) {
@@ -171,7 +171,7 @@ vector<T> Token::simplify(vector<JSON*>* vect){
     if (vect == nullptr)
         ERROR("Token : vect is null");
 
-    vector<T> new_tokens = std::vector<T>();
+    vector<T> new_tokens = vector<T>();
     reverse(vect->begin(), vect->end()) ;
    
     while (vect->size() > 0){

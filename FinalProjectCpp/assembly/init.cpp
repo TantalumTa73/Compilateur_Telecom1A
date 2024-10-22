@@ -22,7 +22,7 @@ void init(){
 
 void w_init_template(){
     std::ifstream src(TEMPLATE);
-    std::string line;
+    string line;
     while (getline(src, line)) {
         add_line(line, false, false);
     }

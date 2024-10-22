@@ -6,7 +6,7 @@
 
 #include "write_assembly.hpp"
 
-void w_call_function(std::string str){
+void w_call_function(string str){
     if (str == PRINT){
         add_line("call print");
         add_line();
@@ -19,7 +19,7 @@ void w_call_function(std::string str){
     }
 }
 
-void w_init_f(std::string str){
+void w_init_f(string str){
     set_section("text");
     add_line(str + ":", false);
     add_line("push %rbp");
@@ -27,7 +27,7 @@ void w_init_f(std::string str){
     add_line();
 }
 
-void w_call_read(std::string str, int val, bool is_global){
+void w_call_read(string str, int val, bool is_global){
     add_line("read value", true, true);
     add_line("call scan");
     if (is_global){

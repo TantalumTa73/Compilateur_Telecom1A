@@ -19,7 +19,7 @@ void w_push_local_var(int val){
     add_line();
 }
 
-void w_push_global_var(std::string str){
+void w_push_global_var(string str){
     add_line("push global variable", true, true);
     add_line("push " + str + "(%rip)");
     add_line();

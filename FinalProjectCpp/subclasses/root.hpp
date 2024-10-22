@@ -11,7 +11,7 @@ class Root : public Token {
             this->gstmts = gstmts;
         }
         void print(string indent = ""){
-            cout << indent << "Root" << endl;
+            v_cout << indent << "Root" << endl;
             for(auto v : gstmts){
                 v->print(indent + "  ");
             }
