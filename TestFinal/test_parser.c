@@ -18,18 +18,21 @@ void complexFunction(int num) {
         if (i % 2 == 0) {
             for (int j = 0; j < i; j++) {
                 if (j % 3 == 0) {
-                    printf("i: %d, j: %d - Divisible by 3\n", i, j);
+                    // printf("i: %d, j: %d - Divisible by 3\n", i, j);
+                    print(0);
                 } else {
-                    printf("i: %d, j: %d - Not divisible by 3\n", i, j);
+                    // printf("i: %d, j: %d - Not divisible by 3\n", i, j);
+                    print(1);
                 }
             }
         } else {
             int k = 0;
             while (k < i) {
                 if (k % 2 == 0) {
-                    printf("i: %d, k: %d - Even\n", i, k);
+                    // printf("i: %d, k: %d - Even\n", i, k);
+                    print()
                 } else {
-                    printf("i: %d, k: %d - Odd\n", i, k);
+                    // printf("i: %d, k: %d - Odd\n", i, k);
                 }
                 k++;
             }

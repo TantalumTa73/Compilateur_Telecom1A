@@ -74,6 +74,8 @@ void FunCall::on_exit(){
 // SET_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void SvarSet::on_exit(){
+    if (op != "=")
+        throw invalid_argument("op " + op + " is not implemented");
     string name = left_value->get_id();
     Variable variable_buffer = find_var(name);
     v_cout << variable_buffer.name << "'s function is : " << variable_buffer.fun_name << "\n";
@@ -120,3 +122,19 @@ void Binop::on_exit(){
 // void Ternop::on_exit(){
 //     w_op("? :");
 // }
+
+
+// To Implement --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void Sfor::on_enter(){
+    throw invalid_argument("for not implemented");
+}
+void Swhile::on_enter(){
+    throw invalid_argument("while not implemented");
+}
+void Sif::on_enter(){
+    throw invalid_argument("if not implemented");
+}
+void SifElse::on_enter(){
+    throw invalid_argument("if else not implemented");
+}

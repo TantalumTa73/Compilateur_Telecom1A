@@ -30,6 +30,7 @@ and stmt =
   | SifElse of expr*stmt*stmt*ppos
 
 and litteral = 
+  | Void of ppos
   | Int of int * ppos
   | Bool of bool * ppos
   | Char of char * ppos
@@ -166,7 +167,7 @@ and toJSONstmt = function
     "value", toJSONexpr e ] @ pos p)
   | SreturnVoid(p) -> `Assoc ([
     "action", `String "return" ;
-    "value", `Assoc([]) ] @ pos p)
+    "value", toJSONlitteral (Void p) ] @ pos p)
   | Sfor(i, c, u, b, p) -> `Assoc ([
     "action", `String "for" ;
     "init", toJSONstmt i ;
@@ -206,6 +207,8 @@ and toJSONstmt = function
     "body_else", toJSONstmt s2 ] @ pos p)
     
 and toJSONlitteral = function
+  | Void p -> `Assoc ([
+    "action", `String "void" ] @ pos p)
   | Int(i, p) -> `Assoc ([
     "action", `String "int" ;
     "value", `Int i ] @ pos p)
