@@ -74,6 +74,7 @@ class Sfor : public Stmt {
         vector<Tk> children() override {
             return {(Tk)init, (Tk)condition, (Tk)increment, (Tk)body};
         }
+        void on_enter() override;
 };
 
 class Swhile : public Stmt {
@@ -92,6 +93,7 @@ class Swhile : public Stmt {
         vector<Tk> children() override {
             return {(Tk)condition, (Tk)body};
         }
+        void on_enter() override;
 };
 
 class SvarDef : public Stmt {
@@ -112,6 +114,7 @@ class SvarDef : public Stmt {
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children() override {
+            if (value == nullptr) return {};
             return {(Tk)value};
         }
 };
@@ -169,6 +172,7 @@ class Sif : public Stmt {
         vector<Tk> children() override {
             return {(Tk)condition, (Tk)body};
         }
+        void on_enter() override;
 };
 
 class SifElse : public Stmt {
@@ -190,5 +194,6 @@ class SifElse : public Stmt {
         vector<Tk> children() override {
             return {(Tk)condition, (Tk)body_if, (Tk)body_else};
         }
+        void on_enter() override;
 };
 

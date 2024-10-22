@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "compiler.hpp"
 #include "write_assembly.hpp"
 
@@ -27,7 +28,6 @@ void Compiler::reversed_children_push(){
 }
 
 void Compiler::push_called_token(){
-    // std::cout << "---> " << actual_token->name << " <--- pushed in called_tokens\n";
     int n = actual_token->children().size();
     actual_token->remained_children = n;
     called_tokens.push_back(actual_token);
@@ -68,7 +68,7 @@ void Compiler::run(){
     stack.push_back(root);
     while (stack.size() > 0){
         actual_token = stack.back();
-        // std::cout << "---> " << actual_token->name << " <--- pop in stack\n";
+        assert(actual_token != nullptr);
         stack.pop_back();
         actual_token->on_enter();
 

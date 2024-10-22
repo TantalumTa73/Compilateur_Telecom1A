@@ -10,6 +10,7 @@ inline int verbose ;
 inline string file_name;
 
 #define v_cout if (verbose>=1) cout
+#define vv_cout if (verbose>=2) cout
 
 #define ERROR(msg) throw std::invalid_argument( msg )
 

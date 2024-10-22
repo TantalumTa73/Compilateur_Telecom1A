@@ -30,6 +30,7 @@ enum TokenType {
     
     // Litteral
     // LITTERAL,
+    LITTERAL_VOID,
     LITTERAL_INT,
     LITTERAL_CHAR,
     LITTERAL_BOOL,

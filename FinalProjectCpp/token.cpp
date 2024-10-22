@@ -108,7 +108,9 @@ Token* Token::simplify(JSON* json){
         Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
         Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
         return new SifElse(condition, body_if, body_else);
-    } else if (action == "int") { // litteral
+    } else if (action == "void") { // litteral
+        return new Void();
+    } else if (action == "int") {
         string value = json->get_string("value");
         int val = stoi(value);
         return new Int(val);

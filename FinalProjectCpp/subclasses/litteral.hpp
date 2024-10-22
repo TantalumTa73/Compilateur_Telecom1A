@@ -9,6 +9,15 @@ class Litteral : public Token {
         }
 };
 
+class Void : public Litteral {
+    public:
+        Void() : Litteral(LITTERAL_VOID){}
+        void print(string indent = "") override {
+            std::cout << indent << "Void\n";
+        }
+        // void on_enter() override;
+};
+
 class Int : public Litteral {
     public:
         int value;

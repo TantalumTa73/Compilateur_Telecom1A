@@ -77,6 +77,7 @@ string show(TokenType t){
         case IF: return "if";
         case IF_ELSE: return "ifelse";
 
+        case LITTERAL_VOID: return "void";
         case LITTERAL_INT: return "int";
         case LITTERAL_CHAR: return "char";
         case LITTERAL_BOOL: return "bool";
