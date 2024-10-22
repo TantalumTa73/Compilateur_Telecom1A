@@ -7,7 +7,10 @@
 #include "define.hpp"
 
 extern string current_section_w;
-extern unordered_map<string, string> operators;
+extern unordered_map<string, string> unary_operators;
+extern unordered_map<string, string> binary_operators;
+extern unordered_map<string, string> left_val_operators;
+extern unordered_map<string, string> assign_operators;
 extern ofstream file;
 
 // init.cpp
@@ -38,7 +41,10 @@ void w_call_read(string str, int val, bool is_global);
 
 // operators.cpp
 void def_operators();
-void w_op(string op_name);
+void w_uniop(string op_name);
+void w_binop(string op_name);
+void w_ternop();
+void w_left_val_op(string op_name);
 
 // end.cpp
 void w_ret(bool main);

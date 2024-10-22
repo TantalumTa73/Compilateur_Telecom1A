@@ -98,6 +98,7 @@ class LeftValOp : public Expr {
         vector<Tk> children() override {
             return {(Tk)left_value};
         }
+        void on_exit() override;
 };
 
 class Uniop : public Expr {
@@ -116,6 +117,7 @@ class Uniop : public Expr {
         vector<Tk> children() override {
             return {(Tk)value};
         }
+        void on_exit() override;
 };
 
 class Binop : public Expr {
@@ -159,4 +161,5 @@ class Ternop : public Expr {
         vector<Tk> children() override {
             return {(Tk)condition, (Tk)v1, (Tk)v2};
         }
+        void on_exit() override;
 };

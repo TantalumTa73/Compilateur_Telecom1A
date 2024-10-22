@@ -7,7 +7,6 @@
 #include "../write_assembly.hpp"
 
 string current_section_w;
-std::unordered_map<string, string> operators;
 std::ofstream file;
 
 void add_line(string str, bool indent, bool comment){

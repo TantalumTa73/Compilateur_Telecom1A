@@ -102,7 +102,7 @@ let str_binop = function
   | BOr -> "|"
 
 let str_uniop = function
-  | Neg -> "-"
+  | Neg -> "u-"
   | Not -> "!"
   | Inv -> "~"
   | Dereference -> "*x"

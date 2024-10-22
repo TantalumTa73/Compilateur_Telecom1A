@@ -18,16 +18,15 @@ Variable::Variable(string name, string fun_name, int offset, bool is_arg){
 }
 
 Variable find_var(string var_name){
-    v_cout << "||||||||||||||||||||entering in find_var\n";
-    v_cout << "  called_contexts' size : " ;
-    v_cout << std::to_string(called_contexts.size()) << "\n"; 
+    v_cout << "find_var : called_contexts' size : " ;
+    v_cout << to_string(called_contexts.size()) << "\n"; 
     // to begin with the last called section
     for (auto it = called_contexts.rbegin(); 
         it != called_contexts.rend(); it ++){
 
         if (contexts[*it].vars.find(var_name) != contexts[*it].vars.end()){
             v_cout << "  " << var_name << "'s offset : " ;
-            v_cout << std::to_string(contexts[*it].vars[var_name].offset) ;
+            v_cout << to_string(contexts[*it].vars[var_name].offset) ;
             v_cout << " in (compiler.cpp)\n";
             return contexts[*it].vars[var_name];
         }
