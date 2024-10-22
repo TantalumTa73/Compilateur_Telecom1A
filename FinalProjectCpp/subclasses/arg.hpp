@@ -18,4 +18,7 @@ class Arg : public Token {
         void print(string indent = "") override {
             std::cout << indent << "Arg: " << name << " " << type << "\n";
         }
+        vector<Tk> children() override {
+            return {};
+        }
 };

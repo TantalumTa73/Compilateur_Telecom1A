@@ -28,6 +28,16 @@ class GFunDef : public GStmt {
             this->body = body;
         };
         void print(string indent = "") override;
+        void on_enter() override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            vector<Tk> res;
+            for (auto v : args) {
+                res.push_back((Tk) v);
+            }
+            res.push_back((Tk) body);
+            return res;
+        }
 };
 
 class GVarDef : public GStmt {
@@ -46,5 +56,9 @@ class GVarDef : public GStmt {
             this->value = value;
         };
         void print(string indent = "") override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            return {(Tk)value};
+        }
 };
 

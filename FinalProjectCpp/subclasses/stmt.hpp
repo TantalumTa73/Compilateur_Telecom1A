@@ -7,6 +7,7 @@ class Stmt : public Token {
         virtual void print(string indent = "") override;
 };
 
+
 class Sscope : public Stmt {
     public:
         vector<Stmt*> body;
@@ -17,6 +18,20 @@ class Sscope : public Stmt {
             this->body = body;
         };
         void print(string indent = "") override;
+
+        unordered_map<string, Variable> vars;
+        void init_var(string var_name, bool is_arg);
+        vector<Tk> children() override {
+            vector<Tk> res;
+            for (auto v : body) {
+                res.push_back((Tk) v);
+            }
+            return res;
+        }
+
+    private:
+        int var_offset;
+        int arg_offset;
 };
 
 class Sreturn : public Stmt {
@@ -29,6 +44,11 @@ class Sreturn : public Stmt {
             this->value = value;
         };
         void print(string indent = "") override;
+
+        void on_exit() override;
+        vector<Tk> children() override {
+            return {(Tk)value};
+        }
 };
 
 class Sfor : public Stmt {
@@ -51,6 +71,9 @@ class Sfor : public Stmt {
             this->body = body;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)init, (Tk)condition, (Tk)increment, (Tk)body};
+        }
 };
 
 class Swhile : public Stmt {
@@ -66,6 +89,9 @@ class Swhile : public Stmt {
             this->body = body;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)condition, (Tk)body};
+        }
 };
 
 class SvarDef : public Stmt {
@@ -84,6 +110,10 @@ class SvarDef : public Stmt {
             this->value = value;
         };
         void print(string indent = "") override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            return {(Tk)value};
+        }
 };
 
 class SvarSet : public Stmt {
@@ -102,6 +132,10 @@ class SvarSet : public Stmt {
             this->value = value;
         };
         void print(string indent = "") override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            return {(Tk)left_value, (Tk)value};
+        }
 };
 
 class Sexpr : public Stmt {
@@ -114,6 +148,9 @@ class Sexpr : public Stmt {
             this->value = value;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)value};
+        }
 };
 
 class Sif : public Stmt {
@@ -129,6 +166,9 @@ class Sif : public Stmt {
             this->body = body;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)condition, (Tk)body};
+        }
 };
 
 class SifElse : public Stmt {
@@ -147,5 +187,8 @@ class SifElse : public Stmt {
             this->body_else = body_else;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)condition, (Tk)body_if, (Tk)body_else};
+        }
 };
 

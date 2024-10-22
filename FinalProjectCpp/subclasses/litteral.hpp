@@ -21,6 +21,7 @@ class Int : public Litteral {
         void print(string indent = "") override {
             std::cout << indent << "Int: " << value << "\n";
         }
+        void on_enter() override;
 };
 
 class Char : public Litteral {

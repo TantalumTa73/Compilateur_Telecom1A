@@ -4,12 +4,15 @@
 
 #include "JSON.hpp"
 #include "types.hpp"
+#include "write_assembly.hpp"
+#include "context.hpp"
 
 class Token {
 
     public:
 
         const TokenType tk_type;
+        int remained_children = 0;
 
         Token() : tk_type(UNKNOW) {}
         Token(TokenType t) : tk_type(t) {}
@@ -18,6 +21,12 @@ class Token {
         static Token* simplify(JSON* json);
     
         virtual void print(string indent = "");
+
+        virtual void on_enter(){
+            v_cout << "enter in " << show(tk_type) << endl;
+        }
+        virtual void on_exit(){}
+        virtual vector<Token*> children(){return vector<Token*>();}
 
     private:
         // vector<T> Token::simplify(vector<JSON*>* vect)
@@ -29,13 +38,13 @@ using Tk = Token*;
 
 class Root ;
 
-class GStmt ;
+class GStmt ; // abstract
 class GFunDef ;
 class GVarDef ;
 
 class Arg ;
 
-class Stmt ;
+class Stmt ; // abstract
 class Sscope ;
 class Sreturn ;
 class Sfor ;
@@ -46,16 +55,16 @@ class Sexpr ;
 class Sif ;
 class SifElse ;
 
-class Litteral ;
+class Litteral ; // abstract
 class Int ;
 class Char ;
 class Bool ;
 
-class LeftValue ;
+class LeftValue ; // abstract
 class Array ;
 class Var ;
 
-class Expr ;
+class Expr ; // abstract
 class Const ;
 class VarGet ;
 class List ;

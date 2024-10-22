@@ -29,12 +29,13 @@ let digit = ['0'-'9']
 let ident = letter (letter | digit)*
 let space = [' ' '\t']
 
-
 rule token = parse
   | '/''/'[^'\n']* { token lexbuf }
   | '#'[^'\n']* { token lexbuf }
   | '\n'    { new_line lexbuf; token lexbuf }
   | space+  { token lexbuf }
+  | '\"' ([^'\"']* as s) '\"' { STRING s }
+  | '\'' (_ as c) '\'' { CHAR c }
   | ident as id { id_or_kwd id }
   | digit+ as d { CST (int_of_string d) }
 

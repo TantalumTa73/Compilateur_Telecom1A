@@ -63,3 +63,4 @@ enum DataType {
 
 TokenType token_type(string s);
 DataType data_type(string s);
+string show(TokenType t);

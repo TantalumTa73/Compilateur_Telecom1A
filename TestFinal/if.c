@@ -1,3 +1,4 @@
-int x(int a, int b){
-    int z ;
+int main(){
+    print(1);
+    return 1 ;
 }

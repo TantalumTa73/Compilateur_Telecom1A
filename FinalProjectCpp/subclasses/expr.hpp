@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "../token.hpp"
 
 class Expr : public Token {
@@ -17,6 +18,9 @@ class Const : public Expr {
             this->value = value;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)value} ;
+        }
 };
 
 class VarGet : public Expr {
@@ -29,6 +33,10 @@ class VarGet : public Expr {
             this->value = value;
         };
         void print(string indent = "") override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            return {(Tk)value};
+        }
 };
 
 class List : public Expr {
@@ -41,6 +49,13 @@ class List : public Expr {
             this->values = values;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            vector<Tk> res;
+            for (auto v : values) {
+                res.push_back((Tk)v);
+            }
+            return res;
+        }
 };
 
 class FunCall : public Expr {
@@ -56,6 +71,15 @@ class FunCall : public Expr {
             this->args = args;
         };
         void print(string indent = "") override;
+        void on_enter() override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            vector<Tk> res;
+            for (auto a : args) {
+                res.push_back((Tk)a);
+            }
+            return res;
+        }
 };
 
 class LeftValOp : public Expr {
@@ -71,6 +95,9 @@ class LeftValOp : public Expr {
             this->op = op;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)left_value};
+        }
 };
 
 class Uniop : public Expr {
@@ -86,6 +113,9 @@ class Uniop : public Expr {
             this->value = value;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)value};
+        }
 };
 
 class Binop : public Expr {
@@ -104,6 +134,10 @@ class Binop : public Expr {
             this->v2 = v2;
         };
         void print(string indent = "") override;
+        void on_exit() override;
+        vector<Tk> children() override {
+            return {(Tk)v1, (Tk)v2};
+        }
 };
 
 class Ternop : public Expr {
@@ -122,4 +156,7 @@ class Ternop : public Expr {
             this->v2 = v2;
         };
         void print(string indent = "") override;
+        vector<Tk> children() override {
+            return {(Tk)condition, (Tk)v1, (Tk)v2};
+        }
 };

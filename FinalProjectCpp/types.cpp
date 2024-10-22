@@ -54,3 +54,44 @@ DataType data_type(string s){
     // if (s == "ptr") return PTR;
     ERROR("Error in DataType : unknown type " + s + "\n");
 }
+
+
+string show(TokenType t){
+    switch (t){
+        case ROOT: return "root";
+        case UNKNOW: return "unknow";
+
+        case G_FUN_DEF: return "fundef";
+        case G_VAR_DEF: return "gvardef";
+
+        case ARG: return "arg";
+
+        case STMT: return "stmt";
+        case SCOPE: return "scope";
+        case RETURN: return "return";
+        case FOR: return "for";
+        case WHILE: return "while";
+        case VAR_DEF: return "vardef";
+        case VAR_SET: return "varset";
+        case EXPR_STMT: return "expr";
+        case IF: return "if";
+        case IF_ELSE: return "ifelse";
+
+        case LITTERAL_INT: return "int";
+        case LITTERAL_CHAR: return "char";
+        case LITTERAL_BOOL: return "bool";
+
+        case VAR: return "var";
+        case ARRAY: return "array";
+
+        case CONST: return "const";
+        case VAR_GET: return "varget";
+        case LIST: return "list";
+        case FUN_CALL: return "funcall";
+        case LEFT_VAL_OP: return "leftvalop";
+        case UNIOP: return "uniop";
+        case BINOP: return "binop";
+        case TERNOP: return "ternop";
+    }
+    return "" ;
+}

@@ -16,4 +16,11 @@ class Root : public Token {
                 v->print(indent + "  ");
             }
         }
+        vector<Tk> children() {
+            vector<Tk> res;
+            for(auto v : gstmts){
+                res.push_back(v);
+            }
+            return res;
+        }
 };

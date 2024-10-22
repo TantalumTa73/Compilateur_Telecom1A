@@ -8,8 +8,10 @@
 // { } ( ) [ ] 
 %token <string> TYPE
 %token <string> IDENT
+%token <string> STRING
+%token <char> CHAR
 %token <int> CST
-%token TRUE FALSE
+%token TRUE FALSE 
 
 %token FOR WHILE
 %token IF ELSE
@@ -73,10 +75,13 @@ global_stmt:
   | t = data_type id = IDENT EQ e = expr SEMICOLON { GVarDefS(t,id,e, $loc) }
   | t = data_type f = IDENT LP args = separated_list(COMMA, arg) RP body = stmt 
     { GFunDef(t,f,args,body, $loc) }
+  | t = data_type f = IDENT LP args = separated_list(COMMA, arg) RP SEMICOLON 
+    { GFunDef(t,f,[],Sscope([],$loc), $loc) }
 ;
 
 arg:
   | t = data_type id = IDENT { Arg(t,id, $loc) }
+  | t = data_type { Arg(t,"", $loc) }
 ;
 
 left_value:
@@ -88,8 +93,11 @@ simple_stmt:
   | RETURN e = expr { Sreturn(e, $loc) }
   | RETURN { SreturnVoid($loc) }
 
-  | t = data_type id = IDENT { SvarDef(t,id, $loc) }
-  | t = data_type id = IDENT EQ e = expr { SvarDefS(t,id,e, $loc) }
+  | t = data_type id = IDENT
+  | t = data_type id = IDENT LBR RBR { SvarDef(t,id, $loc) }
+  | t = data_type id = IDENT EQ e = expr
+  | t = data_type id = IDENT LBR RBR EQ e = expr { SvarDefS(t,id,e, $loc) }
+
   | id = left_value o = assignop e = expr { SvarSet(id,o,e, $loc) }
   | e = expr { Sexpr(e, $loc) }
 ;
@@ -99,7 +107,7 @@ stmt:
 
   | st = simple_stmt SEMICOLON { st }
 
-  | FOR LP s1 = stmt SEMICOLON cond = expr SEMICOLON s2 = stmt RP body = stmt  
+  | FOR LP s1 = simple_stmt SEMICOLON cond = expr SEMICOLON s2 = simple_stmt RP body = stmt  
     { Sfor(s1,cond,s2,body,$loc) }
   | WHILE LP cond = expr RP body = stmt { Swhile(cond, body,$loc) }
 
@@ -111,12 +119,15 @@ litteral:
   | x = CST { Int(x, $loc) }
   | TRUE { Bool(true, $loc) }
   | FALSE { Bool(false, $loc) }
+  | c = CHAR { Char(c, $loc) }
+  | s = STRING { String(s, $loc) }
 ;
 
 expr:
 | x = litteral { Const(x, $loc) }
 | x = left_value { VarGet(x, $loc) }
 | x = IDENT LP args = separated_list(COMMA,expr) RP { FunCall(x,args, $loc) }
+| LB elements = separated_list(COMMA,expr) RB { List(elements, $loc) }
 | LP e = expr RP { e }
 
 | x = left_value PLUSPLUS %prec PRIO1 {LeftValOp(POSTINCR,x, $loc)}

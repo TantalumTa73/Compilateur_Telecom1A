@@ -1,6 +1,6 @@
 #include "JSON.hpp"
 #include "token.hpp"
-#include "execution.hpp"
+#include "compiler.hpp"
 
 extern int verbose;
 
@@ -14,6 +14,7 @@ int main(int argc, char** argv) {
     else if (argc > 2 && string(argv[2]) == "-vv") verbose = 2;
     else verbose = 0;
     
+    file_name = argv[1];
 
     std::cout << "Start execution of " << argv[1] << "\n";
     std::cout << "Verbose level: " << verbose << "\n\n";
@@ -23,9 +24,11 @@ int main(int argc, char** argv) {
 
     Tk token = Token::simplify(json) ;
     token->print();
+    v_cout << endl;
     Root* root = dynamic_cast<Root*>(token);
 
-    Execution execution = Execution(root);
+    Compiler compiler = Compiler(root);
+    compiler.run();
 
     return 0;
 }

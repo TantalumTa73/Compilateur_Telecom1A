@@ -5,6 +5,7 @@ class LeftValue : public Token {
     public:
         LeftValue(TokenType t) : Token(t) {};
         void print(string indent = "") override ;
+        virtual string get_id() = 0;
 };
 
 class Var : public LeftValue {
@@ -17,6 +18,10 @@ class Var : public LeftValue {
             this->name = name;
         };
         void print(string indent = "") override;
+        string get_id() override {return name;}
+        vector<Tk> children() override {
+            return {};
+        }
 };
 
 class Array : public LeftValue {
@@ -32,4 +37,10 @@ class Array : public LeftValue {
             this->index = index;
         };
         void print(string indent = "") override;
+        string get_id() override {
+            ERROR("Array get_id() not implemented");
+        }
+        vector<Tk> children() override {
+            return {(Tk)left_value, (Tk)index};
+        }
 };

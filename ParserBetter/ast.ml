@@ -31,8 +31,9 @@ and stmt =
 
 and litteral = 
   | Int of int * ppos
-  | Char of string * ppos
   | Bool of bool * ppos
+  | Char of char * ppos
+  | String of string * ppos
 
 and left_value = 
   | Tab of left_value*expr * ppos
@@ -208,12 +209,15 @@ and toJSONlitteral = function
   | Int(i, p) -> `Assoc ([
     "action", `String "int" ;
     "value", `Int i ] @ pos p)
-  | Char(s, p) -> `Assoc ([
-    "action", `String "char" ;
-    "value", `String s ] @ pos p)
   | Bool(b, p) -> `Assoc ([
     "action", `String "bool" ;
     "value", `Bool b ] @ pos p)
+  | Char(c, p) -> `Assoc ([
+    "action", `String "char" ;
+    "value", `String (String.make 1 c) ] @ pos p)
+  | String(s, p) -> `Assoc ([
+    "action", `String "string" ;
+    "value", `String s ] @ pos p)
   
 and toJSONleft_value = function
   | Var(n, p) -> `Assoc ([
