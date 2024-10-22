@@ -4,7 +4,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "write_assembly.hpp"
+#include "../write_assembly.hpp"
 
 string current_section_w;
 std::unordered_map<string, string> operators;

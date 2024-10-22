@@ -4,4 +4,4 @@
 #include <vector>
 #include <filesystem>
 
-#include "write_assembly.hpp"
+#include "../write_assembly.hpp"

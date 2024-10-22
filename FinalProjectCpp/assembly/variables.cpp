@@ -4,7 +4,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "write_assembly.hpp"
+#include "../write_assembly.hpp"
 
 
 void w_init_var(){

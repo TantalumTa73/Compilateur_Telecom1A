@@ -4,7 +4,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "write_assembly.hpp"
+#include "../write_assembly.hpp"
 
 void w_call_function(string str){
     if (str == PRINT){

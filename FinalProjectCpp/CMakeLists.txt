@@ -7,8 +7,8 @@ project(${PROJECT_NAME})
 file(GLOB cpp_file_list CONFIGURE_DEPENDS 
     *.cpp
     *.hpp
-    subclasses/*.cpp
-    subclasses/*.hpp
+    **/*.cpp
+    **/*.hpp
 )
 add_executable(${PROJECT_NAME} ${cpp_file_list})
 

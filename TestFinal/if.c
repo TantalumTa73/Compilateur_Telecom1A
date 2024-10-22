@@ -12,8 +12,9 @@ int main(){
     // if (1) print(0);
     // else print(1);
 
-    a += 1 ;
+    a = 1 ;
 
     // ASSIGN(a, (+= 1));
+    print(a);
     return ;
 }
