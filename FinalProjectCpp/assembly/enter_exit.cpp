@@ -2,13 +2,13 @@
 #include "../context.hpp"
 #include "../write_assembly.hpp"
 
-#include "arg.hpp"
-#include "expr.hpp"
-#include "gstmt.hpp"
-#include "left_val.hpp"
-#include "litteral.hpp"
-#include "root.hpp"
-#include "stmt.hpp"
+#include "../subclasses/arg.hpp"
+#include "../subclasses/expr.hpp"
+#include "../subclasses/gstmt.hpp"
+#include "../subclasses/left_val.hpp"
+#include "../subclasses/litteral.hpp"
+#include "../subclasses/root.hpp"
+#include "../subclasses/stmt.hpp"
 
 void Sreturn::on_exit(){
     w_ret(called_contexts.back() == MAIN);

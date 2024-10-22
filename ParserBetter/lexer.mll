@@ -26,6 +26,10 @@
 
 let letter = ['a'-'z' 'A'-'Z' '_']
 let digit = ['0'-'9']
+let int = digit+
+let float = digit+ '.' digit+
+let binary = '0''b' ['0' '1']+
+let hexadecimal = '0''x' ['0'-'9' 'a'-'f' ]+
 let ident = letter (letter | digit)*
 let space = [' ' '\t']
 
@@ -36,8 +40,10 @@ rule token = parse
   | space+  { token lexbuf }
   | '\"' ([^'\"']* as s) '\"' { STRING s }
   | '\'' (_ as c) '\'' { CHAR c }
+  | int as n
+  | binary as n 
+  | hexadecimal as n { CST (int_of_string n) }
   | ident as id { id_or_kwd id }
-  | digit+ as d { CST (int_of_string d) }
 
   | ';'      { SEMICOLON }
   | ','      { COMMA }
