@@ -24,5 +24,6 @@ void w_ret(bool main){
 
 
 void end(){
+    add_line(".section .note.GNU-stack\n\t");
     file.close();
 }

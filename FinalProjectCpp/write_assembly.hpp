@@ -25,8 +25,8 @@ void w_print(string str);
 // variables.cpp
 void w_init_var();
 void w_init_global_var(string str);
-void w_set_var(int val);
-void w_set_global_var(string str);
+void w_set_var(string add, string op);
+// void w_set_global_var(string str, string op);
 void w_get_var(int val);
 
 // push.cpp

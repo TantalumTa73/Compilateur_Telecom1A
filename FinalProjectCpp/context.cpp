@@ -18,16 +18,16 @@ Variable::Variable(string name, string fun_name, int offset, bool is_arg){
 }
 
 Variable find_var(string var_name){
-    v_cout << "find_var : called_contexts' size : " ;
-    v_cout << to_string(called_contexts.size()) << "\n"; 
+    // v_cout << "find_var : called_contexts' size : " ;
+    // v_cout << to_string(called_contexts.size()) << "\n"; 
     // to begin with the last called section
     for (auto it = called_contexts.rbegin(); 
         it != called_contexts.rend(); it ++){
 
         if (contexts[*it].vars.find(var_name) != contexts[*it].vars.end()){
-            v_cout << "  " << var_name << "'s offset : " ;
-            v_cout << to_string(contexts[*it].vars[var_name].offset) ;
-            v_cout << " in (compiler.cpp)\n";
+            // v_cout << "  " << var_name << "'s offset : " ;
+            // v_cout << to_string(contexts[*it].vars[var_name].offset) ;
+            // v_cout << " in (compiler.cpp)\n";
             return contexts[*it].vars[var_name];
         }
     }
@@ -60,8 +60,8 @@ void Context::init_var(string var_name, bool is_arg) {
     int offset = is_arg ? arg_offset : var_offset;
     Variable new_var = Variable(var_name, name, offset, is_arg);
     vars.insert({var_name, new_var});
-    v_cout << var_name << "'s offset in " << name << " : " ;
-    v_cout << to_string(offset) << "(Contexts.cpp) \n";
+    // v_cout << var_name << "'s offset in " << name << " : " ;
+    // v_cout << to_string(offset) << "(Contexts.cpp) \n";
     if (is_arg) {
         arg_offset += SIZE;
     } else {

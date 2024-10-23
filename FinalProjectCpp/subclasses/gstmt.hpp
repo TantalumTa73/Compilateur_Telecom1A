@@ -58,6 +58,7 @@ class GVarDef : public GStmt {
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children() override {
+            if (value == nullptr) return {};
             return {(Tk)value};
         }
 };

@@ -24,7 +24,7 @@ inline void def_binop(){
     binary_operators["-"] = "sub %rbx, %rax\n\tmov %rax, %rbx\n";
     binary_operators["*"] = "imul %rax, %rbx\n";
     binary_operators["/"] = "cqo\n\tidivq %rbx\n\tmov %rax, %rbx\n";
-    binary_operators["%"] = "xor %rdx, %rdx\nidivq %rbx\nmov %rdx, %rbx\n";
+    binary_operators["%"] = "xor %rdx, %rdx\n\tidivq %rbx\n\tmov %rdx, %rbx\n";
 
     // binary_operators["<="] = "\n";
     // binary_operators["<"] = "\n";
@@ -50,6 +50,12 @@ inline void def_leftvalop(){
     // left_val_operators["++x"] = "" ;
     // left_val_operators["--x"] = "" ;
     // left_val_operators["&x"] = "" ;
+
+    // add = x(%rip) or -8(%rbp)
+	// mov x(%rip),%rax
+    // mov %rax, %rbx
+	// add $1, %rbx
+	// mov %rbx, x(%rip)
 }
 
 inline void def_assignop(){
@@ -110,7 +116,7 @@ void w_ternop(){
 
 void w_left_val_op(string op_name){
     add_line("left_val_op "+op_name, true, true);
-    add_line("pop %rax");
+
     if (auto search = left_val_operators.find(op_name); 
         search == left_val_operators.end())
         throw invalid_argument(op_name+" unknown left_val_operators");
@@ -118,6 +124,7 @@ void w_left_val_op(string op_name){
     add_line(left_val_operators[op_name]);
     add_line("push %rax");
     add_line();
+
 }
 
 void w_assign_op(string op_name){

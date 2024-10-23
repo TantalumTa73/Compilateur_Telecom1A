@@ -20,13 +20,11 @@ void Sreturn::on_exit(){
 void GVarDef::on_exit(){
     contexts[called_contexts.back()].init_var(name, false);
     v_cout << "initialize " << name << " in " << called_contexts.back() << "\n"; 
-    v_cout << "called_contexts' size :  " << to_string(called_contexts.size());
     w_init_global_var(name);
 }
 void SvarDef::on_exit(){
     contexts[called_contexts.back()].init_var(name, false);
     v_cout << "initialize " << name << " in " << called_contexts.back() << "\n"; 
-    v_cout << "called_contexts' size :  " << to_string(called_contexts.size());
     w_init_var();
 }
 
@@ -75,17 +73,20 @@ void FunCall::on_exit(){
 // SET_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void SvarSet::on_exit(){
-    if (op != "=")
-        throw invalid_argument("op " + op + " is not implemented");
     string name = left_value->get_id();
     Variable variable_buffer = find_var(name);
-    v_cout << variable_buffer.name << "'s function is : " << variable_buffer.fun_name << "\n";
-    if (variable_buffer.fun_name == GLOBAL){
-        w_set_global_var(variable_buffer.name);
-    } else {
-        v_cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
-        w_set_var(variable_buffer.offset);
-    }
+    
+    // v_cout << variable_buffer.name << "'s function is : " << variable_buffer.fun_name << "\n";
+    // v_cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
+    
+    string address ;
+    if (variable_buffer.fun_name == GLOBAL)
+        address = variable_buffer.name + "(%rip)";
+    else
+        address = to_string(variable_buffer.offset) + "(%rbp)";
+    
+    w_set_var(address,op);
+
 }
 
 

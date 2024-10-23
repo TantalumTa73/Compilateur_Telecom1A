@@ -14,7 +14,7 @@ void add_line(string str, bool indent, bool comment){
         file << "\t";
     }
     if (comment){
-        file << COMMENT;
+        file << COMMENT << " ";
     }
     file << str << "\n";
 }
