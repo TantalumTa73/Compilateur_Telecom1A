@@ -31,8 +31,9 @@ void w_get_var(int val);
 
 // push.cpp
 void w_push_cst(int val);
-void w_push_local_var(int val);
-void w_push_global_var(string str);
+// void w_push_local_var(int val);
+// void w_push_global_var(string str);
+void w_push_var(string str);
 
 // functions.cpp
 void w_init_f(string str); // init a function
@@ -44,7 +45,7 @@ void def_operators();
 void w_uniop(string op_name);
 void w_binop(string op_name);
 void w_ternop();
-void w_left_val_op(string op_name);
+void w_left_val_op(string op_name, string add);
 
 // end.cpp
 void w_ret(bool main);

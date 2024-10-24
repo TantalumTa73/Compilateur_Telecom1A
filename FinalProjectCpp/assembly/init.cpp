@@ -11,7 +11,7 @@ void init(){
     filesystem::path path = file_name ;
     path.replace_extension(".s");
 
-    v_cout << "Output file: " << path.string() << "\n";
+    v_cout << "Output file: " << path.string() << "\n\n";
 
     file.open(path.string(), std::ios::out);
 

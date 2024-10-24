@@ -74,18 +74,12 @@ void FunCall::on_exit(){
 
 void SvarSet::on_exit(){
     string name = left_value->get_id();
-    Variable variable_buffer = find_var(name);
+    Variable variable = find_var(name);
     
     // v_cout << variable_buffer.name << "'s function is : " << variable_buffer.fun_name << "\n";
     // v_cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
-    
-    string address ;
-    if (variable_buffer.fun_name == GLOBAL)
-        address = variable_buffer.name + "(%rip)";
-    else
-        address = to_string(variable_buffer.offset) + "(%rbp)";
-    
-    w_set_var(address,op);
+     
+    w_set_var(variable.get_adress(),op);
 
 }
 
@@ -94,14 +88,10 @@ void SvarSet::on_exit(){
 
 void VarGet::on_exit(){
     string name = value->get_id();
-    Variable variable_buffer = find_var(name);
-    if (variable_buffer.fun_name == GLOBAL){
-        w_push_global_var(name);
-    } else {
-        w_push_local_var(variable_buffer.offset);
-    }
-}
+    Variable variable = find_var(name);
 
+    w_push_var(variable.get_adress());
+}
 
 // CST --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,7 +103,9 @@ void Int::on_enter(){
 // OP --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void LeftValOp::on_exit(){
-    w_left_val_op(op);
+    string name = left_value->get_id();
+    Variable variable = find_var(name);
+    w_left_val_op(op,variable.get_adress());
 }
 void Uniop::on_exit(){
     w_uniop(uniop);

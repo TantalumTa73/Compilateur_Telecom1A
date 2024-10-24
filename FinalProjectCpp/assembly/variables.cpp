@@ -15,6 +15,7 @@ void w_init_var(){
 
 void w_init_global_var(string str){
     add_line("init global variable", true, true);
+    // add_line("pop " + str + "(%rip)");
     set_section("bss");
     add_line(".align " + std::to_string(SIZE));
     add_line(".type " + str + ", @object");
@@ -26,11 +27,15 @@ void w_init_global_var(string str){
 }
 
 void w_set_var(string add, string op){
+    // set local or global variable with the last value in the stack
 
     add_line("set local variable : "+op, true, true);
-    if       (op == "=") add_line("mov %rax, " + add);
-    else if (op == "+=") add_line("add %rax, " + add);
-    else if (op == "*=") {
+    if        (op == "=") {
+        add_line("pop " + add);
+    } else if (op == "+=") {
+        add_line("pop %rax");
+        add_line("add %rax, " + add);
+    } else if (op == "*=") {
         add_line("pop %rax");
         add_line("mov "+add + ", %rbx");
         add_line("imul %rax, %rbx");

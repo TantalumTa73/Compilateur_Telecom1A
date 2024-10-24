@@ -17,6 +17,14 @@ Variable::Variable(string name, string fun_name, int offset, bool is_arg){
     this->is_arg = is_arg ;
 }
 
+string Variable::get_adress(){
+    if (fun_name == GLOBAL){
+        return name + "(%rip)";
+    } else {
+        return to_string(offset) + "(%rbp)";
+    }
+}
+
 Variable find_var(string var_name){
     // v_cout << "find_var : called_contexts' size : " ;
     // v_cout << to_string(called_contexts.size()) << "\n"; 

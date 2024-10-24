@@ -13,6 +13,7 @@ struct Variable {
         bool is_arg;
         Variable();
         Variable(string name, string fun_name, int offset, bool is_arg);
+        string get_adress();
 };
 
 class Context {
