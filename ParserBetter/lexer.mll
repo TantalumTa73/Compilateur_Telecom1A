@@ -9,6 +9,12 @@
   | "for" -> FOR
   | "while" -> WHILE
   | "return" -> RETURN
+  (* | "break" -> BREAK *)
+  (* | "continue" -> CONTINUE *)
+  (* | "const" -> *)
+  (* | "inline" -> *)
+  (* | "struct" -> *)
+
 
   | "false" -> FALSE
   | "true" -> TRUE
@@ -35,6 +41,7 @@ let space = [' ' '\t']
 
 rule token = parse
   | '/''/'[^'\n']* { token lexbuf }
+  | '/''*'[^'*''/']*'*''/' { token lexbuf }
   | '#'[^'\n']* { token lexbuf }
   | '\n'    { new_line lexbuf; token lexbuf }
   | space+  { token lexbuf }
@@ -92,6 +99,8 @@ rule token = parse
   | '&'      { AMPERSAND }
   | '*'      { STAR }
   | '.'      { DOT }
+  | '?'      { QMARK }
+  | ':'      { COLON }
   
 
   | eof      { EOF }

@@ -5,7 +5,7 @@
 %token SEMICOLON COMMA COLON QMARK
 %token EOF
 %token LB RB LP RP LBR RBR
-// { } ( ) [ ] 
+//     {  }  (  )  [   ] 
 %token <string> TYPE
 %token <string> IDENT
 %token <string> STRING
@@ -71,8 +71,15 @@ data_type:
 ;
 
 global_stmt:
-  | t = data_type id = IDENT SEMICOLON { GVarDef(t,id, $loc) }
-  | t = data_type id = IDENT EQ e = expr SEMICOLON { GVarDefS(t,id,e, $loc) }
+  | t = data_type id = IDENT LBR n = CST RBR SEMICOLON
+    { GVarDef(t,id,n, None, $loc) }
+  | t = data_type id = IDENT LBR n = CST RBR EQ e = expr SEMICOLON
+    { GVarDef(t,id,n, Some e, $loc) }
+  | t = data_type id = IDENT SEMICOLON
+    { GVarDef(t,id,1, None, $loc) }
+  | t = data_type id = IDENT EQ e = expr SEMICOLON
+    { GVarDef(t,id,1, Some e, $loc) }
+
   | t = data_type f = IDENT LP args = separated_list(COMMA, arg) RP body = stmt 
     { GFunDef(t,f,args,body, $loc) }
   | t = data_type f = IDENT LP args = separated_list(COMMA, arg) RP SEMICOLON 
@@ -85,18 +92,22 @@ arg:
 ;
 
 left_value:
-  | s = IDENT { Var(s, $loc) }
-  | l = left_value LBR e = expr RBR { Tab(l,e,$loc) }
+  | s = IDENT { VarGet(s, $loc) }
+  | l = left_value LBR e = expr RBR { ArrayGet(l,e,$loc) }
 ;
 
 simple_stmt:
-  | RETURN e = expr { Sreturn(e, $loc) }
-  | RETURN { SreturnVoid($loc) }
+  | RETURN e = expr { Sreturn(Some e, $loc) }
+  | RETURN { Sreturn(None, $loc) }
 
+  | t = data_type id = IDENT LBR n = CST RBR 
+    { SvarDef(t,id,n, None, $loc) }
+  | t = data_type id = IDENT LBR n = CST RBR EQ e = expr
+    { SvarDef(t,id,n, Some e, $loc) }
   | t = data_type id = IDENT
-  | t = data_type id = IDENT LBR RBR { SvarDef(t,id, $loc) }
-  | t = data_type id = IDENT EQ e = expr
-  | t = data_type id = IDENT LBR RBR EQ e = expr { SvarDefS(t,id,e, $loc) }
+    { SvarDef(t,id,1,None, $loc) }
+  | t = data_type id = IDENT EQ e = expr 
+    { SvarDef(t,id,1,Some e, $loc) }
 
   | id = left_value o = assignop e = expr { SvarSet(id,o,e, $loc) }
   | e = expr { Sexpr(e, $loc) }
@@ -124,32 +135,32 @@ litteral:
 ;
 
 expr:
-| x = litteral { Const(x, $loc) }
-| x = left_value { VarGet(x, $loc) }
-| x = IDENT LP args = separated_list(COMMA,expr) RP { FunCall(x,args, $loc) }
-| LB elements = separated_list(COMMA,expr) RB { List(elements, $loc) }
-| LP e = expr RP { e }
+  | x = litteral { Const(x, $loc) }
+  | x = left_value { ValueGet(x, $loc) }
+  | x = IDENT LP args = separated_list(COMMA,expr) RP { FunCall(x,args, $loc) }
+  | LB elements = separated_list(COMMA,expr) RB { List(elements, $loc) }
+  | LP e = expr RP { e }
 
-| x = left_value PLUSPLUS %prec PRIO1 {LeftValOp(POSTINCR,x, $loc)}
-| x = left_value MINUSMINUS %prec PRIO1 {LeftValOp(POSTDECR,x, $loc)}
+  | x = left_value PLUSPLUS %prec PRIO1 {LeftValOp(POSTINCR,x, $loc)}
+  | x = left_value MINUSMINUS %prec PRIO1 {LeftValOp(POSTDECR,x, $loc)}
 
-// | x = expr DOT %prec PRIO1 { Uniop(StructGet,x, $loc) }
-// | x = expr ARROW %prec PRIO1 { Uniop(StructPtrGet,x, $loc) }
+  // | x = expr DOT %prec PRIO1 { Uniop(StructGet,x, $loc) }
+  // | x = expr ARROW %prec PRIO1 { Uniop(StructPtrGet,x, $loc) }
 
-| PLUSPLUS x = left_value %prec PRIO2 { LeftValOp(PREINCR,x, $loc) }
-| MINUSMINUS x = left_value %prec PRIO2 { LeftValOp(PREDECR,x, $loc) }
-| AMPERSAND x = left_value %prec PRIO2 { LeftValOp(GetAdress,x, $loc) }
+  | PLUSPLUS x = left_value %prec PRIO2 { LeftValOp(PREINCR,x, $loc) }
+  | MINUSMINUS x = left_value %prec PRIO2 { LeftValOp(PREDECR,x, $loc) }
+  | AMPERSAND x = left_value %prec PRIO2 { LeftValOp(GetAdress,x, $loc) }
 
-| STAR x = expr %prec PRIO2  { Uniop(Dereference,x, $loc) }
-| MINUS x = expr %prec PRIO2 { Uniop(Neg,x, $loc) }
-| NOT x = expr %prec PRIO2 { Uniop(Not,x, $loc) }
-| INV x = expr %prec PRIO2 { Uniop(Inv,x, $loc) }
+  | STAR x = expr %prec PRIO2  { Uniop(Dereference,x, $loc) }
+  | MINUS x = expr %prec PRIO2 { Uniop(Neg,x, $loc) }
+  | NOT x = expr %prec PRIO2 { Uniop(Not,x, $loc) }
+  | INV x = expr %prec PRIO2 { Uniop(Inv,x, $loc) }
 
-| e1 = expr STAR e2 = expr %prec MULT { Binop(Mul,e1,e2, $loc) }
-| e1 = expr AMPERSAND e2 = expr %prec BAND { Binop(BAnd,e1,e2, $loc) }
+  | e1 = expr STAR e2 = expr %prec MULT { Binop(Mul,e1,e2, $loc) }
+  | e1 = expr AMPERSAND e2 = expr %prec BAND { Binop(BAnd,e1,e2, $loc) }
 
-| e1 = expr o = binop e2 = expr { Binop(o,e1,e2, $loc) }
-| e = expr QMARK e1 = expr COLON e2 = expr { Ternop(e,e1,e2, $loc) }
+  | e1 = expr o = binop e2 = expr { Binop(o,e1,e2, $loc) }
+  | e = expr QMARK e1 = expr COLON e2 = expr { Ternop(e,e1,e2, $loc) }
 ;
 
 
@@ -176,10 +187,10 @@ expr:
 ;
 
 %inline assignop:
-| EQ    { Eq }
-| PLUSEQ { AddEq }
-| MINUSEQ { SubEq }
-| MULTEQ { MulEq }
-| DIVEQ { DivEq }
-| MODEQ { ModEq }
+  | EQ    { Eq }
+  | PLUSEQ { AddEq }
+  | MINUSEQ { SubEq }
+  | MULTEQ { MulEq }
+  | DIVEQ { DivEq }
+  | MODEQ { ModEq }
 ;

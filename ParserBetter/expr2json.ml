@@ -29,22 +29,20 @@ let () =
   let buf = Lexing.from_channel f in
   
   try
+    (* let tk = Lexer.token buf in
+    let _ = print_string "expr2json \n" in *)
     let p = Parser.prog Lexer.token buf in
-    close_in f;
+    let _ = close_in f in
     Ast.toJSON p |> Yojson.to_file fichier_sortie
   with
     | Lexer.Lexing_error c -> 
-	(* Erreur lexicale. On r�cup�re sa position absolue et 
-	   on la convertit en num�ro de ligne *)
-	localisation (Lexing.lexeme_start_p buf);
-	eprintf "Erreur dans l'analyse lexicale: %c@." c;
-	exit 1
+      localisation (Lexing.lexeme_start_p buf);
+      eprintf "Erreur dans l'analyse lexicale: %c@." c;
+      exit 1
     | Parser.Error -> 
-	(* Erreur syntaxique. On r�cup�re sa position absolue et on la 
-	   convertit en num�ro de ligne *)
-	localisation (Lexing.lexeme_start_p buf);
-	eprintf "Erreur dans l'analyse syntaxique@.";
-	exit 1
+      localisation (Lexing.lexeme_start_p buf);
+      eprintf "Erreur dans l'analyse syntaxique@.";
+      exit 1
 	
 
 

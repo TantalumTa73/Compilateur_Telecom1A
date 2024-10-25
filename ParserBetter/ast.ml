@@ -7,27 +7,26 @@ type program =
 
 and global_stmt =
   | GFunDef of string * string * arg list * stmt * ppos
-  | GVarDef of string * string * ppos
-  | GVarDefS of string * string * expr * ppos
+  | GVarDef of string * string * int * expr option * ppos
 
 and arg =
   | Arg of string * string * ppos
 
 and stmt =  
   | Sscope of stmt list  * ppos
-  | Sreturn of expr * ppos
-  | SreturnVoid of ppos
+  | Sreturn of expr option * ppos
+  (* | SreturnVoid of ppos *)
 
   | Sfor of stmt * expr * stmt * stmt * ppos (* s1 ; cond ; s2 {} *)
   | Swhile of expr * stmt * ppos
 
-  | SvarDef of string * string * ppos
-  | SvarDefS of string * string * expr * ppos
-  | SvarSet of left_value * assingop *expr * ppos
+  (* | SvarDef of string * string * ppos *)
+  | SvarDef of string * string * int * expr option * ppos
+  | SvarSet of left_value * assingop * expr * ppos
   | Sexpr of expr * ppos
 
-  | Sif of expr*stmt*ppos
-  | SifElse of expr*stmt*stmt*ppos
+  | Sif of expr * stmt * ppos
+  | SifElse of expr * stmt * stmt * ppos
 
 and litteral = 
   | Void of ppos
@@ -37,12 +36,12 @@ and litteral =
   | String of string * ppos
 
 and left_value = 
-  | Tab of left_value*expr * ppos
-  | Var of string * ppos
+  | ArrayGet of left_value * expr * ppos
+  | VarGet of string * ppos
 
 and expr =
   | Const of litteral * ppos
-  | VarGet of left_value * ppos
+  | ValueGet of left_value * ppos
   | List of expr list * ppos
   | FunCall of string * expr list * ppos
 
@@ -102,7 +101,7 @@ let str_binop = function
   | BOr -> "|"
 
 let str_uniop = function
-  | Neg -> "u-"
+  | Neg -> "-"
   | Not -> "!"
   | Inv -> "~"
   | Dereference -> "*x"
@@ -141,16 +140,15 @@ and toJSONgstmt = function
     "name", `String n ;
     "args", `List (List.map toJSONarg a) ;
     "body", toJSONstmt b ] @ pos p)
-  | GVarDef(t, n, p) -> `Assoc ([
+  | GVarDef(t, n, i, e, p) -> `Assoc ([
     "action", `String "gvardef" ;
     "type", `String t ;
     "name", `String n ;
-    "value", `Assoc ([]) ] @ pos p)
-  | GVarDefS(t, n, e, p) -> `Assoc ([
-    "action", `String "gvardef" ;
-    "type", `String t ;
-    "name", `String n ;
-    "value", toJSONexpr e ] @ pos p)
+    "size", `Int i ;
+    "value", match e with
+      | None -> `Assoc ([])
+      | Some x -> toJSONexpr x 
+    ] @ pos p)
 
 and toJSONarg = function
   | Arg(t, n, p) -> `Assoc ([
@@ -164,10 +162,13 @@ and toJSONstmt = function
     "body", `List (List.map toJSONstmt l) ] @ pos p)
   | Sreturn(e, p) -> `Assoc ([
     "action", `String "return" ;
-    "value", toJSONexpr e ] @ pos p)
-  | SreturnVoid(p) -> `Assoc ([
+    "value", match e with 
+      | None -> toJSONlitteral (Void p)
+      | Some x -> toJSONexpr x
+    ] @ pos p)
+  (* | SreturnVoid(p) -> `Assoc ([
     "action", `String "return" ;
-    "value", toJSONlitteral (Void p) ] @ pos p)
+    "value",  ] @ pos p) *)
   | Sfor(i, c, u, b, p) -> `Assoc ([
     "action", `String "for" ;
     "init", toJSONstmt i ;
@@ -178,16 +179,20 @@ and toJSONstmt = function
     "action", `String "while" ;
     "condition", toJSONexpr e ;
     "body", toJSONstmt s ] @ pos p)
-  | SvarDef(t, n, p) -> `Assoc ([
+  (* | SvarDef(t, n, p) -> `Assoc ([
     "action", `String "vardef" ;
     "type", `String t ;
     "name", `String n ;
-    "value", `Assoc ([]) ] @ pos p)
-  | SvarDefS(t, n, e, p) -> `Assoc ([
+    "value", `Assoc ([]) ] @ pos p) *)
+  | SvarDef(t, n, i,e, p) -> `Assoc ([
     "action", `String "vardef" ;
     "type", `String t ;
     "name", `String n ;
-    "value", toJSONexpr e ] @ pos p)
+    "size", `Int i ;
+    "value", match e with
+      | None -> `Assoc ([])
+      | Some x -> toJSONexpr x
+    ] @ pos p)
   | SvarSet(l, op , e, p) -> `Assoc ([
     "action", `String "varset" ;
     "left_value", toJSONleft_value l ;
@@ -223,11 +228,11 @@ and toJSONlitteral = function
     "value", `String s ] @ pos p)
   
 and toJSONleft_value = function
-  | Var(n, p) -> `Assoc ([
-    "action", `String "var" ;
+  | VarGet(n, p) -> `Assoc ([
+    "action", `String "varget" ;
     "name", `String n ] @ pos p)
-  | Tab(l, e, p) -> `Assoc ([
-    "action", `String "array" ;
+  | ArrayGet(l, e, p) -> `Assoc ([
+    "action", `String "arrayget" ;
     "left_value", toJSONleft_value l ;
     "index", toJSONexpr e ] @ pos p)
 
@@ -235,8 +240,8 @@ and toJSONexpr = function
   | Const(c, p) -> `Assoc ([
     "action", `String "const" ;
     "value", toJSONlitteral c ] @ pos p)
-  | VarGet(lv, p) -> `Assoc ([
-    "action", `String "varget" ;
+  | ValueGet(lv, p) -> `Assoc ([
+    "action", `String "valueget" ;
     "value", toJSONleft_value lv ] @ pos p)
   | List(l, p) -> `Assoc ([
     "action", `String "list" ;
