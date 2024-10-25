@@ -82,25 +82,6 @@ class FunCall : public Expr {
         }
 };
 
-class LeftValOp : public Expr {
-    public:
-        LeftValue* left_value;
-        string op;
-        LeftValOp() : Expr(LEFT_VAL_OP) {
-            left_value = nullptr;
-            op = "";
-        };
-        LeftValOp(LeftValue* left_value, string op) : Expr(LEFT_VAL_OP) {
-            this->left_value = left_value;
-            this->op = op;
-        };
-        void print(string indent = "") override;
-        vector<Tk> children() override {
-            return {(Tk)left_value};
-        }
-        void on_exit() override;
-};
-
 class Uniop : public Expr {
     public:
         string uniop;

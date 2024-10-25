@@ -31,12 +31,6 @@ void FunCall::print(string indent){
     }
 }
 
-void LeftValOp::print(string indent){
-    v_cout << indent << "LeftValOp" << endl;
-    left_value->print(indent + "  ");
-    v_cout << indent + "  " << op << endl;
-}
-
 void Uniop::print(string indent){
     v_cout << indent << "Uniop : " << uniop << endl;
     value->print(indent + "  ");

@@ -14,3 +14,9 @@ void ArrayGet::print(string indent){
     left_value->print(indent + "  ");
     index->print(indent + "  ");
 }
+
+void LeftValOp::print(string indent){
+    v_cout << indent << "LeftValOp" << endl;
+    left_value->print(indent + "  ");
+    v_cout << indent + "  " << op << endl;
+}

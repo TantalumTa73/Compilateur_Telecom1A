@@ -94,6 +94,14 @@ arg:
 left_value:
   | s = IDENT { VarGet(s, $loc) }
   | l = left_value LBR e = expr RBR { ArrayGet(l,e,$loc) }
+
+  | x = left_value PLUSPLUS %prec PRIO1 {LeftValOp(POSTINCR,x, $loc)}
+  | x = left_value MINUSMINUS %prec PRIO1 {LeftValOp(POSTDECR,x, $loc)}
+
+  | PLUSPLUS x = left_value %prec PRIO2 { LeftValOp(PREINCR,x, $loc) }
+  | MINUSMINUS x = left_value %prec PRIO2 { LeftValOp(PREDECR,x, $loc) }
+  | AMPERSAND x = left_value %prec PRIO2 { LeftValOp(GetAddress,x, $loc) }
+  
 ;
 
 simple_stmt:
@@ -141,15 +149,9 @@ expr:
   | LB elements = separated_list(COMMA,expr) RB { List(elements, $loc) }
   | LP e = expr RP { e }
 
-  | x = left_value PLUSPLUS %prec PRIO1 {LeftValOp(POSTINCR,x, $loc)}
-  | x = left_value MINUSMINUS %prec PRIO1 {LeftValOp(POSTDECR,x, $loc)}
 
   // | x = expr DOT %prec PRIO1 { Uniop(StructGet,x, $loc) }
   // | x = expr ARROW %prec PRIO1 { Uniop(StructPtrGet,x, $loc) }
-
-  | PLUSPLUS x = left_value %prec PRIO2 { LeftValOp(PREINCR,x, $loc) }
-  | MINUSMINUS x = left_value %prec PRIO2 { LeftValOp(PREDECR,x, $loc) }
-  | AMPERSAND x = left_value %prec PRIO2 { LeftValOp(GetAdress,x, $loc) }
 
   | STAR x = expr %prec PRIO2  { Uniop(Dereference,x, $loc) }
   | MINUS x = expr %prec PRIO2 { Uniop(Neg,x, $loc) }

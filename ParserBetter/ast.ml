@@ -38,6 +38,7 @@ and litteral =
 and left_value = 
   | ArrayGet of left_value * expr * ppos
   | VarGet of string * ppos
+  | LeftValOp of leftvalop * left_value * ppos
 
 and expr =
   | Const of litteral * ppos
@@ -45,7 +46,6 @@ and expr =
   | List of expr list * ppos
   | FunCall of string * expr list * ppos
 
-  | LeftValOp of leftvalop * left_value * ppos
   | Uniop of uniop * expr * ppos
   | Binop of binop * expr * expr * ppos
   | Ternop of expr * expr * expr * ppos
@@ -56,7 +56,7 @@ and leftvalop =
   | POSTDECR
   | PREINCR
   | PREDECR
-  | GetAdress
+  | GetAddress
 
 and binop = 
   Add | Sub | Mul | Div | Mod | 
@@ -113,7 +113,7 @@ let str_leftvalop = function
   | POSTDECR -> "x--"
   | PREINCR -> "++x"
   | PREDECR -> "--x"
-  | GetAdress -> "&x"
+  | GetAddress -> "&x"
 
 let str_assingop = function
   | Eq -> "="
@@ -235,6 +235,10 @@ and toJSONleft_value = function
     "action", `String "arrayget" ;
     "left_value", toJSONleft_value l ;
     "index", toJSONexpr e ] @ pos p)
+  | LeftValOp(o, lv, p) -> `Assoc ([
+    "action", `String "leftvalop" ;
+    "left_value", toJSONleft_value lv ;
+    "op", `String (str_leftvalop o) ] @ pos p)
 
 and toJSONexpr = function
   | Const(c, p) -> `Assoc ([
@@ -250,10 +254,6 @@ and toJSONexpr = function
     "action", `String "funcall" ;
     "name", `String f ;
     "args", `List (List.map toJSONexpr l) ] @ pos p)
-  | LeftValOp(o, lv, p) -> `Assoc ([
-    "action", `String "leftvalop" ;
-    "left_value", toJSONleft_value lv ;
-    "op", `String (str_leftvalop o) ] @ pos p)
   | Uniop(o, e, p) -> `Assoc ([
     "action", `String "uniop" ;
     "uniop", `String (str_uniop o) ;

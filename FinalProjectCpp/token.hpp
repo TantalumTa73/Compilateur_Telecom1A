@@ -64,13 +64,13 @@ class Bool ;
 class LeftValue ; // abstract
 class ArrayGet ;
 class VarGet ;
+class LeftValOp ;
 
 class Expr ; // abstract
 class Const ;
 class ValueGet ;
 class List ;
 class FunCall ;
-class LeftValOp ;
 class Uniop ;
 class Binop ;
 class Ternop ;
