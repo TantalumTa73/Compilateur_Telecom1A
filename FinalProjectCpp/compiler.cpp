@@ -67,6 +67,7 @@ void Compiler::run(){
 
     stack.push_back(root);
     while (stack.size() > 0){
+        
         actual_token = stack.back();
         assert(actual_token != nullptr);
         stack.pop_back();

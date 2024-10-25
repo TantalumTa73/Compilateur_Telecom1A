@@ -14,7 +14,10 @@ inline string file_name;
 
 #define ERROR(msg) throw std::invalid_argument( msg )
 
-#define SIZE 8
+#define SIZE_INT 8
+#define SIZE_CHAR 1
+#define SIZE_PTR 1
+
 #define COMMENT "#"
 #define GLOBAL "__root__"
 #define MAIN "main"

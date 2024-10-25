@@ -23,7 +23,7 @@ class Token {
         virtual void print(string indent = "");
 
         virtual void on_enter(){
-            vv_cout << "enter in " << show(tk_type) << endl;
+            vv_cout << "enter in " << tk_type << endl;
         }
         virtual void on_exit(){}
         virtual vector<Token*> children(){return vector<Token*>();}
@@ -62,12 +62,12 @@ class Char ;
 class Bool ;
 
 class LeftValue ; // abstract
-class Array ;
-class Var ;
+class ArrayGet ;
+class VarGet ;
 
 class Expr ; // abstract
 class Const ;
-class VarGet ;
+class ValueGet ;
 class List ;
 class FunCall ;
 class LeftValOp ;

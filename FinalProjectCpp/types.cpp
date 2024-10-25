@@ -29,12 +29,12 @@ TokenType token_type(string s){
     if (s == "bool") return LITTERAL_BOOL;
 
     // LeftValue
-    if (s == "var") return VAR;
-    if (s == "array") return ARRAY;
+    if (s == "varget") return VAR_GET;
+    if (s == "arrayget") return ARRAY_GET;
 
     // Expr
     if (s == "const") return CONST;
-    if (s == "varget") return VAR_GET;
+    if (s == "valueget") return VALUE_GET;
     if (s == "list") return LIST;
     if (s == "funcall") return FUN_CALL;
     if (s == "leftvalop") return LEFT_VAL_OP;
@@ -51,48 +51,70 @@ DataType data_type(string s){
     if (s == "char") return CHAR;
     if (s == "bool") return BOOL;
     // if (s == "array") return ARRAY;
-    // if (s == "ptr") return PTR;
+    if (s == "int*") return PTR;
+    if (s == "ptr") return PTR;
     ERROR("Error in DataType : unknown type " + s + "\n");
 }
 
-
-string show(TokenType t){
+std::ostream &operator<<(std::ostream &os, DataType const &t) { 
     switch (t){
-        case ROOT: return "root";
-        case UNKNOW: return "unknow";
-
-        case G_FUN_DEF: return "fundef";
-        case G_VAR_DEF: return "gvardef";
-
-        case ARG: return "arg";
-
-        case STMT: return "stmt";
-        case SCOPE: return "scope";
-        case RETURN: return "return";
-        case FOR: return "for";
-        case WHILE: return "while";
-        case VAR_DEF: return "vardef";
-        case VAR_SET: return "varset";
-        case EXPR_STMT: return "expr";
-        case IF: return "if";
-        case IF_ELSE: return "ifelse";
-
-        case LITTERAL_VOID: return "void";
-        case LITTERAL_INT: return "int";
-        case LITTERAL_CHAR: return "char";
-        case LITTERAL_BOOL: return "bool";
-
-        case VAR: return "var";
-        case ARRAY: return "array";
-
-        case CONST: return "const";
-        case VAR_GET: return "varget";
-        case LIST: return "list";
-        case FUN_CALL: return "funcall";
-        case LEFT_VAL_OP: return "leftvalop";
-        case UNIOP: return "uniop";
-        case BINOP: return "binop";
-        case TERNOP: return "ternop";
+        case VOID: return os << "void";
+        case INT: return os << "int";
+        case CHAR: return os << "char";
+        case BOOL: return os << "bool";
+        case PTR: return os << "ptr";
     }
-    return "" ;
 }
+
+std::ostream &operator<<(std::ostream &os, TokenType const &t) { 
+    switch (t){
+        case ROOT: return os << "root";
+        case UNKNOW: return os << "unknow";
+
+        case G_FUN_DEF: return os << "fundef";
+        case G_VAR_DEF: return os << "gvardef";
+
+        case ARG: return os << "arg";
+
+        case STMT: return os << "stmt";
+        case SCOPE: return os << "scope";
+        case RETURN: return os << "return";
+        case FOR: return os << "for";
+        case WHILE: return os << "while";
+        case VAR_DEF: return os << "vardef";
+        case VAR_SET: return os << "varset";
+        case EXPR_STMT: return os << "expr";
+        case IF: return os << "if";
+        case IF_ELSE: return os << "ifelse";
+
+        case LITTERAL_VOID: return os << "void";
+        case LITTERAL_INT: return os << "int";
+        case LITTERAL_CHAR: return os << "char";
+        case LITTERAL_BOOL: return os << "bool";
+
+        case VAR_GET: return os << "varget";
+        case ARRAY_GET: return os << "arrayget";
+
+        case CONST: return os << "const";
+        case VALUE_GET: return os << "valueget";
+        case LIST: return os << "list";
+        case FUN_CALL: return os << "funcall";
+        case LEFT_VAL_OP: return os << "leftvalop";
+        case UNIOP: return os << "uniop";
+        case BINOP: return os << "binop";
+        case TERNOP: return os << "ternop";
+    }
+    return os;
+}
+
+
+int type_size(DataType type){
+    switch (type){
+        case VOID: return 0;
+        case INT: return 8;
+        case CHAR: return 1;
+        case BOOL: return 1;
+        case PTR: return 8;
+    }
+}
+

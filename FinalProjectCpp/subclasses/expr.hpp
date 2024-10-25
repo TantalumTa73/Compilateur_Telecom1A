@@ -23,13 +23,13 @@ class Const : public Expr {
         }
 };
 
-class VarGet : public Expr {
+class ValueGet : public Expr {
     public:
         LeftValue* value;
-        VarGet() : Expr(VAR_GET) {
+        ValueGet() : Expr(VALUE_GET) {
             value = nullptr;
         };
-        VarGet(LeftValue* value) : Expr(VAR_GET) {
+        ValueGet(LeftValue* value) : Expr(VALUE_GET) {
             this->value = value;
         };
         void print(string indent = "") override;

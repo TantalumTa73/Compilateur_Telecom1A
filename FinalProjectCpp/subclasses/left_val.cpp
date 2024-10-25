@@ -5,12 +5,12 @@ void LeftValue::print(string indent){
     v_cout << indent << "LeftValue" << endl;
 }
 
-void Var::print(string indent){
-    v_cout << indent << "Var : " << name << endl;
+void VarGet::print(string indent){
+    v_cout << indent << "VarGet : " << name << endl;
 }
 
-void Array::print(string indent){
-    v_cout << indent << "Array" << endl;
+void ArrayGet::print(string indent){
+    v_cout << indent << "ArrayGet" << endl;
     left_value->print(indent + "  ");
     index->print(indent + "  ");
 }

@@ -37,13 +37,13 @@ enum TokenType {
     
     // LeftValue
     // LEFT_VALUE,
-    ARRAY,
-    VAR,
+    ARRAY_GET,
+    VAR_GET,
     
     // Expr
     // EXPR,
     CONST,
-    VAR_GET,
+    VALUE_GET,
     LIST,
     FUN_CALL,
     LEFT_VAL_OP,
@@ -58,10 +58,13 @@ enum DataType {
     INT,
     CHAR,
     BOOL,
-    // ARRAY,
-    // PTR
+    PTR
 };
 
-TokenType token_type(string s);
+std::ostream &operator<<(std::ostream &os, TokenType const &t);
+std::ostream &operator<<(std::ostream &os, DataType const &t);
+
 DataType data_type(string s);
-string show(TokenType t);
+TokenType token_type(string s);
+
+int type_size(DataType type);

@@ -16,16 +16,39 @@ void Sreturn::on_exit(){
 
 // DEF_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+// inline void var_def_exit(string name, string type, int array_size, string ctx){
+//     int size ;
+    
+
+//     contexts[ctx].init_var(name, size, false);
+//     v_cout << "initialize " << name << " in " << ctx << "\n"; 
+// }
 
 void GVarDef::on_exit(){
-    contexts[called_contexts.back()].init_var(name, false);
-    v_cout << "initialize " << name << " in " << called_contexts.back() << "\n"; 
+    // if (array_size != 1)
+    throw invalid_argument("global not implemented");
+
+    // var_def_exit(name, type, array_size, called_contexts.back());
     w_init_global_var(name);
 }
 void SvarDef::on_exit(){
-    contexts[called_contexts.back()].init_var(name, false);
-    v_cout << "initialize " << name << " in " << called_contexts.back() << "\n"; 
-    w_init_var();
+    // if (array_size != 1)
+    //     throw invalid_argument("array not implemented");
+
+    // int size = get_size();
+    int size = SIZE_INT * array_size ;
+
+    // var_def_exit(name, type, size, );
+
+    string var_name = array_size == 1 ? name : name + "[" + "]";
+
+    contexts[called_contexts.back()].init_var(var_name, size, false);
+    v_cout << "initialize " << type << " " << name ;
+    if (array_size != 1) v_cout << "[" << array_size << "]" ;
+    v_cout << " in " << called_contexts.back() ;
+    v_cout << " (" << size << ")\n";
+
+    w_init_var(size);
 }
 
 
@@ -45,7 +68,7 @@ void GFunDef::on_enter(){
     w_init_f(name);
 
     for (auto arg : args){
-        contexts[name].init_var(arg->name, true);
+        contexts[name].init_var(arg->name, 8, true);
     }
 }
 
@@ -86,7 +109,7 @@ void SvarSet::on_exit(){
 
 // GET_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void VarGet::on_exit(){
+void ValueGet::on_exit(){
     string name = value->get_id();
     Variable variable = find_var(name);
 

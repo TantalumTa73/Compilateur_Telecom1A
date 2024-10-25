@@ -98,19 +98,26 @@ class Swhile : public Stmt {
 
 class SvarDef : public Stmt {
     public:
-        string type;
+        DataType type;
         string name;
+        int array_size;
         Expr* value;
-        SvarDef() : Stmt(VAR_DEF){
-            type = "";
-            name = "";
-            value = nullptr;
-        };
-        SvarDef(string type, string name, Expr* value) : Stmt(VAR_DEF){
+        // SvarDef() : Stmt(VAR_DEF){
+        //     type = "";
+        //     name = "";
+        //     array_size = 0 ;
+        //     value = nullptr;
+        // };
+        SvarDef(DataType type, string name, int array_size, Expr* value) : Stmt(VAR_DEF){
             this->type = type;
             this->name = name;
+            this->array_size = array_size;
             this->value = value;
         };
+        int get_size(){
+            return 0 ;
+            // return array_size * type_size(type);
+        }
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children() override {

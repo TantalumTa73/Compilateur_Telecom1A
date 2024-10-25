@@ -44,15 +44,19 @@ class GVarDef : public GStmt {
     public:
         string type;
         string name;
+        int array_size;
         Expr* value;
-        GVarDef() : GStmt(G_VAR_DEF){
-            type = "";
-            name = "";
-            value = nullptr;
-        };
-        GVarDef(string type, string name, Expr* value) : GStmt(G_VAR_DEF) {
+        // GVarDef() : GStmt(G_VAR_DEF){
+        //     type = "";
+        //     name = "";
+        //     array_size = 0 ;
+        //     value = nullptr;
+        // };
+        GVarDef(string type, string name, int array_size,Expr* value) : 
+        GStmt(G_VAR_DEF) {
             this->type = type;
             this->name = name;
+            this->array_size = array_size;
             this->value = value;
         };
         void print(string indent = "") override;

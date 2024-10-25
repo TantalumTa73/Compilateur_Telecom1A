@@ -23,7 +23,7 @@ void set_section(string str);
 void w_print(string str);
 
 // variables.cpp
-void w_init_var();
+void w_init_var(int size);
 void w_init_global_var(string str);
 void w_set_var(string add, string op);
 // void w_set_global_var(string str, string op);

@@ -13,7 +13,7 @@ void w_call_function(string str){
     } else {
         add_line("calling function as expr", true, true);
         add_line("call " + str);
-        add_line("add $" + std::to_string(SIZE) + ", %rsp");
+        add_line("add $" + std::to_string(SIZE_INT) + ", %rsp");
         add_line("push %rax");
         add_line();
     }

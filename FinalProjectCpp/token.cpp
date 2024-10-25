@@ -64,8 +64,11 @@ Token* Token::simplify(JSON* json){
     } else if (action == "gvardef"){
         string type = json->get_string("type");
         string name = json->get_string("name");
+        string array_size = json->get_string("size");
+        // v_cout << "array_size : " << array_size << "\n";
+        int array_size_int = stoi(array_size);
         Expr* value = (Expr*) simplify(json->get_object("value"));
-        return new GVarDef(type, name, value);
+        return new GVarDef(type, name, array_size_int, value);
     } else if (action == "arg"){
         string type = json->get_string("type");
         string name = json->get_string("name");
@@ -88,9 +91,12 @@ Token* Token::simplify(JSON* json){
         return new Swhile(condition, body);
     } else if (action == "vardef"){
         string type = json->get_string("type");
+        DataType type_enum = data_type(type);
         string name = json->get_string("name");
+        string array_size = json->get_string("size");
+        int array_size_int = stoi(array_size);
         Expr* value = (Expr*) simplify(json->get_object("value"));
-        return new SvarDef(type, name, value);
+        return new SvarDef(type_enum, name, array_size_int, value);
     } else if (action == "varset"){
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");
@@ -121,19 +127,19 @@ Token* Token::simplify(JSON* json){
     } else if (action == "bool") {
         bool value = json->get_bool("value");
         return new Bool(value);
-    } else if (action == "var") { //left val
+    } else if (action == "varget") { //left val
         string name = json->get_string("name");
-        return new Var(name);
-    } else if (action == "array") {
+        return new VarGet(name);
+    } else if (action == "arrayget") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         Expr* index = (Expr*) simplify(json->get_object("index"));
-        return new Array(left_value, index);
+        return new ArrayGet(left_value, index);
     } else if (action == "const") { // expr
         Litteral* value = (Litteral*) simplify(json->get_object("value"));
         return new Const(value);
-    } else if (action == "varget") {
+    } else if (action == "valueget") {
         LeftValue* value = (LeftValue*) simplify(json->get_object("value"));
-        return new VarGet(value);
+        return new ValueGet(value);
     } else if (action == "list") {
         vector<Expr*> values = simplify<Expr*>(json->get_array("values"));
         return new List(values);
@@ -161,7 +167,7 @@ Token* Token::simplify(JSON* json){
         return new Ternop(condition, v1, v2);
     }
 
-    ERROR("Error in Token : no action \'" + action + "\'\n");
+    ERROR("Error in Token : no action named \'" + action + "\'\n");
     return nullptr;
 }
 

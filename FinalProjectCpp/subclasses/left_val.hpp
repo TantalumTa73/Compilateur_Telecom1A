@@ -8,13 +8,13 @@ class LeftValue : public Token {
         virtual string get_id() = 0;
 };
 
-class Var : public LeftValue {
+class VarGet : public LeftValue {
     public:
         string name;
-        Var() : LeftValue(VAR) {
+        VarGet() : LeftValue(VAR_GET) {
             name = "";
         };
-        Var(string name) : LeftValue(VAR) {
+        VarGet(string name) : LeftValue(VAR_GET) {
             this->name = name;
         };
         void print(string indent = "") override;
@@ -24,21 +24,22 @@ class Var : public LeftValue {
         }
 };
 
-class Array : public LeftValue {
+class ArrayGet : public LeftValue {
     public:
         LeftValue* left_value;
         Expr* index;
-        Array() : LeftValue(ARRAY) {
+        ArrayGet() : LeftValue(ARRAY_GET) {
             left_value = nullptr;
             index = nullptr;
         };
-        Array(LeftValue* left_value, Expr* index) : LeftValue(ARRAY) {
+        ArrayGet(LeftValue* left_value, Expr* index) : LeftValue(ARRAY_GET) {
             this->left_value = left_value;
             this->index = index;
+            ERROR("ArrayGet not implemented");
         };
         void print(string indent = "") override;
         string get_id() override {
-            ERROR("Array get_id() not implemented");
+            return left_value->get_id() + "[" + "]";
         }
         vector<Tk> children() override {
             return {(Tk)left_value, (Tk)index};

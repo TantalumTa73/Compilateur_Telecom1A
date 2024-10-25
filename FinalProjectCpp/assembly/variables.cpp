@@ -7,9 +7,9 @@
 #include "../write_assembly.hpp"
 
 
-void w_init_var(){
+void w_init_var(int size){
     add_line("init local variable", true, true);
-    add_line("sub $" + std::to_string(SIZE) + ", %rsp");
+    add_line("sub $" + std::to_string(size) + ", %rsp");
     add_line();
 }
 
@@ -17,11 +17,11 @@ void w_init_global_var(string str){
     add_line("init global variable", true, true);
     // add_line("pop " + str + "(%rip)");
     set_section("bss");
-    add_line(".align " + std::to_string(SIZE));
+    add_line(".align " + std::to_string(SIZE_INT));
     add_line(".type " + str + ", @object");
-    add_line(".size " + str + ", " + std::to_string(SIZE));
+    add_line(".size " + str + ", " + std::to_string(SIZE_INT));
     add_line(str + ":", false);
-    add_line(".zero " + std::to_string(SIZE));
+    add_line(".zero " + std::to_string(SIZE_INT));
     add_line();
         
 }

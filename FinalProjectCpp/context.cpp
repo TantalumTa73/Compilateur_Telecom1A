@@ -26,16 +26,13 @@ string Variable::get_adress(){
 }
 
 Variable find_var(string var_name){
-    // v_cout << "find_var : called_contexts' size : " ;
-    // v_cout << to_string(called_contexts.size()) << "\n"; 
-    // to begin with the last called section
+    
+    v_cout << "find_var : " << var_name << "\n";
+    
     for (auto it = called_contexts.rbegin(); 
         it != called_contexts.rend(); it ++){
 
         if (contexts[*it].vars.find(var_name) != contexts[*it].vars.end()){
-            // v_cout << "  " << var_name << "'s offset : " ;
-            // v_cout << to_string(contexts[*it].vars[var_name].offset) ;
-            // v_cout << " in (compiler.cpp)\n";
             return contexts[*it].vars[var_name];
         }
     }
@@ -48,32 +45,31 @@ Variable find_var(string var_name){
 
 Context::Context() {
     vars = unordered_map<string, Variable>();
-    var_offset = -1 * SIZE;
-    arg_offset = 2 * SIZE;
+    var_offset = -1 * SIZE_INT;
+    arg_offset = 2 * SIZE_INT;
     return ;
 }
 
 Context::Context(string name_)
 : name(name_) {
     vars = unordered_map<string, Variable>();
-    var_offset = -1 * SIZE;
-    arg_offset = 2 * SIZE;
+    var_offset = -1 * SIZE_INT;
+    arg_offset = 2 * SIZE_INT;
     return ;
 }
 
-void Context::init_var(string var_name, bool is_arg) {
+void Context::init_var(string var_name, int size, bool is_arg) {
     if (auto search = vars.find(var_name); search != vars.end()) {
         return;
     }
     int offset = is_arg ? arg_offset : var_offset;
     Variable new_var = Variable(var_name, name, offset, is_arg);
     vars.insert({var_name, new_var});
-    // v_cout << var_name << "'s offset in " << name << " : " ;
-    // v_cout << to_string(offset) << "(Contexts.cpp) \n";
+    
     if (is_arg) {
-        arg_offset += SIZE;
+        arg_offset += size;
     } else {
-        var_offset -= SIZE;
+        var_offset -= size;
     }
     return;
 }

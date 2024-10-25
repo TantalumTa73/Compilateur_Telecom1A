@@ -11,8 +11,8 @@ void Const::print(string indent){
     value->print(indent + "  ");
 }
 
-void VarGet::print(string indent){
-    v_cout << indent << "VarGet" << endl;
+void ValueGet::print(string indent){
+    v_cout << indent << "ValueGet" << endl;
     value->print(indent + "  ");
 }
 

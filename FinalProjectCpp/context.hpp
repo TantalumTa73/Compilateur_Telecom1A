@@ -26,7 +26,7 @@ class Context {
         Context();
         Context(string name_);
 
-        void init_var(string var_name, bool is_arg);
+        void init_var(string var_name, int size, bool is_arg);
 
     private:
         int var_offset;
