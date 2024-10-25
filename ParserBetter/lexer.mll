@@ -3,24 +3,28 @@
   open Parser
    
   exception Lexing_error of char
+  exception SyntaxError of string
 
   (* Find keyword and identifiers *)
   let id_or_kwd s = match s with
+  | "if" -> IF
+  | "else" -> ELSE
+
   | "for" -> FOR
   | "while" -> WHILE
-  | "return" -> RETURN
-  (* | "break" -> BREAK *)
-  (* | "continue" -> CONTINUE *)
-  (* | "const" -> *)
-  (* | "inline" -> *)
-  (* | "struct" -> *)
 
+  | "return" -> RETURN
+  | "break" -> BREAK
+  | "continue" -> CONTINUE
+
+  | "const" -> CONST
+  | "inline" -> INLINE
+  | "struct" -> STRUCT
 
   | "false" -> FALSE
   | "true" -> TRUE
+  | "NULL" -> NULL
 
-  | "if" -> IF
-  | "else" -> ELSE
 
   | "void" -> TYPE "void"
   | "int" -> TYPE "int"
@@ -40,8 +44,8 @@ let ident = letter (letter | digit)*
 let space = [' ' '\t']
 
 rule token = parse
-  | '/''/'[^'\n']* { token lexbuf }
-  | '/''*'[^'*''/']*'*''/' { token lexbuf }
+  | "//" { single_line_comment lexbuf }
+  | "/*" { multi_line_comment lexbuf }
   | '#'[^'\n']* { token lexbuf }
   | '\n'    { new_line lexbuf; token lexbuf }
   | space+  { token lexbuf }
@@ -49,7 +53,7 @@ rule token = parse
   | '\'' (_ as c) '\'' { CHAR c }
   | int as n
   | binary as n 
-  | hexadecimal as n { CST (int_of_string n) }
+  | hexadecimal as n { LITTERAL (int_of_string n) }
   | ident as id { id_or_kwd id }
 
   | ';'      { SEMICOLON }
@@ -105,5 +109,14 @@ rule token = parse
 
   | eof      { EOF }
   | _ as c   { raise (Lexing_error c) }
- 
 
+and single_line_comment = parse
+  | '\n' { new_line lexbuf; token lexbuf }
+  | eof { EOF }
+  | _ { single_line_comment lexbuf }
+
+and multi_line_comment = parse
+  | "*/" { token lexbuf }
+  | '\n' { new_line lexbuf; multi_line_comment lexbuf }
+  | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.")) }
+  | _ { multi_line_comment lexbuf }

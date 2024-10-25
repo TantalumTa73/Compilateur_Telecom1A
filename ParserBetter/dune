@@ -5,7 +5,7 @@
 (executable
  (name expr2json)
  (promote (until-clean))
- (modules lexer parser ast expr2json)
+ (modules lexer parser ast json expr2json)
  (libraries yojson)
  (flags ()))
   
