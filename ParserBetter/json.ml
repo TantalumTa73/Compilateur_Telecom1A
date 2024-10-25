@@ -173,7 +173,7 @@ and toJSONleft_value = function
 
 and toJSONexpr = function
   | Litteral(c, p) -> `Assoc ([
-    "action", `String "const" ;
+    "action", `String "litteral" ;
     "value", toJSONlitteral c ] @ pos p)
   | ValueGet(lv, p) -> `Assoc ([
     "action", `String "valueget" ;
