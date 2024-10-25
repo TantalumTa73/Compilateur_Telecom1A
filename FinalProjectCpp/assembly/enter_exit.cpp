@@ -118,9 +118,16 @@ void Int::on_enter(){
 
 // OP --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void LeftValOp::on_exit(){
-    w_left_val_op(op,left_value->get_address());
+void LRop::on_exit(){
+    ERROR("LRop not implemented");
 }
+// void LLop::on_exit(){
+//     ERROR("LLop not implemented");
+// }
+// void RLop::on_exit(){
+//     ERROR("RLop not implemented");
+// }
+
 void Uniop::on_exit(){
     w_uniop(uniop);
 }

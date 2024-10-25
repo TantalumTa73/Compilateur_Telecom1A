@@ -9,7 +9,6 @@ enum TokenType {
     UNKNOW,
 
     // GSmt
-    // G_STMT,
     G_FUN_DEF,
     G_VAR_DEF,
 
@@ -29,24 +28,23 @@ enum TokenType {
     IF_ELSE,
     
     // Litteral
-    // LITTERAL,
     LITTERAL_VOID,
     LITTERAL_INT,
     LITTERAL_CHAR,
     LITTERAL_BOOL,
     
     // LeftValue
-    // LEFT_VALUE,
     ARRAY_GET,
     VAR_GET,
+    LL_OP,
+    RL_OP,
     
     // Expr
-    // EXPR,
-    CONST,
+    LITTERAL,
     VALUE_GET,
     LIST,
     FUN_CALL,
-    LEFT_VAL_OP,
+    LR_OP,
     UNIOP,
     BINOP,
     TERNOP

@@ -14,6 +14,7 @@ void Token::print(string indent){
 }
 
 // Token::Token(JSON* json) {
+//     // A non recursive function that will create a Token from a JSON object
 //     // type = "" ;
 
 //     if (json == nullptr)
@@ -55,6 +56,8 @@ Token* Token::simplify(JSON* json){
     if        (action == "__root__"){
         vector<GStmt*> gstmts = simplify<GStmt*>(json->get_array("gstmts"));
         return new Root(gstmts);
+
+
     } else if (action == "fundef"){ // gstmt
         string type = json->get_string("type");
         string name = json->get_string("name");
@@ -69,10 +72,14 @@ Token* Token::simplify(JSON* json){
         int array_size_int = stoi(array_size);
         Expr* value = (Expr*) simplify(json->get_object("value"));
         return new GVarDef(type, name, array_size_int, value);
-    } else if (action == "arg"){
+
+
+    } else if (action == "arg"){ // arg
         string type = json->get_string("type");
         string name = json->get_string("name");
         return new Arg(type, name);
+
+
     } else if (action == "scope"){ // stmt
         vector<Stmt*> body = simplify<Stmt*>(json->get_array("body"));
         return new Sscope(body);
@@ -114,6 +121,8 @@ Token* Token::simplify(JSON* json){
         Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
         Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
         return new SifElse(condition, body_if, body_else);
+
+
     } else if (action == "void") { // litteral
         return new Void();
     } else if (action == "int") {
@@ -127,6 +136,8 @@ Token* Token::simplify(JSON* json){
     } else if (action == "bool") {
         bool value = json->get_bool("value");
         return new Bool(value);
+
+
     } else if (action == "varget") { //left val
         string name = json->get_string("name");
         return new VarGet(name);
@@ -134,9 +145,18 @@ Token* Token::simplify(JSON* json){
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         Expr* index = (Expr*) simplify(json->get_object("index"));
         return new ArrayGet(left_value, index);
-    } else if (action == "const") { // expr
-        Litteral* value = (Litteral*) simplify(json->get_object("value"));
-        return new Const(value);
+    } else if (action == "llop") {
+        LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
+        string op = json->get_string("op");
+        return new LLop(left_value, op);
+    } else if (action == "rlop") {
+        Expr* value = (Expr*) simplify(json->get_object("value"));
+        string op = json->get_string("op");
+        return new RLop(op, value);
+
+
+    } else if (action == "litteral") { // expr
+        return (Litteral*) simplify(json->get_object("value"));
     } else if (action == "valueget") {
         LeftValue* value = (LeftValue*) simplify(json->get_object("value"));
         return new ValueGet(value);
@@ -147,10 +167,11 @@ Token* Token::simplify(JSON* json){
         string name = json->get_string("name");
         vector<Expr*> args = simplify<Expr*>(json->get_array("args"));
         return new FunCall(name, args);
-    } else if (action == "leftvalop") {
+
+    } else if (action == "lrop") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");
-        return new LeftValOp(left_value, op);
+        return new LRop(op,left_value);
     } else if (action == "uniop") {
         string uniop = json->get_string("uniop");
         Expr* value = (Expr*) simplify(json->get_object("value"));

@@ -6,11 +6,6 @@ void Expr::print(string indent){
     v_cout << indent << "Expr" << endl;
 }
 
-void Const::print(string indent){
-    v_cout << indent << "Const" << endl;
-    value->print(indent + "  ");
-}
-
 void ValueGet::print(string indent){
     v_cout << indent << "ValueGet" << endl;
     value->print(indent + "  ");
@@ -29,6 +24,11 @@ void FunCall::print(string indent){
     for(auto v : args){
         v->print(indent + "  ");
     }
+}
+
+void LRop::print(string indent){
+    v_cout << indent << "LRop : " << op << endl;
+    left_value->print(indent + "  ");
 }
 
 void Uniop::print(string indent){

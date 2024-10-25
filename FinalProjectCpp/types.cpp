@@ -31,13 +31,15 @@ TokenType token_type(string s){
     // LeftValue
     if (s == "varget") return VAR_GET;
     if (s == "arrayget") return ARRAY_GET;
+    if (s == "llop") return LL_OP;
+    if (s == "rlop") return RL_OP;
 
     // Expr
-    if (s == "const") return CONST;
+    if (s == "const") return LITTERAL;
     if (s == "valueget") return VALUE_GET;
     if (s == "list") return LIST;
     if (s == "funcall") return FUN_CALL;
-    if (s == "leftvalop") return LEFT_VAL_OP;
+    if (s == "lralop") return LR_OP;
     if (s == "uniop") return UNIOP;
     if (s == "binop") return BINOP;
     if (s == "ternop") return TERNOP;
@@ -45,6 +47,7 @@ TokenType token_type(string s){
     ERROR("token_type : unknow token " + s  + "\n");
 
 }
+
 DataType data_type(string s){
     if (s == "void") return VOID;
     if (s == "int") return INT;
@@ -94,12 +97,14 @@ std::ostream &operator<<(std::ostream &os, TokenType const &t) {
 
         case VAR_GET: return os << "varget";
         case ARRAY_GET: return os << "arrayget";
+        case LL_OP: return os << "llop";
+        case RL_OP: return os << "rlop";
 
-        case CONST: return os << "const";
+        case LITTERAL: return os << "const";
         case VALUE_GET: return os << "valueget";
         case LIST: return os << "list";
         case FUN_CALL: return os << "funcall";
-        case LEFT_VAL_OP: return os << "leftvalop";
+        case LR_OP: return os << "leftvalop";
         case UNIOP: return os << "uniop";
         case BINOP: return os << "binop";
         case TERNOP: return os << "ternop";

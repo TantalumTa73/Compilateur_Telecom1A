@@ -1,9 +1,9 @@
 #pragma once
 #include "../token.hpp"
 
-class Litteral : public Token {
+class Litteral : public Expr {
     public:
-        Litteral(TokenType t) : Token(t) {}
+        Litteral(TokenType t) : Expr(t) {}
         void print(string indent = "") override {
             v_cout << indent << "Litteral: " << "\n";
         }
