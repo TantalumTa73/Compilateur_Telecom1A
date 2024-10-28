@@ -77,6 +77,8 @@ class AssemblyFile:
 VARIABLES: List[Dict[str, Variable]] = [{}]
 VARIABLE_OFFSET = 0
 FUNCTIONS = {}
+LOOP_IDENTIFIER = 0
+IF_IDENTIFIER = 0
 
 VAR_SZ = 8
 COMMENT = '#'
@@ -170,7 +172,18 @@ def write_scope(scope, depth: int):
 
 def evaluate_scope(body, funcname, return_type, depth):
 
-    global VARIABLES, VARIABLE_OFFSET
+    global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER
+
+    if isinstance(body, dict):
+
+        if "action" in body and body["action"] == "scope":
+            evaluate_scope(body["body"], funcname, return_type, depth)
+            return
+            
+        evaluate_scope([body], funcname, return_type, depth)
+        return
+
+        # evaluate_scope([body], funcname, return_type, depth)
 
     for element in body:
         
@@ -233,7 +246,125 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "for":
-            pass
+
+            asm.add([f"{COMMENT} Starting loop", ""])
+
+            VARIABLES.append({})
+            # print(element["init"])
+            evaluate_scope([element["init"]], funcname, return_type, depth + 1)
+            
+            LOOP_IDENTIFIER += 1
+            starting_point = f"start_loop_{LOOP_IDENTIFIER}"
+            end_point = f"end_loop_{LOOP_IDENTIFIER}"
+
+            asm.add(f"{starting_point}:", indent=False)
+
+            # basic condition
+            asm.add(f"{COMMENT} checking condition")
+            evaluate_expression(element["condition"], funcname, depth + 1)
+
+            asm.add([
+                "pop %rax",
+                "test %rax, %rax",
+                f"jz {end_point}",
+                ""
+            ])
+
+            scope = element["body"]
+            # body = scope["body"]
+            evaluate_scope(scope, funcname, return_type, depth + 1)
+
+            evaluate_scope([element["update"]], funcname, return_type, depth + 1)
+
+            # jump point
+            asm.add([
+                f"{COMMENT} back to start",
+                f"jmp {starting_point}",
+                ""
+            ])
+
+            asm.add(f"{end_point}:", indent=False)
+            asm.add("")
+
+            VARIABLES.pop()
+            continue
+
+        if element["action"] == "if":
+
+            IF_IDENTIFIER += 1
+            VARIABLES.append({})
+
+            if_point = f"if_point_{IF_IDENTIFIER}"
+            if_past = f"if_past_{IF_IDENTIFIER}"
+            
+            evaluate_expression(element["condition"], funcname, depth + 1)
+
+
+            asm.add([
+                f"{COMMENT} checking if condition",
+                "pop %rax",
+                "test %rax, %rax",
+                f"jnz {if_point}",
+                f"jmp {if_past}",
+                ""
+            ])
+
+            asm.add(f"{if_point}:", indent=False)
+
+            scope_if = element["body"]
+            # scope_if = 
+            evaluate_scope(scope_if, funcname, return_type, depth)
+            
+            asm.add([
+                f"jmp {if_past}",
+                ""
+            ])
+            asm.add(f"{if_past}:", indent=False)
+            VARIABLES.pop()
+            continue
+
+        if element["action"] == "ifelse":
+
+            IF_IDENTIFIER += 1
+            VARIABLES.append({})
+
+            if_point = f"if_point_{IF_IDENTIFIER}"
+            if_else_point = f"if_else_{IF_IDENTIFIER}"
+            if_past = f"if_past_{IF_IDENTIFIER}"
+            
+            evaluate_expression(element["condition"], funcname, depth + 1)
+
+
+            asm.add([
+                f"{COMMENT} checking ifelse condition",
+                "pop %rax",
+                "test %rax, %rax",
+                f"jnz {if_point}",
+                f"jmp {if_else_point}",
+                ""
+            ])
+
+            asm.add(f"{if_point}:", indent=False)
+
+            scope_if = element["body_if"]
+            evaluate_scope(scope_if, funcname, return_type, depth)
+            asm.add(f"jmp {if_past}")
+
+            asm.add(f"{if_else_point}:", indent=False)
+
+            scope_if = element["body_else"]
+            evaluate_scope(scope_if, funcname, return_type, depth)
+            asm.add(f"jmp {if_past}")
+
+            asm.add(f"{if_past}:", indent=False)
+            continue
+
+
+
+
+
+
+            
 
         # print(element)
 
@@ -285,7 +416,11 @@ def evaluate_expression(expr, funcname, depth: int):
         "&&": "and %rax, %rbx",
         "||": "or %rax, %rbx",
         "&": "and %rax, %rbx",
-        "|": "or %rax, %rbx"
+        "|": "or %rax, %rbx",
+        "<": "cmp %rbx, %rax\n\tsetl %bl\n\tmovzx %bl, %rbx",
+        ">": "cmp %rax, %rbx\n\tsetl %bl\n\tmovzx %bl, %rbx",
+        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
+        ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
     }
 
     if expr["action"] == "var":
