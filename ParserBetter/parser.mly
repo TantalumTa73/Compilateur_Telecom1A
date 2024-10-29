@@ -38,6 +38,7 @@
 
 // https://en.cppreference.com/w/cpp/language/operator_precedence
 // https://en.wikipedia.org/wiki/Operators_in_C_and_C%2B%2B
+// https://mukulrathi.com/create-your-own-programming-language/parsing-ocamllex-menhir/
 
 %left OR
 %left AND
@@ -112,12 +113,16 @@ simple_stmt:
 
 stmt:
   | LB body = list(stmt) RB { Sscope(body,$loc) }
+  | LB RB { Sscope([],$loc) }
 
   | st = simple_stmt SEMICOLON { st }
 
   | FOR LP s1 = simple_stmt SEMICOLON cond = expr SEMICOLON s2 = simple_stmt RP body = stmt  
     { Sfor(s1,cond,s2,body,$loc) }
   | WHILE LP cond = expr RP body = stmt { Swhile(cond, body,$loc) }
+
+  | BREAK SEMICOLON { Skeyword("break",$loc) }
+  | CONTINUE SEMICOLON { Skeyword("continue",$loc) }
 
   | IF LP e = expr RP body = stmt { Sif(e,body,$loc) }
   | IF LP e = expr RP body1 = stmt ELSE body2 = stmt { SifElse(e,body1,body2,$loc) }

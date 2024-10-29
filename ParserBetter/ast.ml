@@ -25,6 +25,8 @@ and stmt =
   | SvarSet of left_value * assingop * expr * ppos
   | Sexpr of expr * ppos
 
+  | Skeyword of string * ppos
+
   | Sif of expr * stmt * ppos
   | SifElse of expr * stmt * stmt * ppos
 

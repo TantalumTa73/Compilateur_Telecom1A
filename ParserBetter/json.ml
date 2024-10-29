@@ -128,6 +128,9 @@ and toJSONstmt = function
   | Sexpr(e, p) -> `Assoc ([
     "action", `String "expr" ;
     "value", toJSONexpr e ] @ pos p)
+  | Skeyword(k, p) -> `Assoc ([
+    "action", `String "keyword" ;
+    "keyword", `String k ] @ pos p)
   | Sif(e, s, p) -> `Assoc ([
     "action", `String "if" ;
     "condition", toJSONexpr e ;
@@ -168,7 +171,7 @@ and toJSONleft_value = function
     "op", `String (str_llop o) ] @ pos p)
   | RLop(o, e, p) -> `Assoc ([
     "action", `String "rlop" ;
-    "right_value", toJSONexpr e ;
+    "value", toJSONexpr e ;
     "op", `String (str_rlop o) ] @ pos p)
 
 and toJSONexpr = function
