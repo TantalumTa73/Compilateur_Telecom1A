@@ -111,11 +111,21 @@ and toJSONstmt = function
     "type", `String t ;
     "name", `String n ;
     "value", `Assoc ([]) ] @ pos p) *)
-  | SvarDef(t, n, i,e, p) -> `Assoc ([
+  (* | SvarDef(t, n, i,e, p) -> `Assoc ([
     "action", `String "vardef" ;
     "type", `String t ;
     "name", `String n ;
     "size", `Int i ;
+    "value", match e with
+      | None -> `Assoc ([])
+      | Some x -> toJSONexpr x
+    ] @ pos p) *)
+  | SvarDef2(t, n, l, e, p) -> `Assoc ([
+    "action", `String "vardef" ;
+    "type", `String t ;
+    "name", `String n ;
+    "size", `List (List.map (fun x -> `Int x) l) ;
+    (* "size", `List (List.map (fun x -> `Assoc (["elm",`Int x]) ) l) ; *)
     "value", match e with
       | None -> `Assoc ([])
       | Some x -> toJSONexpr x

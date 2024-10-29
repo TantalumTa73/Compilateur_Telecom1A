@@ -93,19 +93,25 @@ arg:
   | t = data_type { Arg(t,"", $loc) }
 ;
 
+array_size:
+  // | LBR n = LITTERAL RBR { Int(n,$loc) }
+  | LBR n = LITTERAL RBR { n }
+;
 
 simple_stmt:
   | RETURN e = expr { Sreturn(Some e, $loc) }
   | RETURN { Sreturn(None, $loc) }
 
-  | t = data_type id = IDENT LBR n = LITTERAL RBR 
-    { SvarDef(t,id,n, None, $loc) }
-  | t = data_type id = IDENT LBR n = LITTERAL RBR EQ e = expr
-    { SvarDef(t,id,n, Some e, $loc) }
-  | t = data_type id = IDENT
-    { SvarDef(t,id,1,None, $loc) }
-  | t = data_type id = IDENT EQ e = expr 
-    { SvarDef(t,id,1,Some e, $loc) }
+  // | t = data_type id = IDENT
+  //   { SvarDef(t,id,1,None, $loc) }
+  // | t = data_type id = IDENT EQ e = expr 
+  //   { SvarDef(t,id,1,Some e, $loc) }
+  // | t = data_type id = IDENT LBR n = LITTERAL RBR 
+  //   { SvarDef(t,id,n, None, $loc) }
+  // | t = data_type id = IDENT LBR n = LITTERAL RBR EQ e = expr
+  //   { SvarDef(t,id,n, Some e, $loc) }
+  | t = data_type id = IDENT l = list(array_size)
+    { SvarDef2(t,id,l, None, $loc) }
 
   | id = left_value o = assignop e = expr { SvarSet(id,o,e, $loc) }
   | e = expr { Sexpr(e, $loc) }

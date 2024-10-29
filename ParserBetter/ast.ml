@@ -21,7 +21,8 @@ and stmt =
   | Swhile of expr * stmt * ppos
 
   (* | SvarDef of string * string * ppos *)
-  | SvarDef of string * string * int * expr option * ppos
+  (* | SvarDef of string * string * int * expr option * ppos *)
+  | SvarDef2 of string * string * int list * expr option * ppos
   | SvarSet of left_value * assingop * expr * ppos
   | Sexpr of expr * ppos
 
