@@ -26,6 +26,13 @@ class Variable:
         return self.__repr__()
 
 
+class ArrayAccess:
+
+    def __init__(self, array: Variable, index: tuple) -> None:
+        self.array: Variable = array
+        self.index = index
+
+    
 
 class Function:
 
@@ -77,8 +84,10 @@ class AssemblyFile:
 VARIABLES: List[Dict[str, Variable]] = [{}]
 VARIABLE_OFFSET = 0
 FUNCTIONS = {}
+
 LOOP_IDENTIFIER = 0
 IF_IDENTIFIER = 0
+WHILE_IDENTIFIER = 0
 
 VAR_SZ = 8
 COMMENT = '#'
@@ -113,8 +122,6 @@ def get_variable_object(varname: str, funcname: str, depth: int) -> Variable:
         depth_iterator -= 1
         
     raise Exception(f"Undefined Variable {var_id}/{varname}")
-    # return f"{varname}(%rip)"
-
 
 
 def get_variable_location(varname: str, funcname: str, depth: int):
@@ -125,20 +132,6 @@ def get_variable_location(varname: str, funcname: str, depth: int):
         return f"{obj.varname}(%rip)"
     else:
         return f"{obj.offset}(%rbp)"
-
-
-
-    global VARIABLES
-    depth_iterator = depth
-
-    while depth_iterator >= 0:
-        var_id = variable_id(varname, funcname, depth_iterator)
-        if var_id in VARIABLES[depth_iterator]:
-            offset_to_rbp = VARIABLES[depth_iterator][var_id].offset
-            return f"{offset_to_rbp}(%rbp)"
-        depth_iterator -= 1
-        
-    return f"{varname}"
 
 
 def get_variable(varname: str, funcname: str, depth: int):
@@ -166,13 +159,9 @@ def end_function_here():
     ])
 
 
-def write_scope(scope, depth: int):
-    pass
-
-
 def evaluate_scope(body, funcname, return_type, depth):
 
-    global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER
+    global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER
 
     if isinstance(body, dict):
 
@@ -182,14 +171,20 @@ def evaluate_scope(body, funcname, return_type, depth):
             
         evaluate_scope([body], funcname, return_type, depth)
         return
-
-        # evaluate_scope([body], funcname, return_type, depth)
+    
 
     for element in body:
         
         if element["action"] == "return":
+            
             if len(element["value"].keys()) != 0:
                 evaluate_expression(element["value"], funcname, depth)
+                asm.add([
+                    f"{COMMENT} returning value",
+                    f"pop %rax",
+                    ""
+                ])
+            
             end_function_here()
             continue
 
@@ -198,19 +193,24 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "vardef":
+
+            print(element)
+
             varname = element['name']
             vartype = element['type']
+            varsize = element["size"]
+
             var_id = variable_id(varname, funcname, depth)
             
-            var_size = VAR_SZ
+            memory_var_size = VAR_SZ * varsize
             
             asm.add([
                 f"{COMMENT} space for var {var_id}, type {vartype}",
-                f"sub ${var_size}, %rsp",
+                f"sub ${memory_var_size}, %rsp",
                 ""
             ])
 
-            VARIABLE_OFFSET += var_size
+            VARIABLE_OFFSET += memory_var_size
             # VARIABLES[depth][var_id] = (var_id, -VARIABLE_OFFSET, vartype)
             VARIABLES[depth][var_id] = Variable(varname, funcname, depth, -VARIABLE_OFFSET, vartype)
 
@@ -221,6 +221,8 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "varset":
+
+            print(element)
 
             evaluate_expression(element['value'], funcname, depth)
             var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
@@ -233,21 +235,18 @@ def evaluate_scope(body, funcname, return_type, depth):
                 f"pop %rax"
             ])
 
-            asm.add([f"mov %rax, {location}"])
-            asm.add("")
-
-            # if vartype in ["int", "float"]:
-            #     asm.add(f"mov %rax, {location}")
-            # elif vartype in ["bool"]:
-            #     asm.add(f"mov byte") 
-
-
-            # print(var_obj)
+            asm.add([
+                f"mov %rax, {location}",
+                ""
+            ])
             continue
 
         if element["action"] == "for":
 
-            asm.add([f"{COMMENT} Starting loop", ""])
+            asm.add([
+                f"{COMMENT} Starting loop", 
+                ""
+            ])
 
             VARIABLES.append({})
             # print(element["init"])
@@ -360,13 +359,46 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
 
+        if element["action"] == "while":
 
+            VARIABLES.append({})
 
+            WHILE_IDENTIFIER += 1
+            while_entry = f"while_entry_{WHILE_IDENTIFIER}"
+            while_out = f"while_out_{WHILE_IDENTIFIER}"
 
+            asm.add([
+                f"{COMMENT} while loop",
+                ""
+            ])
 
+            asm.add(f"{while_entry}:", indent=False)
+
+            evaluate_expression(element["condition"], funcname, depth + 1)
+            asm.add([
+                f"{COMMENT} checking while condition",
+                "pop %rax",
+                "test %rax, %rax",
+                f"jz {while_out}",
+                ""
+            ])
+
+            # print(element["body"])
+            evaluate_scope(element["body"], funcname, return_type, depth + 1)
             
+            asm.add([
+                f"{COMMENT} starting loop again",
+                f"jmp {while_entry}",
+                ""
+            ])
 
-        # print(element)
+            asm.add(f"{while_out}:", indent=False)
+
+            VARIABLES.pop()
+            continue
+
+
+        print(element)
 
         
 def define_function(funcname, return_type, arguments, scope, added):
@@ -421,6 +453,7 @@ def evaluate_expression(expr, funcname, depth: int):
         ">": "cmp %rax, %rbx\n\tsetl %bl\n\tmovzx %bl, %rbx",
         "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
         ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
+        "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
     }
 
     if expr["action"] == "var":
