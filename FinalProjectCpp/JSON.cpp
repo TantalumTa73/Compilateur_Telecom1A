@@ -102,14 +102,21 @@ JSON::JSON(string filename){
 
         } else if (c == ',' || c == '}' || c == ']'){
             
-            if (value != ""){
-                if (tree.back().vect != nullptr){
-                    // tree.back().vect ;
-                    v_cout << "Error in JSON : \',\' in vect\n";
-                } else if (tree.back().json != nullptr){
-                    tree.back().json->string_map[name] = value;
-                }
+            if (name != "" && value == "" && is_name && tree.back().vect != nullptr){
+                vv_cout << "int_vect : " << name << "\n";
+                JSON* json = new JSON();
+                json->string_map["action"] = "__int__";
+                json->int_map["value"] = stoi(name);
+                tree.back().vect->push_back(json);
+
+            } else if (value != "" && tree.back().vect != nullptr){
+                v_cout << "Error in JSON : \',\' in vect\n";
+                v_cout << name << " : " << value << "\n";
+
+            } else if (value != "" && tree.back().json != nullptr){
+                tree.back().json->string_map[name] = value;
             }
+            
 
             name = "";
             value = "";
