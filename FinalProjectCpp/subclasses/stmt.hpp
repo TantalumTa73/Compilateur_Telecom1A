@@ -100,7 +100,7 @@ class SvarDef : public Stmt {
     public:
         DataType type;
         string name;
-        int array_size;
+        vector<int> array_size;
         Expr* value;
         // SvarDef() : Stmt(VAR_DEF){
         //     type = "";
@@ -108,7 +108,7 @@ class SvarDef : public Stmt {
         //     array_size = 0 ;
         //     value = nullptr;
         // };
-        SvarDef(DataType type, string name, int array_size, Expr* value) : Stmt(VAR_DEF){
+        SvarDef(DataType type, string name, vector<int> array_size, Expr* value) : Stmt(VAR_DEF){
             this->type = type;
             this->name = name;
             this->array_size = array_size;
@@ -166,18 +166,22 @@ class Sexpr : public Stmt {
 class Sif : public Stmt {
     public:
         Expr* condition;
-        Stmt* body;
-        Sif() : Stmt(IF){
-            condition = nullptr;
-            body = nullptr;
-        };
-        Sif(Expr* condition, Stmt* body) : Stmt(IF){
+        Stmt* body_if;
+        Stmt* body_else;
+        // Sif() : Stmt(IF){
+        //     condition = nullptr;
+        //     body = nullptr;
+        // };
+        Sif(Expr* condition, Stmt* body_if, Stmt* body_else) : Stmt(IF){
             this->condition = condition;
-            this->body = body;
+            this->body_if = body_if;
+            this->body_else = body_else;
         };
         void print(string indent = "") override;
         vector<Tk> children() override {
-            return {(Tk)condition, (Tk)body};
+            if (body_else == nullptr)
+                return {(Tk)condition, (Tk)body_if};
+            return {(Tk)condition, (Tk)body_if, (Tk)body_else};
         }
         void on_enter() override;
 };

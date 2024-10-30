@@ -42,9 +42,9 @@ class GFunDef : public GStmt {
 
 class GVarDef : public GStmt {
     public:
-        string type;
+        DataType type;
         string name;
-        int array_size;
+        vector<int> array_size;
         Expr* value;
         // GVarDef() : GStmt(G_VAR_DEF){
         //     type = "";
@@ -52,7 +52,7 @@ class GVarDef : public GStmt {
         //     array_size = 0 ;
         //     value = nullptr;
         // };
-        GVarDef(string type, string name, int array_size,Expr* value) : 
+        GVarDef(DataType type, string name, vector<int> array_size,Expr* value) : 
         GStmt(G_VAR_DEF) {
             this->type = type;
             this->name = name;

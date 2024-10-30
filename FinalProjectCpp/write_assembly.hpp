@@ -25,15 +25,15 @@ void w_print(string str);
 // variables.cpp
 void w_init_var(int size);
 void w_init_global_var(string str);
-void w_set_var(string add, string op);
-// void w_set_global_var(string str, string op);
-void w_get_var(int val);
+// void w_set_var(string add, string op);
+void w_set_var(string op);
+// void w_get_var(int val);
 
 // push.cpp
 void w_push_cst(int val);
-// void w_push_local_var(int val);
-// void w_push_global_var(string str);
-void w_push_var(string str);
+// void w_push_var(string str);
+void w_push_var();
+void w_push_add(string str);
 
 // functions.cpp
 void w_init_f(string str); // init a function
@@ -45,7 +45,12 @@ void def_operators();
 void w_uniop(string op_name);
 void w_binop(string op_name);
 void w_ternop();
-void w_left_val_op(string op_name, string add);
+// void w_lrop(string op_name, string add);
+// void w_llop(string op, string add);
+void w_lrop(string op);
+void w_llop(string op);
+void w_rlop(string op);
+void w_array_get();
 
 // end.cpp
 void w_ret(bool main);

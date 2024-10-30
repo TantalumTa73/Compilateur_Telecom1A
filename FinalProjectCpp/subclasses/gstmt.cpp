@@ -16,7 +16,7 @@ void GFunDef::print(string indent){
 
 void GVarDef::print(string indent){
     v_cout << indent << "GVarDef: " << type << " " << name ;
-    if (array_size != 1) v_cout << "[" << array_size << "]";
+    for (auto i : array_size) v_cout << "[" << i << "]";
     v_cout << endl;
     if(value != nullptr){
         value->print(indent + "  ");

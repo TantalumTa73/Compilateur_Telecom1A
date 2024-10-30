@@ -52,13 +52,52 @@ void w_set_var(string add, string op){
         add_line("xor %rdx, %rdx");
         add_line("idivq %rbx");
         add_line("mov %rdx, "+add);
-    } else throw invalid_argument("op " + op + " is not implemented");
+    } else ERROR("op " + op + " is not implemented");
     add_line();
 }
 
-void w_get_var(int val){
-    add_line("get variable", true, true);
-    add_line("push " + std::to_string(val) + "(%rbp)");
+void w_set_var(string op){
+    // set local or global variable with the last value in the stack
+
+    add_line("set local variable : "+op, true, true);
+    if        (op == "=") {
+        add_line("pop %rbx");
+        add_line("pop %rax");
+        add_line("mov %rbx, (%rax)");
+
+    } else if (op == "+=") {
+        add_line("pop %rbx");
+        add_line("pop %rax");
+        add_line("add %rbx, (%rax)");
+    } else if (op == "-=") {
+        add_line("pop %rbx");
+        add_line("pop %rax");
+        add_line("sub %rbx, (%rax)");
+    } else if (op == "*=") {
+        add_line("pop %rbx");
+        add_line("pop %rax");
+        add_line("imul (%rax), %rbx");
+        add_line("mov %rbx, (%rax)");
+    } else if (op == "/=") {
+        add_line("pop %rbx");
+        add_line("pop %rcx");
+        add_line("mov (%rcx), %rax");
+        add_line("cqo");
+        add_line("idiv %rbx");
+        add_line("mov %rax, (%rcx)");
+    } else if (op == "%=") {
+        add_line("pop %rbx");
+        add_line("pop %rcx");
+        add_line("mov (%rcx), %rax");
+        add_line("cqo");
+        add_line("idiv %rbx");
+        add_line("mov %rdx, (%rcx)");
+    } else ERROR("op " + op + " is not implemented");
     add_line();
 }
-// .section .note.GNU-stack\n\t
+
+// void w_get_var(int val){
+//     add_line("get variable", true, true);
+//     add_line("push " + std::to_string(val) + "(%rbp)");
+//     add_line();
+// }

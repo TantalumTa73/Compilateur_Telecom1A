@@ -1,12 +1,14 @@
 #pragma once
+#include <assert.h>
 #include "../token.hpp"
+#include "expr.hpp"
 
 class LeftValue : public Token {
     public:
         LeftValue(TokenType t) : Token(t) {};
         void print(string indent = "") override ;
         // virtual string get_id() = 0;
-        virtual string get_address() = 0;
+        // virtual string get_address(int shift = 0) = 0;
 };
 
 class VarGet : public LeftValue {
@@ -19,40 +21,35 @@ class VarGet : public LeftValue {
             this->name = name;
         };
         void print(string indent = "") override;
+        // string get_address(int shift = 0) override;
+        void on_exit() override;
         vector<Tk> children() override {
             return {};
         }
-        string get_address() override {
-            Variable variable = find_var(name);
-            return variable.get_adress();
-        }
-        
 };
 
 class ArrayGet : public LeftValue {
     public:
         LeftValue* left_value;
         Expr* index;
-        ArrayGet() : LeftValue(ARRAY_GET) {
-            left_value = nullptr;
-            index = nullptr;
-        };
+        // ArrayGet() : LeftValue(ARRAY_GET) {
+        //     left_value = nullptr;
+        //     index = nullptr;
+        // };
         ArrayGet(LeftValue* left_value, Expr* index) : LeftValue(ARRAY_GET) {
             this->left_value = left_value;
             this->index = index;
             // ERROR("ArrayGet not implemented");
         };
         void print(string indent = "") override;
+        // string get_address(int shift = 0) override;
+        void on_exit() override;
         vector<Tk> children() override {
+            // if (index->tk_type == LITTERAL_INT)
+            //     return {};
             return {(Tk)left_value, (Tk)index};
         }
-        string get_address() override {
-            ERROR("ArrayGet not implemented");
-            string name ;
-            //  = left_value->get_address() + "[" + "]";
-            Variable variable = find_var(name);
-            return variable.get_adress();
-        }
+        
 };
 
 class LLop : public LeftValue {
@@ -68,16 +65,12 @@ class LLop : public LeftValue {
             this->op = op;
         };
         void print(string indent = "") override;
+        // string get_address(int shift = 0) override;
+        void on_exit() override;
         vector<Tk> children() override {
             return {(Tk)left_value};
         }
-        string get_address() override {
-            ERROR("LLop not implemented");
-            string name ;
-            //  = left_value->get_address() + "[" + "]";
-            Variable variable = find_var(name);
-            return variable.get_adress();
-        }
+        
 };
 
 class RLop : public LeftValue {
@@ -89,18 +82,15 @@ class RLop : public LeftValue {
         //     value = nullptr;
         // };
         RLop(string op, Expr* value) : LeftValue(RL_OP) {
+            assert(value != nullptr);
             this->op = op;
             this->value = value;
         };
         void print(string indent = "") override;
+        // string get_address(int shift = 0) override;
+        void on_exit() override;
         vector<Tk> children() override {
             return {(Tk)value};
         }
-        string get_address() override {
-            ERROR("RLop not implemented");
-            string name ;
-            //  = left_value->get_address() + "[" + "]";
-            Variable variable = find_var(name);
-            return variable.get_adress();
-        }
+        
 };

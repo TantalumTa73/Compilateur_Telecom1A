@@ -34,7 +34,7 @@ void Swhile::print(string indent){
 
 void SvarDef::print(string indent){
     v_cout << indent << "SvarDef: " << type << " " << name ;
-    if (array_size != 1) v_cout << "[" << array_size << "]";
+    for (auto i : array_size) v_cout << "[" << i << "]";
     v_cout << endl;
     if(value != nullptr){
         value->print(indent + "  ");
@@ -56,7 +56,9 @@ void Sexpr::print(string indent){
 void Sif::print(string indent){
     v_cout << indent << "Sif" << endl;
     condition->print(indent + "  ");
-    body->print(indent + "  ");
+    body_if->print(indent + "  ");
+    if (body_else != nullptr)
+        body_else->print(indent + "  ");
 }
 
 void SifElse::print(string indent){

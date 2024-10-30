@@ -17,11 +17,14 @@ Variable::Variable(string name, string fun_name, int offset, bool is_arg){
     this->is_arg = is_arg ;
 }
 
-string Variable::get_adress(){
-    if (fun_name == GLOBAL){
+string Variable::get_adress(int shift){
+    v_cout << "get_adress : " << name << " " << fun_name << " " << offset << " " << shift << "\n";
+    if (fun_name == GLOBAL && shift == 0){
         return name + "(%rip)";
+    } else if (fun_name == GLOBAL) {
+        return name + "+" + to_string(shift) + "(%rip)";
     } else {
-        return to_string(offset) + "(%rbp)";
+        return to_string(offset+shift) + "(%rbp)";
     }
 }
 

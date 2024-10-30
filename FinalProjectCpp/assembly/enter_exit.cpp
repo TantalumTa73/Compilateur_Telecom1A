@@ -26,25 +26,26 @@ void Sreturn::on_exit(){
 
 void GVarDef::on_exit(){
     // if (array_size != 1)
-    throw invalid_argument("global not implemented");
+    ERROR("global not implemented");
 
     // var_def_exit(name, type, array_size, called_contexts.back());
     w_init_global_var(name);
 }
 void SvarDef::on_exit(){
     // if (array_size != 1)
-    //     throw invalid_argument("array not implemented");
+    //     ERROR("array not implemented");
 
     // int size = get_size();
-    int size = SIZE_INT * array_size ;
+    // int size = SIZE_INT * array_size ;
+    int size = SIZE_INT * 1 ;
 
     // var_def_exit(name, type, size, );
 
-    string var_name = array_size == 1 ? name : name + "[" + "]";
+    // string var_name = array_size == 1 ? name : name + "[" + "]";
 
-    contexts[called_contexts.back()].init_var(var_name, size, false);
+    contexts[called_contexts.back()].init_var(name, size, false);
     v_cout << "initialize " << type << " " << name ;
-    if (array_size != 1) v_cout << "[" << array_size << "]" ;
+    // if (array_size != 1) v_cout << "[" << array_size << "]" ;
     v_cout << " in " << called_contexts.back() ;
     v_cout << " (" << size << ")\n";
 
@@ -84,7 +85,7 @@ void GFunDef::on_exit(){
 void FunCall::on_enter(){
     if (auto search = contexts.find(name); search == contexts.end()){
         v_cout << name << " unknown in contexts";
-        throw invalid_argument("unknown function");
+        ERROR("unknown function");
     }
 }
 
@@ -98,15 +99,29 @@ void FunCall::on_exit(){
 void SvarSet::on_exit(){
     // v_cout << variable_buffer.name << "'s function is : " << variable_buffer.fun_name << "\n";
     // v_cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
-    w_set_var(left_value->get_address(),op);
+    // w_set_var(left_value->get_address(),op);
 
+    v_cout << "Var Set : " << value->tk_type << "\n"; 
+    if (value->tk_type == LIST){
+        List* list = (List*)value;
+        add_line("set to list " + to_string(list->values.size()), true, true);
+        // for (auto v : list->values){
+        // }
+    } else {
+        w_set_var(op);
+    }
 }
 
 
 // GET_VAR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void ValueGet::on_exit(){
-    w_push_var(value->get_address());
+    // w_push_var(value->get_address());
+    w_push_var();
+}
+
+void List::on_enter(){
+    add_line("list " + to_string(values.size()), true, true);
 }
 
 // CST --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -118,22 +133,45 @@ void Int::on_enter(){
 
 // OP --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void LRop::on_exit(){
-    ERROR("LRop not implemented");
+// LeftValue
+
+void VarGet::on_exit(){
+    Variable var = find_var(name);
+
+    w_push_add(var.get_adress());
 }
-// void LLop::on_exit(){
-//     ERROR("LLop not implemented");
-// }
-// void RLop::on_exit(){
-//     ERROR("RLop not implemented");
-// }
+
+void ArrayGet::on_exit(){
+    w_array_get();
+}
+
+void LLop::on_exit(){
+    if (op == "++x" || op == "--x")
+        // w_llop(op, left_value->get_address());
+        w_llop(op);
+    else
+        ERROR(op+" unknown left_val_operators");
+}
+
+void RLop::on_exit(){
+    w_rlop(op);
+}
+
+// Expr
+
+void LRop::on_exit(){
+    // w_lrop(op, left_value->get_address());
+    w_lrop(op);
+}
 
 void Uniop::on_exit(){
     w_uniop(uniop);
 }
+
 void Binop::on_exit(){
     w_binop(binop);
 }
+
 void Ternop::on_exit(){
     w_ternop();
 }
@@ -142,14 +180,14 @@ void Ternop::on_exit(){
 // To Implement --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void Sfor::on_enter(){
-    throw invalid_argument("for not implemented");
+    ERROR("for not implemented");
 }
 void Swhile::on_enter(){
-    throw invalid_argument("while not implemented");
+    ERROR("while not implemented");
 }
 void Sif::on_enter(){
-    throw invalid_argument("if not implemented");
+    ERROR("if not implemented");
 }
 void SifElse::on_enter(){
-    throw invalid_argument("if else not implemented");
+    ERROR("if else not implemented");
 }

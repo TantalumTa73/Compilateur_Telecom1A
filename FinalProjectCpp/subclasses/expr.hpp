@@ -49,6 +49,7 @@ class List : public Expr {
             this->values = values;
         };
         void print(string indent = "") override;
+        void on_enter() override;
         vector<Tk> children() override {
             vector<Tk> res;
             for (auto v : values) {
