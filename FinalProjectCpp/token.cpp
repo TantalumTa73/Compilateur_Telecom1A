@@ -91,14 +91,16 @@ Token* Token::simplify(JSON* json){
         return new Sreturn(value);
     } else if (action == "for"){
         Stmt* init = (Stmt*) simplify(json->get_object("init"));
-        Expr* cond = (Expr*) simplify(json->get_object("cond"));
+        Expr* cond = (Expr*) simplify(json->get_object("condition"));
         Stmt* update = (Stmt*) simplify(json->get_object("update"));
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
-        return new Sfor(init, cond, update, body);
+        int label = _label_id++;
+        return new Sfor(init, cond, update, body, label);
     } else if (action == "while"){
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
-        return new Swhile(condition, body);
+        int label = _label_id++;
+        return new Swhile(condition, body, label);
     } else if (action == "vardef"){
         DataType type_enum = data_type(json->get_string("type"));
         string name = json->get_string("name");

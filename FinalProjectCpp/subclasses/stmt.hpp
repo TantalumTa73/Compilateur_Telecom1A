@@ -58,43 +58,57 @@ class Sfor : public Stmt {
         Expr* condition;
         Stmt* increment;
         Stmt* body;
-        Sfor() : Stmt(FOR){
-            init = nullptr;
-            condition = nullptr;
-            increment = nullptr;
-            body = nullptr;
-        };
-        Sfor(Stmt* init, Expr* condition, Stmt* increment, Stmt* body)
-        : Stmt(FOR){
+        Label* label_start ;
+        Label* label_end ;
+        Jz* goto_end ;
+        Jmp* goto_start ;
+
+        Sfor(Stmt* init, Expr* condition, Stmt* increment, Stmt* body, int label) : Stmt(FOR){
             this->init = init;
             this->condition = condition;
             this->increment = increment;
             this->body = body;
+            this->label_start = new Label("L" + to_string(label) + "_start_for");
+            this->label_end = new Label("L" + to_string(label) + "_end_for");
+            this->goto_end = new Jz("L" + to_string(label) + "_end_for");
+            this->goto_start = new Jmp("L" + to_string(label) + "_start_for");
         };
         void print(string indent = "") override;
         vector<Tk> children() override {
-            return {(Tk)init, (Tk)condition, (Tk)increment, (Tk)body};
+            return {
+                (Tk)init, (Tk) label_start,
+                (Tk)condition, (Tk) goto_end,
+                (Tk)body, (Tk)increment, 
+                (Tk) goto_start, (Tk) label_end
+            };
         }
-        void on_enter() override;
 };
 
 class Swhile : public Stmt {
     public:
         Expr* condition;
         Stmt* body;
-        Swhile() : Stmt(WHILE){
-            condition = nullptr;
-            body = nullptr;
-        };
-        Swhile(Expr* condition, Stmt* body) : Stmt(WHILE){
+        Label* label_start ;
+        Label* label_end ;
+        Jz* goto_end ;
+        Jmp* goto_start ;
+        Swhile(Expr* condition, Stmt* body, int label) : Stmt(WHILE){
             this->condition = condition;
             this->body = body;
+            this->label_start = new Label("L" + to_string(label) + "_start_while");
+            this->label_end = new Label("L" + to_string(label) + "_end_while");
+            this->goto_end = new Jz("L" + to_string(label) + "_end_while");
+            this->goto_start = new Jmp("L" + to_string(label) + "_start_while");
         };
         void print(string indent = "") override;
         vector<Tk> children() override {
-            return {(Tk)condition, (Tk)body};
+            return {
+                (Tk) label_start, 
+                (Tk) condition, (Tk) goto_end,
+                (Tk) body, (Tk) goto_start, (Tk) label_end
+            };
         }
-        void on_enter() override;
+        // void on_enter() override;
 };
 
 class SvarDef : public Stmt {

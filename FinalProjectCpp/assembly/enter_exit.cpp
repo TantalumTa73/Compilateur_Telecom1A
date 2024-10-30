@@ -192,19 +192,19 @@ void Jmp::on_enter(){
 }
 
 void Label::on_enter(){
-    add_line("Label",true,true);
+    // add_line("Label",true,true);
     add_line(label+":",false);
     add_line();
 }
 
 // To Implement -----------------------------
 
-void Sfor::on_enter(){
-    ERROR("for not implemented");
-}
-void Swhile::on_enter(){
-    ERROR("while not implemented");
-}
+// void Sfor::on_enter(){
+//     ERROR("for not implemented");
+// }
+// void Swhile::on_enter(){
+//     ERROR("while not implemented");
+// }
 void Sif::on_enter(){
     w_if();
     // else 
