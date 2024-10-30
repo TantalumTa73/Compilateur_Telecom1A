@@ -19,6 +19,7 @@ enum TokenType {
     STMT,
     SCOPE,
     RETURN,
+    KEYWORD,
     FOR,
     WHILE,
     VAR_DEF,

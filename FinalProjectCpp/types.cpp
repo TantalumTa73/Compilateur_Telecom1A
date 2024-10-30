@@ -15,6 +15,7 @@ TokenType token_type(string s){
     // Stmt
     if (s == "scope") return SCOPE;
     if (s == "return") return RETURN;
+    if (s == "keyword") return KEYWORD;
     if (s == "for") return FOR;
     if (s == "while") return WHILE;
     if (s == "vardef") return VAR_DEF;
@@ -82,6 +83,7 @@ std::ostream &operator<<(std::ostream &os, TokenType const &t) {
         case STMT: return os << "stmt";
         case SCOPE: return os << "scope";
         case RETURN: return os << "return";
+        case KEYWORD: return os << "keyword";
         case FOR: return os << "for";
         case WHILE: return os << "while";
         case VAR_DEF: return os << "vardef";

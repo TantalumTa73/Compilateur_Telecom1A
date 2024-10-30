@@ -89,6 +89,9 @@ Token* Token::simplify(JSON* json){
     } else if (action == "return"){
         Expr* value = (Expr*) simplify(json->get_object("value"));
         return new Sreturn(value);
+    } else if (action == "keyword"){
+        string keyword = json->get_string("keyword");
+        return new Skeyword(keyword);
     } else if (action == "for"){
         Stmt* init = (Stmt*) simplify(json->get_object("init"));
         Expr* cond = (Expr*) simplify(json->get_object("condition"));

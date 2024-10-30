@@ -18,6 +18,10 @@ void Sreturn::print(string indent){
     value->print(indent + "  ");
 }
 
+void Skeyword::print(string indent){
+    v_cout << indent << "Skeyword: " << keyword << endl;
+}
+
 void Sfor::print(string indent){
     v_cout << indent << "Sfor" << endl;
     init->print(indent + "  ");

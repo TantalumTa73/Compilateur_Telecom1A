@@ -52,6 +52,15 @@ class Sreturn : public Stmt {
         }
 };
 
+class Skeyword : public Stmt {
+    public:
+        string keyword;
+        Skeyword(string keyword) : Stmt(KEYWORD){
+            this->keyword = keyword;
+        };
+        void print(string indent = "") override;
+};
+
 class Sfor : public Stmt {
     public:
         Stmt* init;

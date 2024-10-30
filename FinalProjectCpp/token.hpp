@@ -48,12 +48,14 @@ class Arg ;
 class Stmt ; // abstract
 class Sscope ;
 class Sreturn ;
-class Sfor ;
-class Swhile ;
+class Skeyword ;
 class SvarDef ;
 class SvarSet ;
 class Sexpr ;
+class Sfor ;
+class Swhile ;
 class Sif ;
+class SifElse ;
 
 
 class Litteral ; // abstract
