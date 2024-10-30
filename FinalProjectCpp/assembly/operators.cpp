@@ -24,16 +24,18 @@ inline void def_binop(){
     binary_operators["/"] = "cqo\n\tidivq %rbx\n\tmov %rax, %rbx\n";
     binary_operators["%"] = "xor %rdx, %rdx\n\tidivq %rbx\n\tmov %rdx, %rbx\n";
 
-    // binary_operators["<="] = "\n";
-    // binary_operators["<"] = "\n";
-    // binary_operators[">="] = "\n";
-    // binary_operators[">"] = "\n";
-    // binary_operators["!="] = "\n";
-    // binary_operators["=="] = "\n";
+    binary_operators["<="] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsetge %bl\n";
+    binary_operators["<"] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsetg %bl\n";
+    binary_operators[">="] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsetle %bl\n";
+    binary_operators[">"] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsetl %bl\n";
+    binary_operators["!="] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsetne %bl\n";
+    binary_operators["=="] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsete %bl\n";
+    // https://c9x.me/x86/html/file_module_x86_id_288.html
+
     // test + cmov ?
 
     // binary_operators["&&"] = "\n"; // NEED TO BE LAZY
-    // binary_operators["||"] = "\n"; // NEED TO BE LAZY
+    // binary_operators["||"] = "\n"; // NEED TO BE LAZY (using cmov and nz ?)
 
     binary_operators["<<"] = "mov %rbx, %rcx\n\tsal %cl, %rax\n\tmov %rax, %rbx";
     binary_operators[">>"] = "mov %rbx, %rcx\n\tsar %cl, %rax\n\tmov %rax, %rbx";
