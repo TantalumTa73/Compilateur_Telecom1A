@@ -41,6 +41,7 @@ Token* Token::simplify(JSON* json){
 
     if (json == nullptr){
         ERROR("Token : json is null");
+        return nullptr;
     } else if (json->is_null()){
         return nullptr;
     } else if (!json->has_key("action")){
@@ -65,13 +66,11 @@ Token* Token::simplify(JSON* json){
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
         return new GFunDef(type, name, args, body);
     } else if (action == "gvardef"){
-        string type = json->get_string("type");
+        DataType type_enum = data_type(json->get_string("type"));
         string name = json->get_string("name");
-        string array_size = json->get_string("size");
-        // v_cout << "array_size : " << array_size << "\n";
-        int array_size_int = stoi(array_size);
+        vector<int> size = simplify_int(json->get_array("size"));
         Expr* value = (Expr*) simplify(json->get_object("value"));
-        return new GVarDef(type, name, array_size_int, value);
+        return new GVarDef(type_enum, name, size, value);
 
 
     } else if (action == "arg"){ // arg
@@ -97,13 +96,11 @@ Token* Token::simplify(JSON* json){
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
         return new Swhile(condition, body);
     } else if (action == "vardef"){
-        string type = json->get_string("type");
-        DataType type_enum = data_type(type);
+        DataType type_enum = data_type(json->get_string("type"));
         string name = json->get_string("name");
-        string array_size = json->get_string("size");
-        int array_size_int = stoi(array_size);
+        vector<int> size = simplify_int(json->get_array("size"));
         Expr* value = (Expr*) simplify(json->get_object("value"));
-        return new SvarDef(type_enum, name, array_size_int, value);
+        return new SvarDef(type_enum, name, size, value);
     } else if (action == "varset"){
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");
@@ -114,13 +111,14 @@ Token* Token::simplify(JSON* json){
         return new Sexpr(value);
     } else if (action == "if") {
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
-        Stmt* body = (Stmt*) simplify(json->get_object("body"));
-        return new Sif(condition, body);
-    } else if (action == "ifelse") {
-        Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
         Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
-        return new SifElse(condition, body_if, body_else);
+        return new Sif(condition, body_if, body_else);
+    // } else if (action == "ifelse") {
+    //     Expr* condition = (Expr*) simplify(json->get_object("condition"));
+    //     Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
+    //     Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
+    //     return new SifElse(condition, body_if, body_else);
 
 
     } else if (action == "void") { // litteral
@@ -208,6 +206,24 @@ vector<T> Token::simplify(vector<JSON*>* vect){
         T new_t = dynamic_cast<T>(simplify(json));
         assert(new_t != nullptr);
         new_tokens.push_back( new_t );
+    }
+
+    return new_tokens;
+}
+
+vector<int> Token::simplify_int(vector<JSON*>* vect){
+
+    if (vect == nullptr)
+        ERROR("Token : vect is null");
+
+    vector<int> new_tokens = vector<int>();
+    reverse(vect->begin(), vect->end()) ;
+   
+    while (vect->size() > 0){
+        JSON* json = vect->back();
+        vect->pop_back();
+        int val = json->get_int("value");
+        new_tokens.push_back( val );
     }
 
     return new_tokens;

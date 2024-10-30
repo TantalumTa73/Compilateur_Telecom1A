@@ -32,6 +32,7 @@ class Token {
         // vector<T> Token::simplify(vector<JSON*>* vect)
         template<typename T>
         static vector<T> simplify(vector<JSON*>* vect);
+        static vector<int> simplify_int(vector<JSON*>* vect);
 };
 
 using Tk = Token*;
@@ -53,7 +54,6 @@ class SvarDef ;
 class SvarSet ;
 class Sexpr ;
 class Sif ;
-class SifElse ;
 
 class Litteral ; // abstract
 class Void ;

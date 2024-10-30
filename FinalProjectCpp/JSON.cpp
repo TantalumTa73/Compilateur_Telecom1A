@@ -153,10 +153,10 @@ void JSON::print(string indent){
         v_cout << indent << '\'' << it->first << "\' : \'" << it->second << "\'\n";
     }
     for (auto it = int_map.begin(); it != int_map.end(); it++){
-        v_cout << indent << it->first << " : " << it->second << "\n";
+        v_cout << indent << "\'" << it->first << "\' : " << it->second << "\n";
     }
     for (auto it = bool_map.begin(); it != bool_map.end(); it++){
-        v_cout << indent << it->first << " : " << it->second << "\n";
+        v_cout << indent << "\'" << it->first << "\' : " << it->second << "\n";
     }
     for (auto it = array_map.begin(); it != array_map.end(); it++){
         v_cout << indent << "\'" << it->first << "\' : [\n";
