@@ -22,31 +22,24 @@ void Compiler::reversed_children_push(){
     // Push children in reverse order
     vector<Token*> body = actual_token->children();
     reverse(body.begin(), body.end());
-    for (auto t : body) {
-        stack.push_back(t);
-        v_cout << "|||> Pushed " << t->tk_type << " in stack\n";
-    }
+
+    for (auto t : body) stack.push_back(t);
 }
 
-// Make calulation for the actual node
-// void Compiler::run_node(){
-// }
 
-// Call on_exit() of if all children are done
 void Compiler::exit_token(){
     // If all children are done, call on_exit() and pop the node
     
-    // while (true){
-    while (called_tokens.size() > 0 && --called_tokens.back()->remained_children <= 0){
+    while (called_tokens.size() > 0 && called_tokens.back()->remained_children-- <= 0){
         
         called_tokens.back()->on_exit();
-        // v_cout << "|||< Popped " << called_tokens.back()->tk_type << " in stack\n";
         called_tokens.pop_back();
     }
     
 }
 
 void Compiler::free_tokens(Token* token){
+    if (token == nullptr) return;
     // if (token->children_().size() > 0){}
     //     for (auto child: token->children){
     //         free_tokens(child);
@@ -71,8 +64,8 @@ void Compiler::run(){
         actual_token->remained_children = actual_token->children().size();
 
 
-        if (actual_token->remained_children > 0) reversed_children_push();
-        else exit_token();
+        reversed_children_push();
+        exit_token();
 
     }
     //file.s
