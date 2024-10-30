@@ -120,8 +120,8 @@ stmt:
   | BREAK SEMICOLON { Skeyword("break",$loc) }
   | CONTINUE SEMICOLON { Skeyword("continue",$loc) }
 
-  | IF LP e = expr RP body = stmt { Sif(e,body,None,$loc) }
-  | IF LP e = expr RP body1 = stmt ELSE body2 = stmt { Sif(e,body1,Some body2,$loc) }
+  | IF LP e = expr RP body = stmt { Sif(e,body,$loc) }
+  | IF LP e = expr RP body1 = stmt ELSE body2 = stmt { SifElse(e,body1,body2,$loc) }
 ;
 
 left_value:

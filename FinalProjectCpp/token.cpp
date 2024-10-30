@@ -9,33 +9,37 @@
 #include "subclasses/root.hpp"
 #include "subclasses/stmt.hpp"
 
+int _label_id = 1 ;
+
 void Token::print(string indent){
     v_cout << indent << "Token: " << "\n";
 }
 
-// Token::Token(JSON* json) {
-//     // A non recursive function that will create a Token from a JSON object
-//     // type = "" ;
+/*
+Token::Token(JSON* json) {
+    // A non recursive function that will create a Token from a JSON object
+    // type = "" ;
 
-//     if (json == nullptr)
-//         ERROR("Token : json is null");
+    if (json == nullptr)
+        ERROR("Token : json is null");
 
-//     // vector<Tk> tokens = vector<Tk>();
-//     // vector<string> keys = vector<string>();
+    // vector<Tk> tokens = vector<Tk>();
+    // vector<string> keys = vector<string>();
 
-//     // Root* root = new Root();
+    // Root* root = new Root();
 
-//     // while (tokens.size() > 0){
-//     //     Tk token = tokens.back();
-//     //     tokens.pop_back();
+    // while (tokens.size() > 0){
+    //     Tk token = tokens.back();
+    //     tokens.pop_back();
 
-//     //     if (token->type == "GStmt"){
-//     //         root->gstmts.push_back((GStmt*) token);
-//     //     }
-//     // }
-//     // if (json->has_string("type")) type = json->get_string("type");
-//     // else ERROR("Error in Token : no type\n");
-// }
+    //     if (token->type == "GStmt"){
+    //         root->gstmts.push_back((GStmt*) token);
+    //     }
+    // }
+    // if (json->has_string("type")) type = json->get_string("type");
+    // else ERROR("Error in Token : no type\n");
+}
+*/
 
 Token* Token::simplify(JSON* json){
 
@@ -46,8 +50,8 @@ Token* Token::simplify(JSON* json){
         return nullptr;
     } else if (!json->has_key("action")){
         ERROR("Error in Token : no action\n");
-    } else if (! json->has_string("action")){
-        ERROR("Error in Token : no string type\n");
+    } else if (!json->has_string("action")){
+        ERROR("Error in Token : no string action\n");
     }
 
     string action = json->get_string("action");
@@ -111,14 +115,15 @@ Token* Token::simplify(JSON* json){
         return new Sexpr(value);
     } else if (action == "if") {
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
+        Stmt* body_if = (Stmt*) simplify(json->get_object("body"));
+        int label = _label_id++;
+        return new Sif(condition, body_if, label);
+    } else if (action == "ifelse") {
+        Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
         Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
-        return new Sif(condition, body_if, body_else);
-    // } else if (action == "ifelse") {
-    //     Expr* condition = (Expr*) simplify(json->get_object("condition"));
-    //     Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
-    //     Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
-    //     return new SifElse(condition, body_if, body_else);
+        int label = _label_id++;
+        return new SifElse(condition, body_if, body_else, label);
 
 
     } else if (action == "void") { // litteral

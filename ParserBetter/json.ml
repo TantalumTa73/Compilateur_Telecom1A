@@ -123,13 +123,16 @@ and toJSONstmt = function
   | Skeyword(k, p) -> `Assoc ([
     "action", `String "keyword" ;
     "keyword", `String k ] @ pos p)
-  | Sif(c, s1, s2, p) -> `Assoc ([
+  | Sif(c, s1, p) -> `Assoc ([
     "action", `String "if" ;
     "condition", toJSONexpr c ;
+    "body", toJSONstmt s1 ;
+    ] @ pos p)
+  | SifElse(c, s1, s2, p) -> `Assoc ([
+    "action", `String "ifelse" ;
+    "condition", toJSONexpr c ;
     "body_if", toJSONstmt s1 ;
-    "body_else", match s2 with
-      | None -> `Assoc ([])
-      | Some x -> toJSONstmt x 
+    "body_else", toJSONstmt s2 ;
     ] @ pos p)
     
 and toJSONlitteral = function

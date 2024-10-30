@@ -54,15 +54,15 @@ void Sexpr::print(string indent){
 }
 
 void Sif::print(string indent){
-    v_cout << indent << "Sif" << endl;
+    v_cout << indent << "Sif ( " ;
+    v_cout << label_endif->label << " )" << endl;
     condition->print(indent + "  ");
-    body_if->print(indent + "  ");
-    if (body_else != nullptr)
-        body_else->print(indent + "  ");
+    body->print(indent + "  ");
 }
 
 void SifElse::print(string indent){
-    v_cout << indent << "SifElse" << endl;
+    v_cout << indent << "SifElse ( " << label_else->label << ",  " ;
+    v_cout << label_endif->label << " )" << endl;
     condition->print(indent + "  ");
     body_if->print(indent + "  ");
     body_else->print(indent + "  ");

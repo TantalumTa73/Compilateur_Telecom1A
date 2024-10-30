@@ -25,8 +25,8 @@ and stmt =
 
   | Skeyword of string * ppos
 
-  | Sif of expr * stmt * stmt option * ppos
-  (* | SifElse of expr * stmt * stmt * ppos *)
+  | Sif of expr * stmt * ppos
+  | SifElse of expr * stmt * stmt * ppos
 
 and litteral = 
   | Void of ppos

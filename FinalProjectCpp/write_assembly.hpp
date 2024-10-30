@@ -45,8 +45,6 @@ void def_operators();
 void w_uniop(string op_name);
 void w_binop(string op_name);
 void w_ternop();
-// void w_lrop(string op_name, string add);
-// void w_llop(string op, string add);
 void w_lrop(string op);
 void w_llop(string op);
 void w_rlop(string op);
@@ -55,3 +53,7 @@ void w_array_get();
 // end.cpp
 void w_ret(bool main);
 void end();
+
+// if_else.cpp
+void w_if();
+void w_if_else();

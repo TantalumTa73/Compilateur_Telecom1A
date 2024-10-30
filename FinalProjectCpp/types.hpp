@@ -47,7 +47,12 @@ enum TokenType {
     LR_OP,
     UNIOP,
     BINOP,
-    TERNOP
+    TERNOP,
+
+    // Assembly
+    JZ,
+    JMP,
+    LABEL
 };
 
 

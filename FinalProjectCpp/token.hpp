@@ -55,6 +55,7 @@ class SvarSet ;
 class Sexpr ;
 class Sif ;
 
+
 class Litteral ; // abstract
 class Void ;
 class Int ;
@@ -77,3 +78,8 @@ class LRop ;
 class Uniop ;
 class Binop ;
 class Ternop ;
+
+class Assembly ; // abstract
+class Jeq ;
+class Jmp ;
+class Label ;

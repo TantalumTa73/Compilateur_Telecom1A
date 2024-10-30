@@ -1,5 +1,6 @@
 #pragma once
 #include "../token.hpp"
+#include "assembly.hpp"
 
 class Stmt : public Token {
     public:
@@ -166,22 +167,22 @@ class Sexpr : public Stmt {
 class Sif : public Stmt {
     public:
         Expr* condition;
-        Stmt* body_if;
-        Stmt* body_else;
+        Stmt* body;
+        Jz* goto_end ;
+        Label* label_endif ;
         // Sif() : Stmt(IF){
         //     condition = nullptr;
         //     body = nullptr;
         // };
-        Sif(Expr* condition, Stmt* body_if, Stmt* body_else) : Stmt(IF){
+        Sif(Expr* condition, Stmt* body, int label) : Stmt(IF){
             this->condition = condition;
-            this->body_if = body_if;
-            this->body_else = body_else;
+            this->body = body;
+            this->goto_end = new Jz("L" + to_string(label) + "_endif");
+            this->label_endif = new Label("L" + to_string(label) + "_endif");
         };
         void print(string indent = "") override;
         vector<Tk> children() override {
-            if (body_else == nullptr)
-                return {(Tk)condition, (Tk)body_if};
-            return {(Tk)condition, (Tk)body_if, (Tk)body_else};
+            return {(Tk)condition, (Tk) goto_end,(Tk) body, (Tk) label_endif};
         }
         void on_enter() override;
 };
@@ -191,19 +192,31 @@ class SifElse : public Stmt {
         Expr* condition;
         Stmt* body_if;
         Stmt* body_else;
-        SifElse() : Stmt(IF_ELSE){
-            condition = nullptr;
-            body_if = nullptr;
-            body_else = nullptr;
-        };
-        SifElse(Expr* condition, Stmt* body_if, Stmt* body_else) : Stmt(IF_ELSE){
+        Jz* goto_else ;
+        Jmp* end_if ;
+        Label* label_endif ;
+        Label* label_else ;
+        // Sif() : Stmt(IF){
+        //     condition = nullptr;
+        //     body = nullptr;
+        // };
+        SifElse(Expr* condition, Stmt* body_if, Stmt* body_else, int label) : Stmt(IF){
             this->condition = condition;
             this->body_if = body_if;
             this->body_else = body_else;
+            this->goto_else = new Jz("L" + to_string(label) + "_else");
+            this->label_else = new Label("L" + to_string(label) + "_else");
+            this->end_if = new Jmp("L" + to_string(label) + "_endif");
+            this->label_endif = new Label("L" + to_string(label) + "_endif");
         };
         void print(string indent = "") override;
         vector<Tk> children() override {
-            return {(Tk)condition, (Tk)body_if, (Tk)body_else};
+            return {
+                (Tk) condition, (Tk) goto_else,
+                (Tk) body_if, (Tk) end_if, 
+                (Tk) label_else, (Tk) body_else,
+                (Tk) label_endif
+            };
         }
         void on_enter() override;
 };
