@@ -15,6 +15,7 @@ set -e
 ./Bash/build-finalproject-cpp.sh || (echo "Failed to build finalproject-cpp"; exit 1;)
 
 touch "$s_file" || (echo "Failed to create file"; exit 1;)
+touch "file.s" || (echo "Failed to create sample s file"; exit 1;)
 
 ./ParserBetter/expr2json.exe "$c_file"  >> log.txt || (echo "Failed to run expr2json"; exit 1;)
 ./FinalProjectCpp/build/main $json_file $2 || (echo "Failed to run finalproject-cpp"; exit 1;)

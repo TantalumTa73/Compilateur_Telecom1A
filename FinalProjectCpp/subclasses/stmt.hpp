@@ -59,6 +59,7 @@ class Skeyword : public Stmt {
             this->keyword = keyword;
         };
         void print(string indent = "") override;
+        void on_enter() override; 
 };
 
 class Sfor : public Stmt {

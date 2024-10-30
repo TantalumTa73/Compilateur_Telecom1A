@@ -199,6 +199,16 @@ void Label::on_enter(){
 
 // To Implement -----------------------------
 
+void Skeyword::on_enter(){
+    if (keyword == "break"){
+        ERROR("Keyword on_enter : continue not implemented");
+    } else if (keyword == "continue") {
+        ERROR("Keyword on_enter : continue not implemented");
+    } else {
+        ERROR("Keyword on_enter : undefined keyword "+ keyword);
+    }
+}
+
 // void Sfor::on_enter(){
 //     ERROR("for not implemented");
 // }
@@ -206,11 +216,9 @@ void Label::on_enter(){
 //     ERROR("while not implemented");
 // }
 void Sif::on_enter(){
-    w_if();
-    // else 
-
+    add_line("if",true,true);
 }
+
 void SifElse::on_enter(){
-    // ERROR("if else not implemented");
-    w_if_else();
+    add_line("if-else",true,true);
 }
