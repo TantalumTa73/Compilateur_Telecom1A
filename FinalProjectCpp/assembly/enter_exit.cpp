@@ -44,10 +44,10 @@ void SvarDef::on_exit(){
     // string var_name = array_size == 1 ? name : name + "[" + "]";
 
     contexts[called_contexts.back()].init_var(name, size, false);
-    v_cout << "initialize " << type << " " << name ;
-    // if (array_size != 1) v_cout << "[" << array_size << "]" ;
-    v_cout << " in " << called_contexts.back() ;
-    v_cout << " (" << size << ")\n";
+    // v_cout << "initialize " << type << " " << name ;
+    // // if (array_size != 1) v_cout << "[" << array_size << "]" ;
+    // v_cout << " in " << called_contexts.back() ;
+    // v_cout << " (" << size << ")\n";
 
     w_init_var(size);
 }
@@ -56,13 +56,12 @@ void SvarDef::on_exit(){
 // DEF_FUNCTION --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GFunDef::on_enter(){
-    v_cout << "defining " << name << " function\n";
+    // v_cout << "defining " << name << " function\n";
     Context f = Context(name);
     contexts.insert({name, f});
 
     called_contexts.push_back(name);
-    v_cout << "called_contexts' back : " << called_contexts.back() << "\n" ;
-    v_cout << "called_contexts' back : " << called_contexts.back() << "\n" ;
+    // v_cout << "called_contexts' back : " << called_contexts.back() << "\n" ;
 
     if (name == GLOBAL) { return; }
 

@@ -25,10 +25,10 @@ int main(int argc, char** argv) {
     Tk token = Token::simplify(json) ;
     token->print();
     v_cout << endl;
-    // Root* root = dynamic_cast<Root*>(token);
-
-    // Compiler compiler = Compiler(root);
-    // compiler.run();
+    
+    Root* root = dynamic_cast<Root*>(token);
+    Compiler compiler = Compiler(root);
+    compiler.run();
 
 
     return 0;

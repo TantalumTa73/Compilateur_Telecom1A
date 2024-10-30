@@ -29,8 +29,8 @@ class Compiler {
         
         void init_compiling();
         void reversed_children_push(); // into stack
-        void push_called_token();
-        void pop_called_token();
+        void run_node();
+        void exit_token();
         void free_tokens(Token* token);
 
 };
