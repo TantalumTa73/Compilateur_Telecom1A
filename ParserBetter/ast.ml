@@ -7,7 +7,7 @@ type program =
 
 and global_stmt =
   | GFunDef of string * string * arg list * stmt * ppos
-  | GVarDef of string * string * int * expr option * ppos
+  | GVarDef of string * string * int list * expr option * ppos
 
 and arg =
   | Arg of string * string * ppos
@@ -15,21 +15,18 @@ and arg =
 and stmt =  
   | Sscope of stmt list  * ppos
   | Sreturn of expr option * ppos
-  (* | SreturnVoid of ppos *)
-
+  
   | Sfor of stmt * expr * stmt * stmt * ppos (* s1 ; cond ; s2 {} *)
   | Swhile of expr * stmt * ppos
 
-  (* | SvarDef of string * string * ppos *)
-  (* | SvarDef of string * string * int * expr option * ppos *)
-  | SvarDef2 of string * string * int list * expr option * ppos
+  | SvarDef of string * string * int list * expr option * ppos
   | SvarSet of left_value * assingop * expr * ppos
   | Sexpr of expr * ppos
 
   | Skeyword of string * ppos
 
-  | Sif of expr * stmt * ppos
-  | SifElse of expr * stmt * stmt * ppos
+  | Sif of expr * stmt * stmt option * ppos
+  (* | SifElse of expr * stmt * stmt * ppos *)
 
 and litteral = 
   | Void of ppos

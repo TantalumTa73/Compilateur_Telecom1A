@@ -1,7 +1,11 @@
 #include <stdbool.h>
 
-int f() {
+int f() {}
 
+int f2(){
+    int x ;
+    {}
+    int y ;
 }
 
 int g() {

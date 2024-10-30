@@ -73,14 +73,10 @@ data_type:
 ;
 
 global_stmt:
-  | t = data_type id = IDENT LBR n = LITTERAL RBR SEMICOLON
-    { GVarDef(t,id,n, None, $loc) }
-  | t = data_type id = IDENT LBR n = LITTERAL RBR EQ e = expr SEMICOLON
-    { GVarDef(t,id,n, Some e, $loc) }
-  | t = data_type id = IDENT SEMICOLON
-    { GVarDef(t,id,1, None, $loc) }
-  | t = data_type id = IDENT EQ e = expr SEMICOLON
-    { GVarDef(t,id,1, Some e, $loc) }
+  | t = data_type id = IDENT l = list(array_size) SEMICOLON
+    { GVarDef(t,id,l, None, $loc) }
+  | t = data_type id = IDENT l = list(array_size) EQ e = expr SEMICOLON
+    { GVarDef(t,id,l, Some e, $loc) }
 
   | t = data_type f = IDENT LP args = separated_list(COMMA, arg) RP body = stmt 
     { GFunDef(t,f,args,body, $loc) }
@@ -102,16 +98,10 @@ simple_stmt:
   | RETURN e = expr { Sreturn(Some e, $loc) }
   | RETURN { Sreturn(None, $loc) }
 
-  // | t = data_type id = IDENT
-  //   { SvarDef(t,id,1,None, $loc) }
-  // | t = data_type id = IDENT EQ e = expr 
-  //   { SvarDef(t,id,1,Some e, $loc) }
-  // | t = data_type id = IDENT LBR n = LITTERAL RBR 
-  //   { SvarDef(t,id,n, None, $loc) }
-  // | t = data_type id = IDENT LBR n = LITTERAL RBR EQ e = expr
-  //   { SvarDef(t,id,n, Some e, $loc) }
   | t = data_type id = IDENT l = list(array_size)
-    { SvarDef2(t,id,l, None, $loc) }
+    { SvarDef(t,id,l, None, $loc) }
+  | t = data_type id = IDENT l = list(array_size) EQ e = expr 
+    { SvarDef(t,id,l, Some e, $loc) }
 
   | id = left_value o = assignop e = expr { SvarSet(id,o,e, $loc) }
   | e = expr { Sexpr(e, $loc) }
@@ -130,8 +120,8 @@ stmt:
   | BREAK SEMICOLON { Skeyword("break",$loc) }
   | CONTINUE SEMICOLON { Skeyword("continue",$loc) }
 
-  | IF LP e = expr RP body = stmt { Sif(e,body,$loc) }
-  | IF LP e = expr RP body1 = stmt ELSE body2 = stmt { SifElse(e,body1,body2,$loc) }
+  | IF LP e = expr RP body = stmt { Sif(e,body,None,$loc) }
+  | IF LP e = expr RP body1 = stmt ELSE body2 = stmt { Sif(e,body1,Some body2,$loc) }
 ;
 
 left_value:

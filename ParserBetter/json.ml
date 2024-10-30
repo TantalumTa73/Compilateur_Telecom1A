@@ -67,14 +67,14 @@ and toJSONgstmt = function
     "name", `String n ;
     "args", `List (List.map toJSONarg a) ;
     "body", toJSONstmt b ] @ pos p)
-  | GVarDef(t, n, i, e, p) -> `Assoc ([
+  | GVarDef(t, n, l, e, p) -> `Assoc ([
     "action", `String "gvardef" ;
     "type", `String t ;
     "name", `String n ;
-    "size", `Int i ;
+    "size", `List (List.map (fun x -> `Int x) l) ;
     "value", match e with
       | None -> `Assoc ([])
-      | Some x -> toJSONexpr x 
+      | Some x -> toJSONexpr x
     ] @ pos p)
 
 and toJSONarg = function
@@ -93,9 +93,6 @@ and toJSONstmt = function
       | None -> toJSONlitteral (Void p)
       | Some x -> toJSONexpr x
     ] @ pos p)
-  (* | SreturnVoid(p) -> `Assoc ([
-    "action", `String "return" ;
-    "value",  ] @ pos p) *)
   | Sfor(i, c, u, b, p) -> `Assoc ([
     "action", `String "for" ;
     "init", toJSONstmt i ;
@@ -106,26 +103,11 @@ and toJSONstmt = function
     "action", `String "while" ;
     "condition", toJSONexpr e ;
     "body", toJSONstmt s ] @ pos p)
-  (* | SvarDef(t, n, p) -> `Assoc ([
-    "action", `String "vardef" ;
-    "type", `String t ;
-    "name", `String n ;
-    "value", `Assoc ([]) ] @ pos p) *)
-  (* | SvarDef(t, n, i,e, p) -> `Assoc ([
-    "action", `String "vardef" ;
-    "type", `String t ;
-    "name", `String n ;
-    "size", `Int i ;
-    "value", match e with
-      | None -> `Assoc ([])
-      | Some x -> toJSONexpr x
-    ] @ pos p) *)
-  | SvarDef2(t, n, l, e, p) -> `Assoc ([
+  | SvarDef(t, n, l, e, p) -> `Assoc ([
     "action", `String "vardef" ;
     "type", `String t ;
     "name", `String n ;
     "size", `List (List.map (fun x -> `Int x) l) ;
-    (* "size", `List (List.map (fun x -> `Assoc (["elm",`Int x]) ) l) ; *)
     "value", match e with
       | None -> `Assoc ([])
       | Some x -> toJSONexpr x
@@ -141,15 +123,14 @@ and toJSONstmt = function
   | Skeyword(k, p) -> `Assoc ([
     "action", `String "keyword" ;
     "keyword", `String k ] @ pos p)
-  | Sif(e, s, p) -> `Assoc ([
+  | Sif(c, s1, s2, p) -> `Assoc ([
     "action", `String "if" ;
-    "condition", toJSONexpr e ;
-    "body", toJSONstmt s ] @ pos p)
-  | SifElse(e, s1, s2, p) -> `Assoc ([
-    "action", `String "ifelse" ;
-    "condition", toJSONexpr e ;
+    "condition", toJSONexpr c ;
     "body_if", toJSONstmt s1 ;
-    "body_else", toJSONstmt s2 ] @ pos p)
+    "body_else", match s2 with
+      | None -> `Assoc ([])
+      | Some x -> toJSONstmt x 
+    ] @ pos p)
     
 and toJSONlitteral = function
   | Void p -> `Assoc ([
