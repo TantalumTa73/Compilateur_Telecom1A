@@ -23,8 +23,6 @@ class Sscope : public Stmt {
             this->ctx = ctx ;
         };
 
-        // unordered_map<string, Variable> vars;
-        // void init_var(string var_name, bool is_arg);
         void print(string indent = "") override;
         void on_enter() override ;
         void on_exit() override ;

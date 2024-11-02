@@ -16,19 +16,18 @@ void Sreturn::on_exit(){
 
 // DEF_VAR -----------------------------
 
-// inline void var_def_exit(string name, string type, int array_size, string ctx){
-//     int size ;
-    
-
-//     contexts[ctx].init_var(name, size, false);
-//     v_cout << "initialize " << name << " in " << ctx << "\n"; 
-// }
-
 void GVarDef::on_exit(){
     // if (array_size != 1)
     ERROR("global not implemented");
 
     // var_def_exit(name, type, array_size, called_contexts.back());
+    // inline void var_def_exit(string name, string type, int array_size, string ctx){
+    //     int size ;
+        
+
+    //     contexts[ctx].init_var(name, size, false);
+    //     v_cout << "initialize " << name << " in " << ctx << "\n"; 
+    // }
     w_init_global_var(name);
 }
 void SvarDef::on_exit(){
@@ -38,15 +37,10 @@ void SvarDef::on_exit(){
     int size = type_size(type);
     for (auto d : array_size) size *= d;
 
+    int address = contexts[called_contexts.back()].var_offset;
     contexts[called_contexts.back()].init_var(name, size, false);
-    // v_cout << "initialize " << type << " " << name ;
-    // v_cout << " in " << called_contexts.back() ;
-    // v_cout << " (" << size << ")\n";
-    // v_cout << "ctx : " ;
-    // for (auto c : called_contexts) v_cout << c << " ";
-    // v_cout << "\n";
 
-    w_init_var(size);
+    w_init_var(size,address);
 }
 
 
