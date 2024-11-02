@@ -37,7 +37,7 @@ void SvarDef::on_exit(){
     int size = type_size(type);
     for (auto d : array_size) size *= d;
 
-    int address = contexts[called_contexts.back()].var_offset;
+    int address = (value == nullptr) ? 0 : contexts[called_contexts.back()].var_offset;
     contexts[called_contexts.back()].init_var(name, size, false);
 
     w_init_var(size,address);

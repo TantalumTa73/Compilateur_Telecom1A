@@ -10,8 +10,8 @@
 void w_init_var(int size, int address){
     add_line("init local variable", true, true);
     if (address != 0) {
-        add_line("pop %rax");
-        add_line("mov %rax, " + std::to_string(address) + "(%rbp)");
+        // add_line("pop %rax");
+        add_line("pop " + std::to_string(address) + "(%rbp)");
     }
     add_line("sub $" + std::to_string(size) + ", %rsp");
     add_line();
