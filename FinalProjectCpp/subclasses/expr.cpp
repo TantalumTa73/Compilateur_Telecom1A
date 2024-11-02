@@ -37,9 +37,8 @@ void Uniop::print(string indent){
 }
 
 void Binop::print(string indent){
-    v_cout << indent << "Binop" << endl;
+    v_cout << indent << "Binop : " << binop << endl;
     v1->print(indent + "  ");
-    v_cout << indent + "  " << binop << endl;
     v2->print(indent + "  ");
 }
 

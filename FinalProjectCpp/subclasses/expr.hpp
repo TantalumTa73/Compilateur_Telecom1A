@@ -18,7 +18,7 @@ class Expr : public Token {
 //             this->value = value;
 //         };
 //         void print(string indent = "") override;
-//         vector<Tk> children() override {
+//         vector<Tk> children(string) override {
 //             return {(Tk)value} ;
 //         }
 // };
@@ -34,7 +34,7 @@ class ValueGet : public Expr {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)value};
         }
 };
@@ -50,7 +50,7 @@ class List : public Expr {
         };
         void print(string indent = "") override;
         void on_enter() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             vector<Tk> res;
             for (auto v : values) {
                 res.push_back((Tk)v);
@@ -74,7 +74,7 @@ class FunCall : public Expr {
         void print(string indent = "") override;
         void on_enter() override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             vector<Tk> res;
             for (auto a : args) {
                 res.push_back((Tk)a);
@@ -97,7 +97,7 @@ class LRop : public Expr {
             this->left_value = left_value;
         };
         void print(string indent = "") override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)left_value};
         }
         void on_exit() override;
@@ -116,7 +116,7 @@ class Uniop : public Expr {
             this->value = value;
         };
         void print(string indent = "") override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)value};
         }
         void on_exit() override;
@@ -139,7 +139,7 @@ class Binop : public Expr {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)v1, (Tk)v2};
         }
 };
@@ -160,7 +160,7 @@ class Ternop : public Expr {
             this->v2 = v2;
         };
         void print(string indent = "") override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)condition, (Tk)v1, (Tk)v2};
         }
         void on_exit() override;

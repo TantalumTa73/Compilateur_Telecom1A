@@ -8,8 +8,8 @@ struct Variable {
 
     public:
         string name;
-        string fun_name;
-        int offset;
+        string ctx_name;
+        int adress;
         bool is_arg;
         Variable();
         Variable(string name, string fun_name, int offset, bool is_arg);
@@ -24,12 +24,12 @@ class Context {
         unordered_map<string, Variable> vars;
 
         Context();
-        Context(string name_);
+        Context(string name_, int offset = 0);
 
         void init_var(string var_name, int size, bool is_arg);
 
-    private:
         int var_offset;
+    private:
         int arg_offset;
 };
 

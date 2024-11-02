@@ -26,6 +26,8 @@ class Compiler {
 
         vector<Token*> called_tokens;
         vector<Token*> stack;
+        vector<string> break_stack ;
+        vector<string> continue_stack ;
         
         void init_compiling();
         void reversed_children_push(); // into stack

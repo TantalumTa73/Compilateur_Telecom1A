@@ -10,6 +10,8 @@
 #include "subclasses/stmt.hpp"
 
 int _label_id = 1 ;
+int _scope_id = 1 ;
+vector<string> _scope_stack = vector<string>();
 
 void Token::print(string indent){
     v_cout << indent << "Token: " << "\n";
@@ -59,6 +61,7 @@ Token* Token::simplify(JSON* json){
     // v_cout << "simplify : " << action << "\n";
 
     if        (action == "__root__"){
+        _scope_stack.push_back("__root__");
         vector<GStmt*> gstmts = simplify<GStmt*>(json->get_array("gstmts"));
         return new Root(gstmts);
 
@@ -66,8 +69,14 @@ Token* Token::simplify(JSON* json){
     } else if (action == "fundef"){ // gstmt
         string type = json->get_string("type");
         string name = json->get_string("name");
+        _scope_stack.push_back(name);
         vector<Arg*> args = simplify<Arg*>(json->get_array("args"));
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
+        // if (body->tk_type == SCOPE){
+        //     Sscope* scope = (Sscope*) body;
+        //     scope->name = name;
+        // }
+        _scope_stack.pop_back();
         return new GFunDef(type, name, args, body);
     } else if (action == "gvardef"){
         DataType type_enum = data_type(json->get_string("type"));
@@ -84,8 +93,14 @@ Token* Token::simplify(JSON* json){
 
 
     } else if (action == "scope"){ // stmt
+        int id = _scope_id++;
+        string name = "scope_" + to_string(id);
+        string ctx = _scope_stack.back();
+        // v_cout << "new scope " + name + " in " << ctx << "\n";
+        _scope_stack.push_back(name);
         vector<Stmt*> body = simplify<Stmt*>(json->get_array("body"));
-        return new Sscope(body);
+        _scope_stack.pop_back();
+        return new Sscope(name,body,ctx);
     } else if (action == "return"){
         Expr* value = (Expr*) simplify(json->get_object("value"));
         return new Sreturn(value);

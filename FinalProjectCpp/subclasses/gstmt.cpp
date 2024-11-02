@@ -8,9 +8,9 @@ void GStmt::print(string indent){
 
 void GFunDef::print(string indent){
     v_cout << indent << "GFunDef: " << type << " " << name << "\n";
-    // for(auto v : args){
-    //     v->print(indent + "  ");
-    // }
+    for(auto v : args){
+        v->print(indent + "  ");
+    }
     body->print(indent + "  ");
 }
 

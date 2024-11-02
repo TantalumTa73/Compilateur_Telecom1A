@@ -35,28 +35,25 @@ void SvarDef::on_exit(){
     // if (array_size != 1)
     //     ERROR("array not implemented");
 
-    int size ;
-    switch (type){
-        case INT: size = SIZE_INT; break;
-        case CHAR: size = SIZE_CHAR; break;
-        case PTR: size = SIZE_PTR; break;
-        default: ERROR("unknown type");
-    }
+    int size = type_size(type);
     for (auto d : array_size) size *= d;
 
     contexts[called_contexts.back()].init_var(name, size, false);
-    v_cout << "initialize " << type << " " << name ;
-    v_cout << " in " << called_contexts.back() ;
-    v_cout << " (" << size << ")\n";
+    // v_cout << "initialize " << type << " " << name ;
+    // v_cout << " in " << called_contexts.back() ;
+    // v_cout << " (" << size << ")\n";
+    // v_cout << "ctx : " ;
+    // for (auto c : called_contexts) v_cout << c << " ";
+    // v_cout << "\n";
 
     w_init_var(size);
 }
 
 
-// DEF_FUNCTION -----------------------------
+// DEF_FUNCTION SCOPE -----------------------------
 
 void GFunDef::on_enter(){
-    // v_cout << "defining " << name << " function\n";
+    // v_cout << "defining function " << name << "\n";
     Context f = Context(name);
     contexts.insert({name, f});
 
@@ -68,8 +65,32 @@ void GFunDef::on_enter(){
     w_init_f(name);
 
     for (auto arg : args){
-        contexts[name].init_var(arg->name, 8, true);
+        string var_name = arg->name ;
+        int size = SIZE_INT ;
+        contexts[name].init_var(var_name, size, true);
     }
+}
+
+void Sscope::on_enter(){
+    // v_cout << "defining scope " << name << "\n";
+
+    called_contexts.push_back(name);
+
+    // check if name already defined
+    if (contexts.find(name) != contexts.end()){
+        // v_cout << name << " already defined in contexts\n";
+        return ;
+    }
+
+    add_line("scope: " + name, true, true);
+    int offset = contexts[ctx].var_offset + SIZE_INT ;
+    v_cout << "new ctx " << name << " in " << ctx ;
+    v_cout << " (" << offset << ")\n" ;
+    Context f = Context(name,offset);
+    contexts.insert({name, f});
+
+    // if (name == GLOBAL) { return; }
+    // w_init_f(name);
 }
 
 void GFunDef::on_exit(){
@@ -78,6 +99,11 @@ void GFunDef::on_exit(){
     called_contexts.pop_back();
 }
 
+void Sscope::on_exit(){
+    add_line("end of scope: " + name, true, true);
+    add_line();
+    called_contexts.pop_back();
+}
 
 // CALL_FUN -----------------------------
 
@@ -100,7 +126,7 @@ void SvarSet::on_exit(){
     // v_cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
     // w_set_var(left_value->get_address(),op);
 
-    v_cout << "Var Set : " << value->tk_type << "\n"; 
+    // v_cout << "Var Set : " << value->tk_type << "\n"; 
     if (value->tk_type == LIST){
         List* list = (List*)value;
         add_line("set to list " + to_string(list->values.size()), true, true);
@@ -201,9 +227,11 @@ void Label::on_enter(){
 
 void Skeyword::on_enter(){
     if (keyword == "break"){
-        ERROR("Keyword on_enter : continue not implemented");
+        // ERROR("Keyword on_enter : break not implemented");
+        v_cout << "kw : break\n";
     } else if (keyword == "continue") {
-        ERROR("Keyword on_enter : continue not implemented");
+        v_cout << "kw : continue\n";
+        // ERROR("Keyword on_enter : continue not implemented");
     } else {
         ERROR("Keyword on_enter : undefined keyword "+ keyword);
     }
@@ -216,9 +244,9 @@ void Skeyword::on_enter(){
 //     ERROR("while not implemented");
 // }
 void Sif::on_enter(){
-    add_line("if",true,true);
+    add_line("Stmt if",true,true);
 }
 
 void SifElse::on_enter(){
-    add_line("if-else",true,true);
+    add_line("Stmt if-else",true,true);
 }

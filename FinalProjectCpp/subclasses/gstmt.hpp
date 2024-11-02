@@ -1,6 +1,6 @@
 #pragma once
 #include "../token.hpp"
-// #include "arg.hpp"
+#include "arg.hpp"
 
 class GStmt : public Token {
     public:
@@ -14,12 +14,12 @@ class GFunDef : public GStmt {
         string type;
         vector<Arg*> args;
         Stmt* body;
-        GFunDef() : GStmt(G_FUN_DEF){
-            name = "";
-            type = "";
-            args = vector<Arg*>();
-            body = nullptr;
-        };
+        // GFunDef() : GStmt(G_FUN_DEF){
+        //     name = "";
+        //     type = "";
+        //     args = vector<Arg*>();
+        //     body = nullptr;
+        // };
         GFunDef(string type, string name, vector<Arg*> args, Stmt* body)
         : GStmt(G_FUN_DEF) {
             this->name = name;
@@ -30,7 +30,7 @@ class GFunDef : public GStmt {
         void print(string indent = "") override;
         void on_enter() override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             vector<Tk> res;
             for (auto v : args) {
                 res.push_back((Tk) v);
@@ -61,7 +61,7 @@ class GVarDef : public GStmt {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             if (value == nullptr) return {};
             return {(Tk)value};
         }

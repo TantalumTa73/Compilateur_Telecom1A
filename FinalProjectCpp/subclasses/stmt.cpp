@@ -7,7 +7,7 @@ void Stmt::print(string indent){
 }
 
 void Sscope::print(string indent){
-    v_cout << indent << "Sscope" << endl;
+    v_cout << indent << "Sscope (" << name << ")\n";
     for(auto v : body){
         v->print(indent + "  ");
     }
@@ -26,7 +26,7 @@ void Sfor::print(string indent){
     v_cout << indent << "Sfor" << endl;
     init->print(indent + "  ");
     condition->print(indent + "  ");
-    increment->print(indent + "  ");
+    update->print(indent + "  ");
     body->print(indent + "  ");
 }
 

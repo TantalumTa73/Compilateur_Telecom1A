@@ -23,7 +23,7 @@ class VarGet : public LeftValue {
         void print(string indent = "") override;
         // string get_address(int shift = 0) override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {};
         }
 };
@@ -44,7 +44,7 @@ class ArrayGet : public LeftValue {
         void print(string indent = "") override;
         // string get_address(int shift = 0) override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             // if (index->tk_type == LITTERAL_INT)
             //     return {};
             return {(Tk)left_value, (Tk)index};
@@ -67,7 +67,7 @@ class LLop : public LeftValue {
         void print(string indent = "") override;
         // string get_address(int shift = 0) override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)left_value};
         }
         
@@ -89,7 +89,7 @@ class RLop : public LeftValue {
         void print(string indent = "") override;
         // string get_address(int shift = 0) override;
         void on_exit() override;
-        vector<Tk> children() override {
+        vector<Tk> children(string) override {
             return {(Tk)value};
         }
         

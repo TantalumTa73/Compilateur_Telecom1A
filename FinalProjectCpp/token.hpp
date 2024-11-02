@@ -26,7 +26,7 @@ class Token {
             vv_cout << "enter in " << tk_type << endl;
         }
         virtual void on_exit(){}
-        virtual vector<Token*> children(){return vector<Token*>();}
+        virtual vector<Token*> children(string){return vector<Token*>();}
 
     private:
         // vector<T> Token::simplify(vector<JSON*>* vect)

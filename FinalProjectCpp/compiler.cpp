@@ -7,6 +7,8 @@ void Compiler::init_compiling(){
     
     stack = vector<Token*>();
     called_tokens = vector<Token*>();
+    break_stack = vector<string>();
+    continue_stack = vector<string>();
 
     Context empty_f = Context();
     contexts.insert({PRINT, empty_f});
@@ -20,7 +22,21 @@ void Compiler::init_compiling(){
 
 void Compiler::reversed_children_push(){
     // Push children in reverse order
-    vector<Token*> body = actual_token->children();
+
+    string label_start = (continue_stack.size() > 0) ? continue_stack.back() : "";
+    string label_end = (break_stack.size() > 0) ? break_stack.back() : "";
+    string arg = "";
+    if (actual_token != nullptr && actual_token->tk_type == KEYWORD){
+        Skeyword* keyword = dynamic_cast<Skeyword*>(actual_token);
+        assert(keyword != nullptr);
+        if(keyword->keyword == "break"){
+            arg = label_end;
+        } else if (keyword->keyword == "continue"){
+            arg = label_start;
+        }
+    }
+    vector<Token*> body = actual_token->children(arg);
+    actual_token->remained_children = body.size();
     reverse(body.begin(), body.end());
 
     for (auto t : body) stack.push_back(t);
@@ -33,6 +49,11 @@ void Compiler::exit_token(){
     while (called_tokens.size() > 0 && called_tokens.back()->remained_children-- <= 0){
         
         called_tokens.back()->on_exit();
+        if (called_tokens.back()->tk_type == FOR || 
+            called_tokens.back()->tk_type == WHILE){
+            break_stack.pop_back();
+            continue_stack.pop_back();
+        }
         called_tokens.pop_back();
     }
     
@@ -59,10 +80,20 @@ void Compiler::run(){
         stack.pop_back();
         called_tokens.push_back(actual_token);
 
+        if (actual_token->tk_type == FOR){
+            Sfor* for_token = (Sfor*)actual_token;
+            assert(for_token != nullptr);
+            continue_stack.push_back(for_token->label_update->label);
+            break_stack.push_back(for_token->label_end->label);
+        }
+        if (actual_token->tk_type == WHILE){
+            Swhile* while_token = (Swhile*)actual_token;
+            assert(while_token != nullptr);
+            continue_stack.push_back(while_token->label_start->label);
+            break_stack.push_back(while_token->label_end->label);
+        }
 
         actual_token->on_enter();
-        actual_token->remained_children = actual_token->children().size();
-
 
         reversed_children_push();
         exit_token();
