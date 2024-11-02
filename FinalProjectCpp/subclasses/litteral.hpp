@@ -45,6 +45,7 @@ class Char : public Litteral {
         void print(string indent = "") override {
             v_cout << indent << "Char: " << value << "\n";
         }
+        void on_enter() override;
 };
 
 class Bool : public Litteral {
@@ -59,4 +60,5 @@ class Bool : public Litteral {
         void print(string indent = "") override {
             v_cout << indent << "Bool: " << value << "\n";
         }
+        void on_enter() override;
 };

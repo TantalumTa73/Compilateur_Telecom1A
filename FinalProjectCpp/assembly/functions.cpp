@@ -7,8 +7,12 @@
 #include "../write_assembly.hpp"
 
 void w_call_function(string str){
-    if (str == PRINT){
-        add_line("call print");
+    if (str == PRINT_INT){
+        add_line("call print_int");
+        add_line();
+    } else if (str == PRINTF){
+        add_line("calling printf",true,true);
+        // add_line("call printf");
         add_line();
     } else {
         add_line("calling function as expr", true, true);

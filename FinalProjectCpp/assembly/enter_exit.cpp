@@ -143,10 +143,16 @@ void List::on_enter(){
     add_line("list " + to_string(values.size()), true, true);
 }
 
-// CST -----------------------------
+// LITTERAL -----------------------------
 
 void Int::on_enter(){
     w_push_cst(value);
+}
+void Char::on_enter(){
+    w_push_cst((int) value);
+}
+void Bool::on_enter(){
+    w_push_cst((int) value);
 }
 
 

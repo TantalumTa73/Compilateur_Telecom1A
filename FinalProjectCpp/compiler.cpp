@@ -11,8 +11,9 @@ void Compiler::init_compiling(){
     continue_stack = vector<string>();
 
     Context empty_f = Context();
-    contexts.insert({PRINT, empty_f});
+    contexts.insert({PRINT_INT, empty_f});
     contexts.insert({READ, empty_f});
+    contexts.insert({PRINTF, empty_f});
     Context global_f = Context(GLOBAL);
     contexts.insert({GLOBAL, global_f});
     called_contexts.push_back(GLOBAL);
