@@ -10,6 +10,13 @@ void w_call_function(string str){
     if (str == PRINT_INT){
         add_line("call print_int");
         add_line();
+    } else if (str == PRINT_CHAR){
+        add_line("calling print_char", true, true);
+        add_line("pop %rdi");
+        add_line("call putchar");
+        add_line("mov $10, %rdi"); // new line
+        add_line("call putchar");
+        add_line();
     } else if (str == PRINTF){
         add_line("calling printf",true,true);
         // add_line("call printf");

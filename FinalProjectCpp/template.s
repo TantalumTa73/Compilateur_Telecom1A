@@ -36,7 +36,39 @@ print_int:
         # Epilogue
         mov %rbp, %rsp
         pop %rbp                   
-        ret                      
+        ret 
+
+
+
+
+print_f:
+        # Prologue
+        push %rbp                
+        mov %rsp, %rbp           
+        
+        # Pop the last element from the stack into rsi (argument for printf)
+        mov 16(%rbp), %rsi                 
+    
+        # Align the stack for printf
+        mov %rsp, %rax           
+        and $15, %rax            
+        jz .call_print_f     
+
+        # align stack
+        sub $8, %rsp
+
+.call_print_f:
+        # Load the format string into rdi (first argument for printf)
+        lea int_fmt(%rip), %rdi  
+        mov $0, %rax             
+    
+        # Call printf
+        call printf              
+
+        # Epilogue
+        mov %rbp, %rsp
+        pop %rbp                   
+        ret                  
 
 
 scan:

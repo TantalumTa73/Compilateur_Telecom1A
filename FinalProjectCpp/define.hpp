@@ -21,8 +21,10 @@ inline string file_name;
 #define COMMENT "#"
 #define GLOBAL "__root__"
 #define MAIN "main"
+
 #define PRINT_INT "print_int"
+#define PRINT_CHAR "print_char"
 #define PRINTF "printf"
 #define SCAN_INT "scan_int"
-#define READ "read"
+
 #define TEMPLATE "FinalProjectCpp/template.s"
