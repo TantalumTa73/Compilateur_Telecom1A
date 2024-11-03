@@ -54,7 +54,3 @@ void w_array_get();
 void w_ret(bool main);
 // void 
 void end();
-
-// if_else.cpp
-void w_if();
-void w_if_else();

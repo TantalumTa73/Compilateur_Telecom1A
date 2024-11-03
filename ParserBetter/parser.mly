@@ -98,6 +98,9 @@ simple_stmt:
   | RETURN e = expr { Sreturn(Some e, $loc) }
   | RETURN { Sreturn(None, $loc) }
 
+  // | t = data_type id = IDENT LBR RBR EQ e = expr 
+  //   { SvarDef(t,id,-1, Some e, $loc) }
+
   | t = data_type id = IDENT l = list(array_size)
     { SvarDef(t,id,l, None, $loc) }
   | t = data_type id = IDENT l = list(array_size) EQ e = expr 
