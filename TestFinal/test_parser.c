@@ -19,10 +19,10 @@ void complexFunction(int num) {
             for (int j = 0; j < i; j++) {
                 if (j % 3 == 0) {
                     // printf("i: %d, j: %d - Divisible by 3\n", i, j);
-                    print(0);
+                    print_int(0);
                 } else {
                     // printf("i: %d, j: %d - Not divisible by 3\n", i, j);
-                    print(1);
+                    print_int(1);
                 }
             }
         } else {
@@ -30,7 +30,7 @@ void complexFunction(int num) {
             while (k < i) {
                 if (k % 2 == 0) {
                     // printf("i: %d, k: %d - Even\n", i, k);
-                    print()
+                    print_int()
                 } else {
                     // printf("i: %d, k: %d - Odd\n", i, k);
                 }

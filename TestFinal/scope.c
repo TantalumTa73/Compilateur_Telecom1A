@@ -10,8 +10,8 @@ int test1() {
         y = 2;
     }
     // Should print 2 and 1
-    print(x);
-    print(y);
+    print_int(x);
+    print_int(y);
 }
 
 int test2() {
@@ -20,11 +20,11 @@ int test2() {
         int a = 10;
         {
             int a = 15;
-            print(a); // Should print 15
+            print_int(a); // Should print 15
         }
-        print(a); // Should print 10
+        print_int(a); // Should print 10
     }
-    print(a); // Should print 5
+    print_int(a); // Should print 5
 }
 
 int test3() {
@@ -33,11 +33,11 @@ int test3() {
         int b = 25;
         {
             b = 30;
-            print(b); // Should print 30
+            print_int(b); // Should print 30
         }
-        print(b); // Should print 30
+        print_int(b); // Should print 30
     }
-    print(b); // Should print 20
+    print_int(b); // Should print 20
 }
 
 int main() {
