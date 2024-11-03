@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <algorithm>
 
+#include "define.hpp"
 #include "JSON.hpp"
 #include "types.hpp"
 #include "write_assembly.hpp"

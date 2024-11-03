@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "define.hpp"
-
+#include <vector>
 
 
 struct Variable {
@@ -34,7 +34,7 @@ class Context {
 };
 
 extern std::unordered_map<string, Context> contexts ;
-extern vector<string> called_contexts ;
+extern std::vector<string> called_contexts ;
 
 Variable find_var(string name);
 
