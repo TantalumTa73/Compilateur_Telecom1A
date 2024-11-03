@@ -28,6 +28,7 @@ void set_section(string str){
 }
 
 void w_print(string str){
+    if (str == "") return ;
 }
 
 

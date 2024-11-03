@@ -38,7 +38,7 @@ void w_init_f(string str){
     add_line();
 }
 
-void w_call_read(string str, int val, bool is_global){
+void w_call_read(int val, bool is_global){
     add_line("read value", true, true);
     add_line("call scan");
     if (is_global){

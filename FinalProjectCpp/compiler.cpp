@@ -105,6 +105,13 @@ void Compiler::run(){
 
     }
     //file.s
+
+    if (contexts.find(MAIN) == contexts.end()){
+        v_cout << "No main function" << endl;
+        w_init_f(MAIN);
+        w_ret(true);
+    }
+
     end();
     free_tokens(root);
 }

@@ -38,7 +38,7 @@ void w_push_add(string str);
 // functions.cpp
 void w_init_f(string str); // init a function
 void w_call_function(string str);
-void w_call_read(string str, int val, bool is_global);
+void w_call_read(int val, bool is_global);
 
 // operators.cpp
 void def_operators();
@@ -52,6 +52,7 @@ void w_array_get();
 
 // end.cpp
 void w_ret(bool main);
+// void 
 void end();
 
 // if_else.cpp
