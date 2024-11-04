@@ -20,7 +20,7 @@ echo "json file : $json_file"  >> log.txt
 # python3 FinalProjectPy/core.py $json_file "FinalProjectPy/template.s"
 # rm $s_file
 # touch "$s_file" || (echo "Failed to create file"; exit 1;)
-python3 FinalProjectPy/core.py $json_file FinalProjectPy/template.s
+python3 FinalProjectPy/core.py $json_file FinalProjectPy/template.txt
 # cd ..
 # echo "bonjour1"
 # gcc $s_file -o $out_file
