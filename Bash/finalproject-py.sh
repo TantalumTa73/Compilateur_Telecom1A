@@ -18,9 +18,11 @@ echo "json file : $json_file"  >> log.txt
 
 ./ParserBetter/expr2json.exe "$c_file"  >> log.txt
 # python3 FinalProjectPy/core.py $json_file "FinalProjectPy/template.s"
-python3 FinalProjectPy/core.py $json_file "PythonCompiler/template.s"
+python3 FinalProjectPy/core.py $json_file "FinalProjectPy/template.s"
 # cd ..
+# echo "bonjour1"
 # gcc $s_file -o $out_file
+# echo "bonjour2"
 # ./$out_file
 # You just need to compute the .s file, not to run it
 

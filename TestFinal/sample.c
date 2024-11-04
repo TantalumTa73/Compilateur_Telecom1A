@@ -13,6 +13,5 @@ int factorial(int n, bool a) {
 
 
 int main() {
-    int a[6];
-    a[0] = 1;
+    print_int(factorial(10, 1));
 }

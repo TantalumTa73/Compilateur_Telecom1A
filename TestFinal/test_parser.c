@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bool.h>
+#include <stdbool.h>
 
 
 void complexFunction(int num) {
@@ -30,7 +30,7 @@ void complexFunction(int num) {
             while (k < i) {
                 if (k % 2 == 0) {
                     // printf("i: %d, k: %d - Even\n", i, k);
-                    print_int()
+                    print_int(1);
                 } else {
                     // printf("i: %d, k: %d - Odd\n", i, k);
                 }

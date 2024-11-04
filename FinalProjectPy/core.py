@@ -1,6 +1,7 @@
 import sys
 import json
 from typing import List, Dict, Union
+import math
 
 
 class Variable:
@@ -166,10 +167,14 @@ def evaluate_scope(body, funcname, return_type, depth):
     if isinstance(body, dict):
 
         if "action" in body and body["action"] == "scope":
+            # VARIABLES.append({})
             evaluate_scope(body["body"], funcname, return_type, depth)
+            # VARIABLES.pop()
             return
-            
+        
+        # VARIABLES.append({})
         evaluate_scope([body], funcname, return_type, depth)
+        # VARIABLES.pop()
         return
     
 
@@ -194,11 +199,9 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "vardef":
 
-            print(element)
-
             varname = element['name']
             vartype = element['type']
-            varsize = element["size"]
+            varsize = math.prod(element["size"])
 
             var_id = variable_id(varname, funcname, depth)
             
@@ -221,8 +224,6 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "varset":
-
-            print(element)
 
             evaluate_expression(element['value'], funcname, depth)
             var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
@@ -397,6 +398,12 @@ def evaluate_scope(body, funcname, return_type, depth):
             VARIABLES.pop()
             continue
 
+        if element["action"] == "scope":
+
+            VARIABLES.append({})
+            evaluate_scope(element["body"], funcname, return_type, depth + 1)
+            VARIABLES.pop()
+
 
         print(element)
 
@@ -404,9 +411,12 @@ def evaluate_scope(body, funcname, return_type, depth):
 def define_function(funcname, return_type, arguments, scope, added):
 
     global VARIABLES, VARIABLE_OFFSET
+
+    # print(VARIABLES)
     
     current_depth = 1
     VARIABLES.append({})
+    VARIABLE_OFFSET = 0
 
     asm.set_section("text")
     
@@ -578,5 +588,7 @@ if __name__ == "__main__":
 
     with open(sys.argv[1].replace(".json", ".s"), "w") as f:
         f.write(asm.own_asm)    
+        # print(asm.own_asm)
+
 
 
