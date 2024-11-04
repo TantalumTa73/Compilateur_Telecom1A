@@ -17,18 +17,12 @@ void Sreturn::on_exit(){
 // DEF_VAR -----------------------------
 
 void GVarDef::on_exit(){
-    // if (array_size != 1)
-    ERROR("global not implemented");
+    
+    int size = type_size(type);
+    for (auto d : array_size) size *= d;
 
-    // var_def_exit(name, type, array_size, called_contexts.back());
-    // inline void var_def_exit(string name, string type, int array_size, string ctx){
-    //     int size ;
-        
-
-    //     contexts[ctx].init_var(name, size, false);
-    //     v_cout << "initialize " << name << " in " << ctx << "\n"; 
-    // }
-    w_init_global_var(name);
+    contexts[GLOBAL].init_var(name, size, false);
+    w_init_global_var(name, size);
 }
 void SvarDef::on_exit(){
     // if (array_size != 1)

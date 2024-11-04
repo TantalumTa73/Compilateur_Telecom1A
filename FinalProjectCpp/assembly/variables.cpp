@@ -19,17 +19,20 @@ void w_init_var(int size, int address){
     // sub $8, %rsp
 }
 
-void w_init_global_var(string str){
-    add_line("init global variable", true, true);
-    // add_line("pop " + str + "(%rip)");
+void w_init_global_var(string str, int size){
     set_section("bss");
-    add_line(".align " + std::to_string(SIZE_INT));
+    add_line("init global variable " + str, true, true);
+    add_line(".align " + std::to_string(size));
     add_line(".type " + str + ", @object");
-    add_line(".size " + str + ", " + std::to_string(SIZE_INT));
+    add_line(".size " + str + ", " + std::to_string(size));
     add_line(str + ":", false);
-    add_line(".zero " + std::to_string(SIZE_INT));
+    add_line(".zero " + std::to_string(size));
     add_line();
-        
+    // set_section("data");
+    // add_line("init global variable", true, true);
+    // add_line(str + ":", false);
+    // add_line(".quad " + std::to_string(size));
+    // add_line();
 }
 
 void w_set_var(string add, string op){

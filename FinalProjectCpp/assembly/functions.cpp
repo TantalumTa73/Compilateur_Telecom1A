@@ -36,6 +36,11 @@ void w_init_f(string str){
     add_line("push %rbp");
     add_line("mov %rsp, %rbp");
     add_line();
+
+    if (str != MAIN) return ;
+
+    add_line("main function", true, true);
+    add_line();
 }
 
 void w_call_read(int val, bool is_global){

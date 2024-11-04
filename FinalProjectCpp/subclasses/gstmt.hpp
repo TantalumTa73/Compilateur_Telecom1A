@@ -63,7 +63,8 @@ class GVarDef : public GStmt {
         void on_exit() override;
         vector<Tk> children(string) override {
             if (value == nullptr) return {};
-            return {(Tk)value};
+            ERROR("Global variable inizialization not yet implemented");
+            // return {(Tk)value};
         }
 };
 
