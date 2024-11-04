@@ -5,7 +5,7 @@ s_file="${c_file%".c"}.s"
 out_file="${c_file%".c"}.out"
 json_file="${c_file%".c"}.json"
 
-eval $(opam env)
+# eval $(opam env)
 
 echo ""  >> log.txt
 echo "------------------------------------"  >> log.txt
