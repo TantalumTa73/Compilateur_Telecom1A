@@ -6,6 +6,6 @@ int main() {
     int b = 3;
 
     bool c = 1 < 2;
-    print(c);
+    print_int(c);
 
 }
