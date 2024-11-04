@@ -11,7 +11,7 @@
 #include "../subclasses/stmt.hpp"
 
 void Sreturn::on_exit(){
-    w_ret(called_contexts.back() == MAIN);
+    w_ret(called_contexts.back() == MAIN, value != nullptr);
 }
 
 // DEF_VAR -----------------------------

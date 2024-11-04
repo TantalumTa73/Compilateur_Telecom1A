@@ -51,6 +51,6 @@ void w_rlop(string op);
 void w_array_get();
 
 // end.cpp
-void w_ret(bool main);
+void w_ret(bool main, bool has_arg = true);
 // void 
 void end();

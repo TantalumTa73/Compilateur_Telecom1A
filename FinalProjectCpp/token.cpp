@@ -103,6 +103,9 @@ Token* Token::simplify(JSON* json){
         return new Sscope(name,body,ctx);
     } else if (action == "return"){
         Expr* value = (Expr*) simplify(json->get_object("value"));
+        if (value != nullptr && value->tk_type == LITTERAL_VOID){
+            value = nullptr;
+        }
         return new Sreturn(value);
     } else if (action == "keyword"){
         string keyword = json->get_string("keyword");

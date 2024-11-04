@@ -52,6 +52,7 @@ class Sreturn : public Stmt {
 
         void on_exit() override;
         vector<Tk> children(string) override {
+            if (value == nullptr) return {};
             return {(Tk)value};
         }
 };

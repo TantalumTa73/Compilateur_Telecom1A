@@ -15,7 +15,7 @@ void Sscope::print(string indent){
 
 void Sreturn::print(string indent){
     v_cout << indent << "Sreturn" << endl;
-    value->print(indent + "  ");
+    if (value != nullptr) value->print(indent + "  ");
 }
 
 void Skeyword::print(string indent){
