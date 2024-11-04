@@ -34,8 +34,8 @@ inline void def_binop(){
 
     // test + cmov ?
 
-    binary_operators["&&"] = "and %rax, %rbx\n"; // NEED TO BE LAZY
-    binary_operators["||"] = "or %rax, %rbx\n"; // NEED TO BE LAZY (using cmov and nz ?)
+    // binary_operators["&&"] = "and %rax, %rbx\n"; // NEED TO BE LAZY
+    // binary_operators["||"] = "or %rax, %rbx\n"; // NEED TO BE LAZY (using cmov and nz ?)
 
     binary_operators["<<"] = "mov %rbx, %rcx\n\tsal %cl, %rax\n\tmov %rax, %rbx";
     binary_operators[">>"] = "mov %rbx, %rcx\n\tsar %cl, %rax\n\tmov %rax, %rbx";
