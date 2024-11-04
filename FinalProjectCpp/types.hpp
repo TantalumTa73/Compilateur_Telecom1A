@@ -51,7 +51,9 @@ enum TokenType {
     TERNOP,
 
     // Assembly
+    CMD_X86,
     JZ,
+    JNZ,
     JMP,
     LABEL
 };

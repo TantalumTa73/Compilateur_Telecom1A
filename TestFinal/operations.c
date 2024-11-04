@@ -1,3 +1,9 @@
+
+int f(){
+    print_int(10);
+    return 1 ;
+}
+
 int main(){
 
     print_int(15 + 5); // 20
@@ -19,6 +25,9 @@ int main(){
     
     print_int(0 ? 10 : 20);  // 10
     print_int(1 ? 10 : 20);  // 20
+
+    print_int( 0 && f() ); // 0
+    print_int( 1 && f() ); // 10, 1
 
     return 0 ;
 }

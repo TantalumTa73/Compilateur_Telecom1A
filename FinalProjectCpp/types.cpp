@@ -111,7 +111,9 @@ std::ostream &operator<<(std::ostream &os, TokenType const &t) {
         case BINOP: return os << "binop";
         case TERNOP: return os << "ternop";
 
+        case CMD_X86: return os << "cmdx86";
         case JZ: return os << "jz";
+        case JNZ: return os << "jnz";
         case JMP: return os << "jmp";
         case LABEL: return os << "label";
     }

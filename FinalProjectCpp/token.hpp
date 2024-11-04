@@ -84,6 +84,8 @@ class Binop ;
 class Ternop ;
 
 class Assembly ; // abstract
-class Jeq ;
+class CmdX86 ;
+class Jz ;
+class Jnz ;
 class Jmp ;
 class Label ;

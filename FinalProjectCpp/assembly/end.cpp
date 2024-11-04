@@ -6,9 +6,9 @@
 
 #include "../write_assembly.hpp"
 
-void w_ret(bool main){
+void w_ret(bool is_main){
     add_line("return", true, true);
-    if (main) {
+    if (is_main) {
         // add_line("xor %rax, %rax");
         // add_line("ret");
         // add_line();

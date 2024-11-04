@@ -103,8 +103,7 @@ void Sscope::on_exit(){
 
 void FunCall::on_enter(){
     if (auto search = contexts.find(name); search == contexts.end()){
-        v_cout << name << " unknown in contexts";
-        ERROR("unknown function");
+        ERROR("unknown function " + name);
     }
 }
 
@@ -194,6 +193,8 @@ void Uniop::on_exit(){
 }
 
 void Binop::on_exit(){
+    if (binop == "&&" || binop == "||")
+        return ;
     w_binop(binop);
 }
 
@@ -203,6 +204,12 @@ void Ternop::on_exit(){
 
 // Assembly -----------------------------
 
+void CmdX86::on_enter(){
+    add_line("Custom x86 cmd", true, true);
+    add_line(cmd);
+    add_line();
+}
+
 void Jz::on_enter(){
     add_line("JZ",true,true);
     add_line("pop %rax");
@@ -210,7 +217,13 @@ void Jz::on_enter(){
     add_line("jz "+label);
     add_line();
 }
-
+void Jnz::on_enter(){
+    add_line("JNZ",true,true);
+    add_line("pop %rax");
+    add_line("cmp $0, %rax");
+    add_line("jnz "+label);
+    add_line();
+}
 void Jmp::on_enter(){
     add_line("JMP",true,true);
     add_line("jmp "+label);

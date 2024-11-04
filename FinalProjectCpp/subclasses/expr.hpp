@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "../token.hpp"
+#include "assembly.hpp"
 
 class Expr : public Token {
     public:
@@ -127,19 +128,40 @@ class Binop : public Expr {
         string binop;
         Expr* v1;
         Expr* v2;
+
+        Jnz* goto_set = nullptr;
+        CmdX86* cmd_not_set = nullptr;
+        Jmp* goto_end = nullptr ;
+        Label* label_end = nullptr ;
+        Label* label_set = nullptr ;
+
         Binop() : Expr(BINOP) {
             binop = "";
             v1 = nullptr;
             v2 = nullptr;
         };
-        Binop(string binop, Expr* v1, Expr* v2) : Expr(BINOP) {
+        Binop(string binop, Expr* v1, Expr* v2, int label = 0) : Expr(BINOP) {
             this->binop = binop;
             this->v1 = v1;
             this->v2 = v2;
+            if (binop == "&&" || binop == "||") {
+                assert(label != 0);
+                goto_set = new Jnz("L" + to_string(label) + "_set");
+                cmd_not_set = new CmdX86("pushq $0");
+                goto_end = new Jmp("L" + to_string(label) + "_end_set");
+                label_end = new Label("L" + to_string(label) + "_end_set");
+                label_set = new Label("L" + to_string(label) + "_set");
+            }
         };
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children(string) override {
+            if (binop == "&&" || binop == "||") {
+                return {
+                    (Tk) v1, (Tk) goto_set, 
+                    (Tk) cmd_not_set, (Tk) goto_end, 
+                    (Tk) label_set, (Tk) v2, (Tk) label_end};
+            }
             return {(Tk)v1, (Tk)v2};
         }
 };

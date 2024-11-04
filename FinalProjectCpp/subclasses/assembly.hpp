@@ -1,3 +1,4 @@
+#pragma once
 #include "../token.hpp"
 
 class Assembly : public Token {
@@ -5,6 +6,15 @@ class Assembly : public Token {
         Assembly(TokenType t) : Token(t) {}
 };
 
+class CmdX86 : public Assembly {
+    public:
+        string cmd;
+        CmdX86(string cmd) : Assembly(CMD_X86){
+            this->cmd = cmd;
+        };
+        void print(string indent = "") override;
+        void on_enter() override;
+};
 
 class Jz : public Assembly {
     public:
@@ -12,6 +22,16 @@ class Jz : public Assembly {
         Jz(string label) : Assembly(JZ){
             this->label = label;
             // this->body = body;
+        };
+        void print(string indent = "") override;
+        void on_enter() override;
+};
+
+class Jnz : public Assembly {
+    public:
+        string label;
+        Jnz(string label) : Assembly(JNZ){
+            this->label = label;
         };
         void print(string indent = "") override;
         void on_enter() override;

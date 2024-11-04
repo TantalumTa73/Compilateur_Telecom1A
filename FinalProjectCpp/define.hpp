@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <iostream>
 #include <fstream>
+#include <assert.h>
 #include <unordered_map>
 
 using namespace std;
