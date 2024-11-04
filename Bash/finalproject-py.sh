@@ -18,6 +18,8 @@ echo "json file : $json_file"  >> log.txt
 
 ./ParserBetter/expr2json.exe "$c_file"  >> log.txt
 # python3 FinalProjectPy/core.py $json_file "FinalProjectPy/template.s"
+rm $s_file
+touch "$s_file" || (echo "Failed to create file"; exit 1;)
 python3 FinalProjectPy/core.py $json_file "FinalProjectPy/template.s"
 # cd ..
 # echo "bonjour1"
