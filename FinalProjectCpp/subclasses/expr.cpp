@@ -42,6 +42,18 @@ void Binop::print(string indent){
     v2->print(indent + "  ");
 }
 
+void LazyAnd::print(string indent){
+    v_cout << indent << "LazyAnd" << endl;
+    v1->print(indent + "  ");
+    v2->print(indent + "  ");
+}
+
+void LazyOr::print(string indent){
+    v_cout << indent << "LazyOr" << endl;
+    v1->print(indent + "  ");
+    v2->print(indent + "  ");
+}
+
 void Ternop::print(string indent){
     v_cout << indent << "Ternop" << endl;
     condition->print(indent + "  ");

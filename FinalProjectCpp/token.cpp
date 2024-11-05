@@ -206,8 +206,9 @@ Token* Token::simplify(JSON* json){
         string binop = json->get_string("binop");
         Expr* v1 = (Expr*) simplify(json->get_object("v1"));
         Expr* v2 = (Expr*) simplify(json->get_object("v2"));
-        int label = (binop == "&&" || binop == "||") ? _label_id++ : 0;
-        return new Binop(binop, v1, v2, label);
+        if (binop == "&&") return new LazyAnd(v1, v2, _label_id++);
+        if (binop == "||") return new LazyOr(v1, v2, _label_id++);
+        return new Binop(binop, v1, v2);
     } else if (action == "ternop") {
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Expr* v1 = (Expr*) simplify(json->get_object("v1"));

@@ -107,6 +107,8 @@ std::ostream &operator<<(std::ostream &os, TokenType const &t) {
         case FUN_CALL: return os << "funcall";
         case LR_OP: return os << "leftvalop";
         case UNIOP: return os << "uniop";
+        case LAZY_AND: return os << "and";
+        case LAZY_OR: return os << "or";
         case BINOP: return os << "binop";
         case TERNOP: return os << "ternop";
 

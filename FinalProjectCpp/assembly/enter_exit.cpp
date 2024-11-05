@@ -172,8 +172,6 @@ void Uniop::on_exit(){
 }
 
 void Binop::on_exit(){
-    if (binop == "&&" || binop == "||")
-        return ;
     w_binop(binop);
 }
 

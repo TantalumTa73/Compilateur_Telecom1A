@@ -48,6 +48,8 @@ enum TokenType {
     LR_OP,
     UNIOP,
     BINOP,
+    LAZY_AND,
+    LAZY_OR,
     TERNOP,
 
     // Assembly

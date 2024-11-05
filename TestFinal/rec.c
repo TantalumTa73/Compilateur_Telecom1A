@@ -3,7 +3,7 @@
 int factorial(int n, int a) {
     
     if (n <= 0) {
-        return 1;
+        return a ;
     } else {
         return n*factorial(n-1, a);
     }
@@ -11,6 +11,6 @@ int factorial(int n, int a) {
 
 
 int main() {
-    int x = factorial(10, 1) ;
+    int x = factorial(10, 2) ;
     print_int(x);
 }

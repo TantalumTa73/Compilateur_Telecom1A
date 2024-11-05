@@ -112,40 +112,77 @@ class Binop : public Expr {
         Expr* v1;
         Expr* v2;
 
+
+        Binop(string binop, Expr* v1, Expr* v2) : Expr(BINOP) {
+            this->binop = binop;
+            this->v1 = v1;
+            this->v2 = v2;
+        };
+        void print(string indent = "") override;
+        void on_exit() override;
+        vector<Tk> children(string) override {
+            return {(Tk)v1, (Tk)v2};
+        }
+};
+
+class LazyAnd : public Expr {
+    public:
+        Expr* v1;
+        Expr* v2;
+
         Jnz* goto_set = nullptr;
         CmdX86* cmd_not_set = nullptr;
         Jmp* goto_end = nullptr ;
         Label* label_end = nullptr ;
         Label* label_set = nullptr ;
 
-        Binop() : Expr(BINOP) {
-            binop = "";
-            v1 = nullptr;
-            v2 = nullptr;
-        };
-        Binop(string binop, Expr* v1, Expr* v2, int label = 0) : Expr(BINOP) {
-            this->binop = binop;
+        LazyAnd(Expr* v1, Expr* v2, int label) : Expr(LAZY_AND) {
             this->v1 = v1;
             this->v2 = v2;
-            if (binop == "&&" || binop == "||") {
-                assert(label != 0);
-                goto_set = new Jnz("L" + to_string(label) + "_set");
-                cmd_not_set = new CmdX86("pushq $0");
-                goto_end = new Jmp("L" + to_string(label) + "_end_set");
-                label_end = new Label("L" + to_string(label) + "_end_set");
-                label_set = new Label("L" + to_string(label) + "_set");
-            }
+            goto_set = new Jnz("L" + to_string(label) + "_set");
+            cmd_not_set = new CmdX86("pushq $0");
+            goto_end = new Jmp("L" + to_string(label) + "_end_set");
+            label_end = new Label("L" + to_string(label) + "_end_set");
+            label_set = new Label("L" + to_string(label) + "_set");
         };
         void print(string indent = "") override;
-        void on_exit() override;
         vector<Tk> children(string) override {
-            if (binop == "&&" || binop == "||") {
-                return {
-                    (Tk) v1, (Tk) goto_set, 
-                    (Tk) cmd_not_set, (Tk) goto_end, 
-                    (Tk) label_set, (Tk) v2, (Tk) label_end};
-            }
-            return {(Tk)v1, (Tk)v2};
+            return {
+                (Tk) v1, (Tk) goto_set, 
+                (Tk) cmd_not_set, (Tk) goto_end, 
+                (Tk) label_set, (Tk) v2, (Tk) label_end
+            };
+            
+        }
+};
+class LazyOr : public Expr {
+    public:
+        Expr* v1;
+        Expr* v2;
+
+        Jz* goto_set ;
+        CmdX86* cmd_not_set ;
+        Jmp* goto_end ;
+        Label* label_end  ;
+        Label* label_set  ;
+
+        LazyOr(Expr* v1, Expr* v2, int label) : Expr(LAZY_OR) {
+            this->v1 = v1;
+            this->v2 = v2;
+            goto_set = new Jz("L" + to_string(label) + "_set");
+            label_set = new Label("L" + to_string(label) + "_set");
+            cmd_not_set = new CmdX86("pushq $1");
+            goto_end = new Jmp("L" + to_string(label) + "_end_set");
+            label_end = new Label("L" + to_string(label) + "_end_set");
+        };
+        void print(string indent = "") override;
+        vector<Tk> children(string) override {
+            return {
+                (Tk) v1, (Tk) goto_set, 
+                (Tk) cmd_not_set, (Tk) goto_end, 
+                (Tk) label_set, (Tk) v2, (Tk) label_end
+            };
+            
         }
 };
 
