@@ -139,10 +139,12 @@ void VarGet::on_exit(){
     string s = "";
     for (int i : var.array_size) s += "[" + to_string(i) + "]";
     add_line("var get : " + name, true, true);
-    add_line("Pushing size", true, true);
+
+    if (var.array_size.size() > 0) add_line("Pushing size", true, true);
     for (int i : var.array_size){
         add_line("push $" + std::to_string(i));
     }
+
     w_push_add(var.get_adress());
 }
 

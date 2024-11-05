@@ -29,4 +29,6 @@ inline string file_name;
 #define PRINTF "printf"
 #define SCAN_INT "scan_int"
 
+#define MALLOC "malloc"
+
 #define TEMPLATE "FinalProjectCpp/template.s"

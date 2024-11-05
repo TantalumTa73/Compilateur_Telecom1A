@@ -21,6 +21,15 @@ void w_call_function(string str, int args){
         add_line("calling printf",true,true);
         // add_line("call printf");
         add_line();
+    } else if (str == MALLOC){
+        add_line("calling malloc",true,true);
+        add_line("pop %rdi");
+        add_line("call malloc");
+        add_line("push %rax");
+        add_line();
+        // movq    add, %rax
+        // movq    val, (%rax)
+        ERROR("malloc not yet implemented");
     } else {
         add_line("calling function as expr", true, true);
         add_line("call " + str);

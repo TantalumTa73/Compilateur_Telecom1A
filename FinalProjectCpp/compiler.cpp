@@ -18,6 +18,8 @@ void Compiler::init_compiling(){
 
     contexts.insert({SCAN_INT, empty_f});
 
+    contexts.insert({MALLOC, empty_f});
+
     Context global_f = Context(GLOBAL);
     contexts.insert({GLOBAL, global_f});
     called_contexts.push_back(GLOBAL);
