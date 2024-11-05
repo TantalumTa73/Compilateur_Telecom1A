@@ -15,7 +15,6 @@ class Void : public Litteral {
         void print(string indent = "") override {
             v_cout << indent << "Void\n";
         }
-        // void on_enter() override;
 };
 
 class Int : public Litteral {

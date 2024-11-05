@@ -33,12 +33,11 @@ void SvarDef::on_exit(){
 // DEF_FUNCTION SCOPE -----------------------------
 
 void GFunDef::on_enter(){
-    // v_cout << "defining function " << name << "\n";
+
     Context f = Context(name);
     contexts.insert({name, f});
 
     called_contexts.push_back(name);
-    // v_cout << "called_contexts' back : " << called_contexts.back() << "\n" ;
 
     if (name == GLOBAL) { return; }
 
@@ -52,15 +51,10 @@ void GFunDef::on_enter(){
 }
 
 void Sscope::on_enter(){
-    // v_cout << "defining scope " << name << "\n";
 
     called_contexts.push_back(name);
 
-    // check if name already defined
-    if (contexts.find(name) != contexts.end()){
-        // v_cout << name << " already defined in contexts\n";
-        return ;
-    }
+    if (contexts.find(name) != contexts.end()) return ;
 
     add_line("scope: " + name, true, true);
     int offset = contexts[ctx].var_offset + SIZE_INT ;
@@ -69,8 +63,6 @@ void Sscope::on_enter(){
     Context f = Context(name,offset);
     contexts.insert({name, f});
 
-    // if (name == GLOBAL) { return; }
-    // w_init_f(name);
 }
 
 void GFunDef::on_exit(){
@@ -101,11 +93,7 @@ void FunCall::on_exit(){
 // SET_VAR -----------------------------
 
 void SvarSet::on_exit(){
-    // v_cout << variable_buffer.name << "'s function is : " << variable_buffer.fun_name << "\n";
-    // v_cout << "  " << variable_buffer.name << "'s offset : " << variable_buffer.offset << "\n";
-    // w_set_var(left_value->get_address(),op);
-
-    // v_cout << "Var Set : " << value->tk_type << "\n"; 
+    
     if (value->tk_type == LIST){
         List* list = (List*)value;
         add_line("set to list " + to_string(list->values.size()), true, true);
@@ -120,7 +108,6 @@ void SvarSet::on_exit(){
 // GET_VAR -----------------------------
 
 void ValueGet::on_exit(){
-    // w_push_var(value->get_address());
     w_push_var();
 }
 
@@ -164,7 +151,6 @@ void ArrayGet::on_exit(){
 
 void LLop::on_exit(){
     if (op == "++x" || op == "--x")
-        // w_llop(op, left_value->get_address());
         w_llop(op);
     else
         ERROR(op+" unknown left_val_operators");
@@ -177,7 +163,6 @@ void RLop::on_exit(){
 // Expr
 
 void LRop::on_exit(){
-    // w_lrop(op, left_value->get_address());
     w_lrop(op);
 }
 
@@ -224,7 +209,6 @@ void Jmp::on_enter(){
 }
 
 void Label::on_enter(){
-    // add_line("Label",true,true);
     add_line(label+":",false);
     add_line();
 }
@@ -233,22 +217,14 @@ void Label::on_enter(){
 
 void Skeyword::on_enter(){
     if (keyword == "break"){
-        // ERROR("Keyword on_enter : break not implemented");
         v_cout << "kw : break\n";
     } else if (keyword == "continue") {
         v_cout << "kw : continue\n";
-        // ERROR("Keyword on_enter : continue not implemented");
     } else {
         ERROR("Keyword on_enter : undefined keyword "+ keyword);
     }
 }
 
-// void Sfor::on_enter(){
-//     ERROR("for not implemented");
-// }
-// void Swhile::on_enter(){
-//     ERROR("while not implemented");
-// }
 void Sif::on_enter(){
     add_line("Stmt if",true,true);
 }

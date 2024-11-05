@@ -58,7 +58,6 @@ JSON::JSON(string filename){
     }
 
     vector<tree_node> tree = vector<tree_node>();
-    // vector<string> keys = vector<string>();
 
     tree.push_back(tree_node(this));
     this->string_map["action"] = "__root__";

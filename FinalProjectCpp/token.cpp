@@ -96,7 +96,6 @@ Token* Token::simplify(JSON* json){
         int id = _scope_id++;
         string name = "scope_" + to_string(id);
         string ctx = _scope_stack.back();
-        // v_cout << "new scope " + name + " in " << ctx << "\n";
         _scope_stack.push_back(name);
         vector<Stmt*> body = simplify<Stmt*>(json->get_array("body"));
         _scope_stack.pop_back();
@@ -231,7 +230,6 @@ vector<T> Token::simplify(vector<JSON*>* vect){
     while (vect->size() > 0){
         JSON* json = vect->back();
         vect->pop_back();
-        // T new_t = (T) simplify(json);
         T new_t = dynamic_cast<T>(simplify(json));
         assert(new_t != nullptr);
         new_tokens.push_back( new_t );

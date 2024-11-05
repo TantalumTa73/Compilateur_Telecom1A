@@ -66,11 +66,6 @@ void Compiler::exit_token(){
 
 void Compiler::free_tokens(Token* token){
     if (token == nullptr) return;
-    // if (token->children_().size() > 0){}
-    //     for (auto child: token->children){
-    //         free_tokens(child);
-    //     }
-    // }
     // delete token;
 }
 

@@ -31,7 +31,6 @@ class Compiler {
         
         void init_compiling();
         void reversed_children_push(); // into stack
-        // void run_node();
         void exit_token();
         void free_tokens(Token* token);
 

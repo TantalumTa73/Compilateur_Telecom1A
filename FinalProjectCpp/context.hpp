@@ -9,7 +9,7 @@ struct Variable {
     public:
         string name;
         string ctx_name;
-        int adress;
+        int address;
         bool is_arg;
         int type_size ;
         int full_size ;
@@ -41,8 +41,3 @@ extern std::unordered_map<string, Context> contexts ;
 extern std::vector<string> called_contexts ;
 
 Variable find_var(string name);
-
-// Find var
-// class context
-// Pile of context
-// dict context

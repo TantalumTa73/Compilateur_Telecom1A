@@ -54,7 +54,6 @@ DataType data_type(string s){
     if (s == "int") return INT;
     if (s == "char") return CHAR;
     if (s == "bool") return BOOL;
-    // if (s == "array") return ARRAY;
     if (s == "int*") return PTR;
     if (s == "ptr") return PTR;
     ERROR("Error in DataType : unknown type " + s + "\n");

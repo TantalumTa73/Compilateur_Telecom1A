@@ -5,12 +5,6 @@ class Arg : public Token {
     public:
         string name;
         string type;
-        // Arg() : Token(ARG) {
-        // // Arg() {
-        //     // tk_type = ARG;
-        //     name = "";
-        //     type = "";
-        // };
         Arg(string type, string name) : Token(ARG) {
             this->name = name;
             this->type = type;

@@ -32,11 +32,7 @@ inline void def_binop(){
     binary_operators["=="] = "cmp %rax, %rbx\n\tmovq $0, %rbx\n\tsete %bl\n";
     // https://c9x.me/x86/html/file_module_x86_id_288.html
 
-    // test + cmov ?
-
-    // binary_operators["&&"] = "and %rax, %rbx\n"; // NEED TO BE LAZY
-    // binary_operators["||"] = "or %rax, %rbx\n"; // NEED TO BE LAZY (using cmov and nz ?)
-
+    
     binary_operators["<<"] = "mov %rbx, %rcx\n\tsal %cl, %rax\n\tmov %rax, %rbx";
     binary_operators[">>"] = "mov %rbx, %rcx\n\tsar %cl, %rax\n\tmov %rax, %rbx";
     
@@ -124,7 +120,6 @@ void w_lrop(string op){
         add_line("decq (%rax)");
     } else if (op == "&x"){
         add_line("pop %rax");
-        // add_line("lea %rax, %rbx");
         add_line("push %rax");
     } else ERROR("lrop " + op + " is not implemented");
     add_line();

@@ -10,13 +10,10 @@
 void w_init_var(int size, int address){
     add_line("init local variable", true, true);
     if (address != 0) {
-        // add_line("pop %rax");
         add_line("pop " + std::to_string(address) + "(%rbp)");
     }
     add_line("sub $" + std::to_string(size) + ", %rsp");
     add_line();
-    // push -8(%rbp)
-    // sub $8, %rsp
 }
 
 void w_init_global_var(string str, int size){
@@ -104,9 +101,3 @@ void w_set_var(string op){
     } else ERROR("op " + op + " is not implemented");
     add_line();
 }
-
-// void w_get_var(int val){
-//     add_line("get variable", true, true);
-//     add_line("push " + std::to_string(val) + "(%rbp)");
-//     add_line();
-// }

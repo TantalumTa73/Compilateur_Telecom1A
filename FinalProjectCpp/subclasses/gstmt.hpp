@@ -14,12 +14,6 @@ class GFunDef : public GStmt {
         string type;
         vector<Arg*> args;
         Stmt* body;
-        // GFunDef() : GStmt(G_FUN_DEF){
-        //     name = "";
-        //     type = "";
-        //     args = vector<Arg*>();
-        //     body = nullptr;
-        // };
         GFunDef(string type, string name, vector<Arg*> args, Stmt* body)
         : GStmt(G_FUN_DEF) {
             this->name = name;
@@ -46,12 +40,6 @@ class GVarDef : public GStmt {
         string name;
         vector<int> array_size;
         Expr* value;
-        // GVarDef() : GStmt(G_VAR_DEF){
-        //     type = "";
-        //     name = "";
-        //     array_size = 0 ;
-        //     value = nullptr;
-        // };
         GVarDef(DataType type, string name, vector<int> array_size,Expr* value) : 
         GStmt(G_VAR_DEF) {
             this->type = type;

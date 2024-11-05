@@ -36,7 +36,7 @@ void w_push_var();
 void w_push_add(string str);
 
 // functions.cpp
-void w_init_f(string str); // init a function
+void w_init_f(string str);
 void w_call_function(string str);
 void w_call_read(int val, bool is_global);
 

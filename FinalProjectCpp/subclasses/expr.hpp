@@ -9,20 +9,6 @@ class Expr : public Token {
         virtual void print(string indent = "") override;
 };
 
-// class Litteral : public Expr {
-//     public:
-//         Litteral* value;
-//         Litteral() : Expr(LITTERAL) {
-//             value = nullptr;
-//         };
-//         Litteral(Litteral* value) : Expr(LITTERAL) {
-//             this->value = value;
-//         };
-//         void print(string indent = "") override;
-//         vector<Tk> children(string) override {
-//             return {(Tk)value} ;
-//         }
-// };
 
 class ValueGet : public Expr {
     public:
@@ -89,10 +75,7 @@ class LRop : public Expr {
     public:
         string op;
         LeftValue* left_value;
-        // LRop() : Expr(LR_OP) {
-        //     op = "";
-        //     left_value = nullptr;
-        // };
+        
         LRop(string op, LeftValue* left_value) : Expr(LR_OP) {
             this->op = op;
             this->left_value = left_value;

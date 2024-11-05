@@ -6,17 +6,17 @@ vector<string> called_contexts = vector<string>();
 Variable::Variable(){
     name = "";
     ctx_name = "";
-    adress = 0;
+    address = 0;
     is_arg = false;
     type_size = 0;
     full_size = 0;
     array_size = vector<int>();
 }
 
-Variable::Variable(string name, string ctx_name, int adress, bool is_arg, int type_size, vector<int> array_size){
+Variable::Variable(string name, string ctx_name, int address, bool is_arg, int type_size, vector<int> array_size){
     this->name = name ;
     this->ctx_name = ctx_name ;
-    this->adress = adress;
+    this->address = address;
     this->is_arg = is_arg ;
     this->type_size = type_size ;
     
@@ -27,44 +27,29 @@ Variable::Variable(string name, string ctx_name, int adress, bool is_arg, int ty
         this->full_size *= (*it);
     }
 
-    // // DEBUG PRINT
-    // v_cout << "new var : " << name << " in " << ctx_name << " at " << adress ;
-    // v_cout << "\n\tarray_size : " ;
-    // for (auto i : array_size) v_cout << i << " ";
-    // v_cout << "\n\tnew array_size : " ;
-    // for (auto i : this->array_size) v_cout << i << " ";
-    // v_cout << full_size << "\n";
 }
 
 string Variable::get_adress(int shift){
-    v_cout << "get_adress : " << name << " " << ctx_name << " " << adress << " " << shift << "\n";
+    v_cout << "get_adress : " << name << " " << ctx_name << " " << address << " " << shift << "\n";
     if (ctx_name == GLOBAL && shift == 0){
         return name + "(%rip)";
     } else if (ctx_name == GLOBAL) {
         return name + "+" + to_string(shift) + "(%rip)";
     } else {
-        return to_string(adress+shift) + "(%rbp)";
+        return to_string(address+shift) + "(%rbp)";
     }
 }
 
 Variable find_var(string var_name){
     
-    // v_cout << "find_var : " << var_name << "\n";
-    // v_cout << "\tctx : " ;
-    // for (auto c : called_contexts) v_cout << c << " ";
-    // v_cout << "\n";
     
     for (auto it = called_contexts.rbegin(); 
         it != called_contexts.rend(); it ++){
         
-        // v_cout << *it << " " ;
-
-        if (contexts[*it].vars.find(var_name) != contexts[*it].vars.end()){
-            // v_cout << "\n" ;
+        if (contexts[*it].vars.find(var_name) != contexts[*it].vars.end())
             return contexts[*it].vars[var_name];
-        }
+
     }
-    // v_cout << "\n" ;
 
     ERROR("find_var : " + var_name + " not found (compiler.cpp)\n");
 }

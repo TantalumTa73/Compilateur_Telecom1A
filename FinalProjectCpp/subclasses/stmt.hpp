@@ -137,7 +137,6 @@ class Swhile : public Stmt {
                 (Tk) body, (Tk) goto_start, (Tk) label_end
             };
         }
-        // void on_enter() override;
 };
 
 class SvarDef : public Stmt {
@@ -146,22 +145,12 @@ class SvarDef : public Stmt {
         string name;
         vector<int> array_size;
         Expr* value;
-        // SvarDef() : Stmt(VAR_DEF){
-        //     type = "";
-        //     name = "";
-        //     array_size = 0 ;
-        //     value = nullptr;
-        // };
         SvarDef(DataType type, string name, vector<int> array_size, Expr* value) : Stmt(VAR_DEF){
             this->type = type;
             this->name = name;
             this->array_size = array_size;
             this->value = value;
         };
-        int get_size(){
-            return 0 ;
-            // return array_size * type_size(type);
-        }
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children(string) override {
@@ -213,10 +202,6 @@ class Sif : public Stmt {
         Stmt* body;
         Jz* goto_end ;
         Label* label_endif ;
-        // Sif() : Stmt(IF){
-        //     condition = nullptr;
-        //     body = nullptr;
-        // };
         Sif(Expr* condition, Stmt* body, int label) : Stmt(IF){
             this->condition = condition;
             this->body = body;
@@ -239,10 +224,6 @@ class SifElse : public Stmt {
         Jmp* end_if ;
         Label* label_endif ;
         Label* label_else ;
-        // Sif() : Stmt(IF){
-        //     condition = nullptr;
-        //     body = nullptr;
-        // };
         SifElse(Expr* condition, Stmt* body_if, Stmt* body_else, int label) : Stmt(IF){
             this->condition = condition;
             this->body_if = body_if;
