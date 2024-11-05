@@ -11,8 +11,12 @@ struct Variable {
         string ctx_name;
         int adress;
         bool is_arg;
+        int type_size ;
+        int full_size ;
+        vector<int> array_size;
         Variable();
-        Variable(string name, string fun_name, int offset, bool is_arg);
+        Variable(string name, string fun_name, int offset, bool is_arg,
+            int type_size, vector<int> array_size);
         string get_adress(int shift = 0);
 };
 
@@ -26,7 +30,7 @@ class Context {
         Context();
         Context(string name_, int offset = 0);
 
-        void init_var(string var_name, int size, bool is_arg);
+        int init_var(string var_name, int type_size, vector<int> array_size, bool is_arg);
 
         int var_offset;
     private:

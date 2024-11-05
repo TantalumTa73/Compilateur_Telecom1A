@@ -199,10 +199,14 @@ void w_assign_op(string op_name){
 
 void w_array_get(){
     add_line("array_get", true, true);
-    add_line("pop %rbx");
+    add_line("pop %rbx"); // index
+    add_line("pop %rax"); // array ptr
+    add_line("pop %rcx"); // array size
+    // get t - i * s
     add_line("neg %rbx");
-    add_line("pop %rax");
-    add_line("lea (%rax, %rbx, 8), %rax");
+    add_line("imul %rcx, %rbx"); // array size
+    add_line("lea (%rax, %rbx, 1), %rax");
+    // add_line("lea (%rax, %rbx, 8), %rax");
     add_line("push %rax");
     add_line();
 }

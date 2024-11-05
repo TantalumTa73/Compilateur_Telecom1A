@@ -18,22 +18,14 @@ void Sreturn::on_exit(){
 
 void GVarDef::on_exit(){
     
-    int size = type_size(type);
-    for (auto d : array_size) size *= d;
-
-    contexts[GLOBAL].init_var(name, size, false);
+    int size = contexts[GLOBAL].init_var(name, type_size(type), array_size, false);
     w_init_global_var(name, size);
 }
 void SvarDef::on_exit(){
-    // if (array_size != 1)
-    //     ERROR("array not implemented");
-
-    int size = type_size(type);
-    for (auto d : array_size) size *= d;
-
+    
     int address = (value == nullptr) ? 0 : contexts[called_contexts.back()].var_offset;
-    contexts[called_contexts.back()].init_var(name, size, false);
-
+    int size = contexts[called_contexts.back()].init_var(name, type_size(type), array_size, false);
+    
     w_init_var(size,address);
 }
 
@@ -55,7 +47,7 @@ void GFunDef::on_enter(){
     for (auto arg : args){
         string var_name = arg->name ;
         int size = SIZE_INT ;
-        contexts[name].init_var(var_name, size, true);
+        contexts[name].init_var(var_name, size, {}, true);
     }
 }
 
@@ -156,6 +148,13 @@ void Bool::on_enter(){
 void VarGet::on_exit(){
     Variable var = find_var(name);
 
+    string s = "";
+    for (int i : var.array_size) s += "[" + to_string(i) + "]";
+    add_line("var get : " + name, true, true);
+    add_line("Pushing size", true, true);
+    for (int i : var.array_size){
+        add_line("push $" + std::to_string(i));
+    }
     w_push_add(var.get_adress());
 }
 

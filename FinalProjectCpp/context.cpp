@@ -8,13 +8,32 @@ Variable::Variable(){
     ctx_name = "";
     adress = 0;
     is_arg = false;
+    type_size = 0;
+    full_size = 0;
+    array_size = vector<int>();
 }
 
-Variable::Variable(string name, string ctx_name, int adress, bool is_arg){
+Variable::Variable(string name, string ctx_name, int adress, bool is_arg, int type_size, vector<int> array_size){
     this->name = name ;
     this->ctx_name = ctx_name ;
     this->adress = adress;
     this->is_arg = is_arg ;
+    this->type_size = type_size ;
+    
+    this->array_size = vector<int>();
+    this->full_size = type_size ;
+    for (auto it = array_size.rbegin(); it != array_size.rend() ; it++){
+        this->array_size.push_back(this->full_size);
+        this->full_size *= (*it);
+    }
+
+    // // DEBUG PRINT
+    // v_cout << "new var : " << name << " in " << ctx_name << " at " << adress ;
+    // v_cout << "\n\tarray_size : " ;
+    // for (auto i : array_size) v_cout << i << " ";
+    // v_cout << "\n\tnew array_size : " ;
+    // for (auto i : this->array_size) v_cout << i << " ";
+    // v_cout << full_size << "\n";
 }
 
 string Variable::get_adress(int shift){
@@ -48,7 +67,6 @@ Variable find_var(string var_name){
     // v_cout << "\n" ;
 
     ERROR("find_var : " + var_name + " not found (compiler.cpp)\n");
-    return Variable();
 }
 
 ///////////////////////////////////////////////////////////
@@ -68,24 +86,24 @@ Context::Context(string name_, int offset)
     return ;
 }
 
-void Context::init_var(string var_name, int size, bool is_arg) {
+int Context::init_var(string var_name, int type_size, vector<int> array_size, bool is_arg) {
     if (auto search = vars.find(var_name); search != vars.end()) {
         ERROR("Init var : " + var_name + " already defined in " + name + "\n");
-        return;
+        return -1;
     }
 
     int offset = is_arg ? arg_offset : var_offset;
-    Variable new_var = Variable(var_name, name, offset, is_arg);
+    Variable new_var = Variable(var_name, name, offset, is_arg, type_size, array_size);
     vars.insert({var_name, new_var});
 
     v_cout << "Init var " << var_name << " in " << name ;
     v_cout << " at " << offset << "\n" ;
     
     if (is_arg) {
-        arg_offset += size;
+        arg_offset += new_var.full_size;
     } else {
-        var_offset -= size;
+        var_offset -= new_var.full_size;
     }
     // v_cout << "  offsets : " << var_offset << " " << arg_offset << "\n";
-    return;
+    return new_var.full_size;
 }
