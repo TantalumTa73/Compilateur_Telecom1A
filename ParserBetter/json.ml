@@ -143,7 +143,7 @@ and toJSONlitteral = function
     "value", `Int i ] @ pos p)
   | Bool(b, p) -> `Assoc ([
     "action", `String "bool" ;
-    "value", `Bool b ] @ pos p)
+    "value", if b then `Int 1 else `Int 0] @ pos p)
   | Char(c, p) -> `Assoc ([
     "action", `String "char" ;
     "value", `String (String.make 1 c) ] @ pos p)

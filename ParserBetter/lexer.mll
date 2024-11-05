@@ -49,8 +49,10 @@ rule token = parse
   | '#'[^'\n']* { token lexbuf }
   | '\n'    { new_line lexbuf; token lexbuf }
   | space+  { token lexbuf }
+  
   | '\"' ([^'\"']* as s) '\"' { STRING s }
   | '\'' (_ as c) '\'' { CHAR c }
+
   | int as n
   | binary as n 
   | hexadecimal as n { LITTERAL (int_of_string n) }

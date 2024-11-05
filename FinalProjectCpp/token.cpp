@@ -159,8 +159,9 @@ Token* Token::simplify(JSON* json){
         char c = value[0];
         return new Char(c);
     } else if (action == "bool") {
-        bool value = json->get_bool("value");
-        return new Bool(value);
+        string value = json->get_string("value");
+        bool value_bool = (value == "1");
+        return new Bool(value_bool);
 
 
     } else if (action == "varget") { //left val

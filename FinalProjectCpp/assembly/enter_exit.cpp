@@ -124,7 +124,8 @@ void Char::on_enter(){
     w_push_cst((int) value);
 }
 void Bool::on_enter(){
-    w_push_cst((int) value);
+    int val = this->value ? 1 : 0;
+    w_push_cst(val);
 }
 
 

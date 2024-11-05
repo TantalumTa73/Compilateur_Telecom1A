@@ -1,19 +1,19 @@
 int f(){
-    return 0 ;
+    return 1 ;
 }
 
 int g(){
-    f();
+    print_int(f());
     return 2 ;
 }
 
-int args(int a, int b, int c){
-    return a ;
-}
+// int args(int a, int b, int c){
+//     return a ;
+// }
 
 int main(){
 
-    f();
+    // f();
     g();
 
     // args(1,2,3);
