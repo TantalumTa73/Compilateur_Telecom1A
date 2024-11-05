@@ -37,7 +37,7 @@ void w_push_add(string str);
 
 // functions.cpp
 void w_init_f(string str);
-void w_call_function(string str);
+void w_call_function(string str, int args);
 void w_call_read(int val, bool is_global);
 
 // operators.cpp

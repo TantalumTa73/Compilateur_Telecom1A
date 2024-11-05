@@ -63,8 +63,8 @@ class FunCall : public Expr {
         void on_exit() override;
         vector<Tk> children(string) override {
             vector<Tk> res;
-            for (auto a : args) {
-                res.push_back((Tk)a);
+            for (auto it = args.rbegin(); it != args.rend(); ++it) {
+                res.push_back((Tk)*it);
             }
             return res;
         }

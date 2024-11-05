@@ -29,7 +29,6 @@ class ArrayGet : public LeftValue {
         ArrayGet(LeftValue* left_value, Expr* index) : LeftValue(ARRAY_GET) {
             this->left_value = left_value;
             this->index = index;
-            // ERROR("ArrayGet not implemented");
         };
         void print(string indent = "") override;
         void on_exit() override;

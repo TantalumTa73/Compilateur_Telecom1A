@@ -86,7 +86,7 @@ void FunCall::on_enter(){
 }
 
 void FunCall::on_exit(){
-    w_call_function(name);
+    w_call_function(name,args.size());
 }
 
 

@@ -6,7 +6,7 @@
 
 #include "../write_assembly.hpp"
 
-void w_call_function(string str){
+void w_call_function(string str, int args){
     if (str == PRINT_INT){
         add_line("call print_int");
         add_line();
@@ -24,7 +24,8 @@ void w_call_function(string str){
     } else {
         add_line("calling function as expr", true, true);
         add_line("call " + str);
-        add_line("add $" + std::to_string(SIZE_INT) + ", %rsp");
+        // add_line("add $" + std::to_string(SIZE_INT) + ", %rsp");
+        for (int i = 0; i < args; i++) add_line("pop %rcx");
         add_line("push %rax");
         add_line();
     }
