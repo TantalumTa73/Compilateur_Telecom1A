@@ -220,7 +220,7 @@ def end_function_here():
 
 def evaluate_scope(body, funcname, return_type, depth):
 
-    print("++++", body)
+    # print("++++", body)
 
     global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER
 
@@ -509,6 +509,16 @@ def evaluate_scope(body, funcname, return_type, depth):
             VARIABLES.pop()
 
 
+        if element["action"] == "keyword":
+
+            if element["keyword"] == "continue":
+
+                asm.add([
+                    f"{COMMENT} continue keyword",
+                    f"jmp start_loop_{LOOP_IDENTIFIER}",
+                    ""
+                ])
+
         print(element)
 
         
@@ -572,6 +582,10 @@ def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
         "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx", 
         ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
+    }
+
+    unioperators = {
+        "!": "and $1, %rax\n\tnot %rax\n\tand $1, %rax"
     }
 
     # print(expr)
@@ -659,7 +673,7 @@ def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
 
     if expr["action"] == "varget":
 
-        print("----", expr)
+        # print("----", expr)
         if "value" in expr:
             evaluate_expression(expr['value'], funcname, depth)
             return
@@ -693,8 +707,22 @@ def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
             f"push ${'1' if expr['value'] else '0'}",
             ""
         ])
+        return
 
-    # print(expr)
+    if expr["action"] == "uniop":
+        
+        evaluate_expression(expr["value"], funcname, depth)
+        current_uniop = expr["uniop"]
+
+        asm.add([
+            f"{COMMENT} uniop {current_uniop}",
+            "pop %rax",
+            unioperators[current_uniop],
+            "push %rax",
+            ""
+        ])
+
+    print(expr)
 
         
 
