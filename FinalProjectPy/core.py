@@ -515,7 +515,15 @@ def evaluate_scope(body, funcname, return_type, depth):
 
                 asm.add([
                     f"{COMMENT} continue keyword",
-                    f"jmp start_loop_{LOOP_IDENTIFIER}",
+                    f"jmp while_entry_{WHILE_IDENTIFIER}",
+                    ""
+                ])
+
+            if element["keyword"] == "break":
+
+                asm.add([
+                    f"{COMMENT} break keyword",
+                    f"jmp while_out_{WHILE_IDENTIFIER}",
                     ""
                 ])
 

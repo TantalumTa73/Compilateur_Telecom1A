@@ -15,4 +15,15 @@ int main() {
         print_int(i);
     }
 
+    i = 0;
+    while (i < 10) {
+        if (i == 2) {
+            break;
+        }
+        print_int(i);
+        i = i + 1;
+    }
+
+    print_int(i);
+
 }
