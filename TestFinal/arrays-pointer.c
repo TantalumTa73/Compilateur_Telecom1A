@@ -1,16 +1,4 @@
 int main() {
-    int b;
-    b = 1;
-    print_int(b);
-    int* a;
-    a = &b;
-    // int c;
-    // c = *a;
-    print_int(*a);
-
-    int c2 = &a;
-    int c3 = &c2;
-    int c4 = &c3;
-    int c5 = &c4;
-    print_int(*****c5);
+    int a = 5 + 5;
+    print_int(a);
 }

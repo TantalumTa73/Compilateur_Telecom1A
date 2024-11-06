@@ -110,10 +110,19 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
     if element["action"] == "varget":
         return get_variable_object(element["name"], funcname, depth)
     
-    # print(element)
+    print(element)
     if element["action"] == "rlop":
         
         if element["op"] == "*x":
+
+            # asm.add([
+            # ])
+            evaluate_expression(element["value"], funcname, depth)
+            asm.add([
+                f"{COMMENT} using evaluating address inside",
+
+            ])
+
             # print(VARIABLES, funcname, depth)
             pointed_obj = get_variable_object_via_json(element["value"], funcname, depth)
             # print(pointed_obj)
@@ -209,6 +218,8 @@ def end_function_here():
 
 def evaluate_scope(body, funcname, return_type, depth):
 
+    print("++++", body)
+
     global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER
 
     if isinstance(body, dict):
@@ -272,23 +283,55 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "varset":
 
-            # print(element['value'])
-
             evaluate_expression(element['value'], funcname, depth)
-            var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
-            location = var_obj.location()
-            vartype = var_obj.vartype
-            # vartype = get_variable_location_via_json(element["left_value"], funcname, depth)
+
+            left_val = element["left_value"]
+            if left_val["action"] == "rlop" and left_val["op"] == "*x":
+                evaluate_expression(left_val["value"], funcname, depth, True)
             
-            asm.add([
-                f"{COMMENT} varset left_value, for type {vartype}",
-                f"pop %rax"
-            ])
+            elif left_val["action"] == "varget" and "name" in left_val:
+                
+                var_obj = get_variable_object(left_val["name"], funcname, depth)
+                location = var_obj.location()
+                
+                asm.add([
+                    f"{COMMENT} varset, pushing address",
+                    f"lea {location}, %rax",
+                    "push %rax",
+                    ""
+                ])  
+
+            else:
+                print("HUGH", left_val)    
+
+            
 
             asm.add([
-                f"mov %rax, {location}",
+                f"{COMMENT} dereference element",
+                f"pop %rax {COMMENT} get back where to put",
+                f"pop %rbx {COMMENT} get back evaluated value",
+                f"mov %rbx, (%rax)",
                 ""
             ])
+
+
+
+
+            
+            # var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
+            # location = var_obj.location()
+            # vartype = var_obj.vartype
+            # # vartype = get_variable_location_via_json(element["left_value"], funcname, depth)
+            
+            # asm.add([
+            #     f"{COMMENT} varset left_value, for type {vartype}",
+            #     f"pop %rax"
+            # ])
+
+            # asm.add([
+            #     f"mov %rax, {location}",
+            #     ""
+            # ])
             continue
 
         if element["action"] == "for":
@@ -496,7 +539,7 @@ def define_function(funcname, return_type, arguments, scope, added):
 
 
 
-def evaluate_expression(expr, funcname, depth: int):
+def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
 
     operators = {
         "+": "add %rax, %rbx",
@@ -510,12 +553,13 @@ def evaluate_expression(expr, funcname, depth: int):
         "|": "or %rax, %rbx",
         "<": "cmp %rbx, %rax\n\tsetl %bl\n\tmovzx %bl, %rbx",
         ">": "cmp %rax, %rbx\n\tsetl %bl\n\tmovzx %bl, %rbx",
-        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
+        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx", 
         ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
     }
 
     # print(expr)
+            # print(left_val)
     if expr["action"] == "lrop":
 
         if expr["op"] == "&x":
@@ -599,6 +643,7 @@ def evaluate_expression(expr, funcname, depth: int):
 
     if expr["action"] == "varget":
 
+        print("----", expr)
         if "value" in expr:
             evaluate_expression(expr['value'], funcname, depth)
             return
