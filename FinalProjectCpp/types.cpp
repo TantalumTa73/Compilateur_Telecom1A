@@ -127,7 +127,8 @@ int type_size(DataType type){
         case VOID: return 0;
         case INT: return 8;
         case CHAR: return 1;
-        case BOOL: return 1;
+        // case BOOL: return 1;
+        case BOOL: return 8;
         case PTR: return 8;
     }
 }

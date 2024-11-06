@@ -49,6 +49,7 @@ void w_lrop(string op);
 void w_llop(string op);
 void w_rlop(string op);
 void w_array_get();
+void w_array_get2(int size);
 
 // end.cpp
 void w_ret(bool main, bool has_arg = true);
