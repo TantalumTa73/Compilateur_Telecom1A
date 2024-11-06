@@ -1,7 +1,11 @@
+#include <tuple>
 #include "context.hpp"
+#include "token.hpp"
 
 unordered_map<string, Context> contexts = unordered_map<string, Context>();
 vector<string> called_contexts = vector<string>();
+vector<tuple<string, string>> local_string = vector<tuple<string, string>>();
+vector<tuple<string, Tk>> global_var_init = vector<tuple<string, Tk>>();
 
 Variable::Variable(){
     name = "";
@@ -27,9 +31,9 @@ Variable::Variable(string name, string ctx_name, int address, bool is_arg, int t
         this->full_size *= (*it);
     }
 
-    v_cout << "Variable : " << name << " " << ctx_name << " " << address << " " << is_arg << " " << type_size << " " << full_size << "\n";
-    for (int i : this->array_size) v_cout << i << " ";
-    v_cout << "\n";
+    // v_cout << "Variable : " << name << " " << ctx_name << " " << address << " " << is_arg << " " << type_size << " " << full_size << "\n";
+    // for (int i : this->array_size) v_cout << i << " ";
+    // v_cout << "\n";
 
 }
 
@@ -85,8 +89,8 @@ int Context::init_var(string var_name, int type_size, vector<int> array_size, bo
     Variable new_var = Variable(var_name, name, offset, is_arg, type_size, array_size);
     vars.insert({var_name, new_var});
 
-    v_cout << "Init var " << var_name << " in " << name ;
-    v_cout << " at " << offset << "\n" ;
+    // v_cout << "Init var " << var_name << " in " << name ;
+    // v_cout << " at " << offset << "\n" ;
     
     if (is_arg) {
         arg_offset += new_var.full_size;

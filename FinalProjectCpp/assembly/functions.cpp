@@ -15,7 +15,7 @@ void w_call_function(string str, int args){
         add_line("pop %rdi");
         add_line("call putchar");
         add_line("mov $10, %rdi");
-        add_line("call putchar");
+        add_line("call putchar"); // print newline
         add_line();
     } else if (str == PRINTF){
         add_line("calling printf",true,true);

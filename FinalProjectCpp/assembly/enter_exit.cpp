@@ -14,21 +14,6 @@ void Sreturn::on_exit(){
     w_ret(called_contexts.back() == MAIN, value != nullptr);
 }
 
-// DEF_VAR -----------------------------
-
-void GVarDef::on_exit(){
-    
-    int size = contexts[GLOBAL].init_var(name, type_size(type), array_size, false);
-    w_init_global_var(name, size);
-}
-void SvarDef::on_exit(){
-    
-    int address = (value == nullptr) ? 0 : contexts[called_contexts.back()].var_offset;
-    int size = contexts[called_contexts.back()].init_var(name, type_size(type), array_size, false);
-    
-    w_init_var(size,address);
-}
-
 
 // DEF_FUNCTION SCOPE -----------------------------
 
@@ -99,6 +84,7 @@ void SvarSet::on_exit(){
         add_line("set to list " + to_string(list->values.size()), true, true);
         // for (auto v : list->values){
         // }
+        ERROR("Initialisation with list not yet implemented");
     } else {
         w_set_var(op);
     }
@@ -122,6 +108,10 @@ void Int::on_enter(){
 }
 void Char::on_enter(){
     w_push_cst((int) value);
+}
+void String::on_enter(){
+    // ERROR("String not yet implemented");
+    // w_push_cst((int) value);
 }
 void Bool::on_enter(){
     int val = this->value ? 1 : 0;

@@ -46,6 +46,21 @@ class Char : public Litteral {
         }
         void on_enter() override;
 };
+class String : public Litteral {
+    public:
+        string value;
+        int string_id;
+        int length;
+        String(string value, int string_id, int length) : Litteral(LITTERAL_STRING){
+            this->value = value;
+            this->string_id = string_id;
+            this->length = length;
+        }
+        void print(string indent = "") override {
+            v_cout << indent << "String: " << value << " (" << length << ")\n";
+        }
+        void on_enter() override;
+};
 
 class Bool : public Litteral {
     public:

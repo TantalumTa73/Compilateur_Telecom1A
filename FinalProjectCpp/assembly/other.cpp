@@ -20,8 +20,8 @@ void add_line(string str, bool indent, bool comment){
 }
 
 void set_section(string str){
-    add_line();
     if (str != current_section_w) {
+        add_line();
         add_line("." + str, false);
         current_section_w = str;
     }

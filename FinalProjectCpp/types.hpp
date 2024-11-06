@@ -32,6 +32,7 @@ enum TokenType {
     LITTERAL_VOID,
     LITTERAL_INT,
     LITTERAL_CHAR,
+    LITTERAL_STRING,
     LITTERAL_BOOL,
     
     // LeftValue
@@ -76,3 +77,4 @@ DataType data_type(string s);
 TokenType token_type(string s);
 
 int type_size(DataType type);
+inline bool is_litteral(TokenType t);

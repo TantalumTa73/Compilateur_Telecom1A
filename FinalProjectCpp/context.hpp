@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
-#include "define.hpp"
 #include <vector>
+#include "token.hpp"
 
 
 struct Variable {

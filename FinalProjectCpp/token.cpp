@@ -11,6 +11,7 @@
 
 int _label_id = 1 ;
 int _scope_id = 1 ;
+vector<string> _string_stack = vector<string>();
 vector<string> _scope_stack = vector<string>();
 
 void Token::print(string indent){
@@ -154,14 +155,20 @@ Token* Token::simplify(JSON* json){
         string value = json->get_string("value");
         int val = stoi(value);
         return new Int(val);
-    } else if (action == "char") {
-        string value = json->get_string("value");
-        char c = value[0];
-        return new Char(c);
     } else if (action == "bool") {
         string value = json->get_string("value");
         bool value_bool = (value == "1");
         return new Bool(value_bool);
+    } else if (action == "char") {
+        string value = json->get_string("value");
+        char c = value[0];
+        return new Char(c);
+    } else if (action == "string") {
+        string value = json->get_string("value");
+        int length = value.size() + 1; // +1 for '\0'
+        int id = _string_stack.size();
+        _string_stack.push_back(value);
+        return new String(value, id, length);
 
 
     } else if (action == "varget") { //left val

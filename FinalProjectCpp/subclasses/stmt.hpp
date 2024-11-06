@@ -1,6 +1,7 @@
 #pragma once
 #include "../token.hpp"
 #include "assembly.hpp"
+#include "expr.hpp"
 
 class Stmt : public Token {
     public:
@@ -177,6 +178,14 @@ class SvarSet : public Stmt {
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children(string) override {
+            if (
+                value == nullptr ||
+                // value->tk_type == LITTERAL_VOID ||
+                // value->tk_type == LITTERAL_INT ||
+                // value->tk_type == LITTERAL_BOOL ||
+                // value->tk_type == LITTERAL_CHAR ||
+                value->tk_type == LITTERAL_STRING
+            ) return {(Tk)left_value};
             return {(Tk)left_value, (Tk)value};
         }
 };
