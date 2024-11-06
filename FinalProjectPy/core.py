@@ -285,6 +285,8 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "varset":
 
+            keep_one_bit_flag = False
+
             evaluate_expression(element['value'], funcname, depth)
 
             left_val = element["left_value"]
@@ -295,7 +297,8 @@ def evaluate_scope(body, funcname, return_type, depth):
                 
                 var_obj = get_variable_object(left_val["name"], funcname, depth)
                 location = var_obj.location()
-                
+                keep_one_bit_flag = (var_obj.vartype == "bool")
+
                 asm.add([
                     f"{COMMENT} varset, pushing address",
                     f"lea {location}, %rax",
@@ -312,7 +315,14 @@ def evaluate_scope(body, funcname, return_type, depth):
                 f"{COMMENT} dereference element",
                 f"pop %rax {COMMENT} get back where to put",
                 f"pop %rbx {COMMENT} get back evaluated value",
-                f"mov %rbx, (%rax)",
+                ""
+            ])
+
+            if keep_one_bit_flag:
+                asm.add(f"and $1, %rbx")
+
+            asm.add([
+                f"mov %rbx, (%rax)", 
                 ""
             ])
 
