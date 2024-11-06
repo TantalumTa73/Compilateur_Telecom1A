@@ -110,7 +110,7 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
     if element["action"] == "varget":
         return get_variable_object(element["name"], funcname, depth)
     
-    print(element)
+    # print(element)
     if element["action"] == "rlop":
         
         if element["op"] == "*x":
@@ -123,6 +123,10 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
     # CAREFUL HERE, VALUEGET COULD COME FROM SOMETHING ELSE, DONT KNOW WHAT THOUGH
     if element["action"] == "valueget":
         return get_variable_object_via_json(element["value"], funcname, depth)
+    
+    if element["action"] == "arrayget":
+        pass
+        
 
 
 
@@ -511,6 +515,7 @@ def evaluate_expression(expr, funcname, depth: int):
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
     }
 
+    # print(expr)
     if expr["action"] == "lrop":
 
         if expr["op"] == "&x":
@@ -519,8 +524,20 @@ def evaluate_expression(expr, funcname, depth: int):
             location = var_obj.location()
             push_pointer(location, "pushing pointer from expr")
             return
-        
+    
+    if expr["action"] == "rlop":
+
         if expr["op"] == "*x":
+            # print(expr)    
+            evaluate_expression(expr["value"], funcname, depth)
+            
+            asm.add([
+                f"{COMMENT} dereferencing variable",
+                "pop %rbx",
+                "mov (%rbx), %rax",
+                "push %rax",
+                ""
+            ])
             return
 
 
@@ -530,7 +547,13 @@ def evaluate_expression(expr, funcname, depth: int):
         return
     
     if expr["action"] == "valueget":
-        print(expr)
+        evaluate_expression(expr["value"], funcname, depth)
+        return
+
+        value = expr["value"]
+        if value["action"] == "rlop" and value["op"] == "*x":
+            pass
+
         var_obj = get_variable_object_via_json(expr["value"], funcname, depth)
         location = var_obj.location()
         
@@ -575,7 +598,13 @@ def evaluate_expression(expr, funcname, depth: int):
         return
 
     if expr["action"] == "varget":
-        evaluate_expression(expr['value'], funcname, depth)
+
+        if "value" in expr:
+            evaluate_expression(expr['value'], funcname, depth)
+            return
+
+        var = get_variable_object(expr["name"], funcname, depth)
+        push_location(var.location(), "HEEEEEEEEELP")
         return
 
     if expr["action"] == "litteral":

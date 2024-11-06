@@ -8,10 +8,9 @@ int main() {
     // c = *a;
     print_int(*a);
 
-    int* c2 = &a;
-    int* c3 = &c2;
-    // int*** c3 = &c2;
-    // int**** c4 = &c3;
-    // int***** c5 = &c5;
-    print_int(***c3);
+    int c2 = &a;
+    int c3 = &c2;
+    int c4 = &c3;
+    int c5 = &c4;
+    print_int(*****c5);
 }
