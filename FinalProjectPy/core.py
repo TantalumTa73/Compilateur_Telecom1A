@@ -1,18 +1,21 @@
 import sys
 import json
-from typing import List, Dict, Union
+from typing import List, Dict
 import math
 
 
 class Variable:
 
-    def __init__(self, varname: str, funcname: str, depth: int, offset: int, vartype: str, globl: bool = False) -> None:
+
+    def __init__(self, varname: str, funcname: str, depth: int, offset: int, vartype: str, globl: bool = False, unreference: int = 0) -> None:
         self.varname = varname
         self.funcname = funcname
         self.depth = depth
         self.offset = offset
         self.vartype = vartype
         self.globl = globl
+        self.unreference = unreference
+
 
     def location(self):
         if self.globl:
@@ -20,28 +23,31 @@ class Variable:
         else:
             return f"{self.offset}(%rbp)"
     
+
     def __repr__(self) -> str:
         return "v(" + self.varname + ", " + str(self.offset) + ", " + self.vartype + ")"
+
 
     def __str__(self) -> str:
         return self.__repr__()
 
 
-class ArrayAccess:
+# class ArrayAccess:
 
-    def __init__(self, array: Variable, index: tuple) -> None:
-        self.array: Variable = array
-        self.index = index
+#     def __init__(self, array: Variable, index: tuple) -> None:
+#         self.array: Variable = array
+#         self.index = index
 
     
 
-class Function:
+# class Function:
 
-    def __init__(self, name: str, arguments: List[int], return_type: str) -> None:
-        pass
+#     def __init__(self, name: str, arguments: List[int], return_type: str) -> None:
+#         pass
 
 
 class AssemblyFile:
+
 
     def __init__(self) -> None:
         
@@ -103,12 +109,27 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
 
     if element["action"] == "varget":
         return get_variable_object(element["name"], funcname, depth)
+    
+    print(element)
+    if element["action"] == "rlop":
+        
+        if element["op"] == "*x":
+            # print(VARIABLES, funcname, depth)
+            pointed_obj = get_variable_object_via_json(element["value"], funcname, depth)
+            # print(pointed_obj)
+            return Variable(f"*{pointed_obj.varname}", pointed_obj.funcname, pointed_obj.depth, pointed_obj.offset, pointed_obj.vartype, pointed_obj.globl, pointed_obj.unreference + 1)
+        # return 
+
+    # CAREFUL HERE, VALUEGET COULD COME FROM SOMETHING ELSE, DONT KNOW WHAT THOUGH
+    if element["action"] == "valueget":
+        return get_variable_object_via_json(element["value"], funcname, depth)
 
 
-def get_variable_location_via_json(element, funcname: str, depth: int):
 
-    if element["action"] == "varget":
-        return get_variable_location(element["name"], funcname, depth)
+# def get_variable_location_via_json(element, funcname: str, depth: int):
+
+#     if element["action"] == "varget":
+#         return get_variable_location(element["name"], funcname, depth)
 
 
 def get_variable_object(varname: str, funcname: str, depth: int) -> Variable:
@@ -142,13 +163,35 @@ def get_variable(varname: str, funcname: str, depth: int):
 
 
 
-def push_location(location: str, comment: str = "Default comment :')"):
+def push_location(location: str, comment: str = "Default comment, variable expr :')"):
 
     asm.add([
-        f"{COMMENT} variable expr",
+        f"{COMMENT} {comment}",
         f"push {location}",
         ""
     ])
+
+
+def push_pointer(location: str, comment: str = "Default comment, pushing pointer :')"):
+
+    asm.add([
+        f"{COMMENT} {comment}",
+        f"lea {location}, %rax",
+        "push %rax",
+        ""
+    ])
+
+def push_unreference(location: str, unref_count: int, comment: str = "Default comment, pushing unreferenced variable :')"):
+
+    asm.add([
+        f"{COMMENT} {comment} unref_count: {unref_count}",
+        f"mov {location}, %rax",
+        ["mov (%rax), %rbx",
+        "mov %rbx, %rax"] * unref_count,
+        "push %rax",
+        ""
+    ])
+
 
 
 def end_function_here():
@@ -224,6 +267,8 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "varset":
+
+            # print(element['value'])
 
             evaluate_expression(element['value'], funcname, depth)
             var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
@@ -466,13 +511,35 @@ def evaluate_expression(expr, funcname, depth: int):
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
     }
 
+    if expr["action"] == "lrop":
+
+        if expr["op"] == "&x":
+            left_val = expr["left_value"]
+            var_obj = get_variable_object_via_json(left_val, funcname, depth)
+            location = var_obj.location()
+            push_pointer(location, "pushing pointer from expr")
+            return
+        
+        if expr["op"] == "*x":
+            return
+
+
+
     if expr["action"] == "var":
         get_variable(expr["name"], funcname, depth)
         return
     
     if expr["action"] == "valueget":
-        location = get_variable_location_via_json(expr["value"], funcname, depth)
-        push_location(location, "pushing var through valueget")
+        print(expr)
+        var_obj = get_variable_object_via_json(expr["value"], funcname, depth)
+        location = var_obj.location()
+        
+        if var_obj.unreference == 0:
+            push_location(location, "pushing var through valueget")
+        else:
+            push_unreference(location, var_obj.unreference, "pushing unreferenced pointer")
+
+        # location = get_variable_location_via_json(expr["value"], funcname, depth)
         return
 
     if expr["action"] == "funcall":
