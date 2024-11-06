@@ -152,8 +152,10 @@ def get_variable_object(varname: str, funcname: str, depth: int) -> Variable:
 
     while depth_iterator >= 0:
         var_id = variable_id(varname, funcname, depth_iterator)
-        if var_id in VARIABLES[depth_iterator] or varname in VARIABLES[depth_iterator]:
+        if var_id in VARIABLES[depth_iterator]:
             return VARIABLES[depth_iterator][var_id]
+        if varname in VARIABLES[depth_iterator]:
+            return VARIABLES[depth_iterator][varname]
         depth_iterator -= 1
         
     raise Exception(f"Undefined Variable {var_id}/{varname}")
@@ -504,10 +506,14 @@ def define_function(funcname, return_type, arguments, scope, added):
 
     global VARIABLES, VARIABLE_OFFSET
 
-    # print(VARIABLES)
     
     current_depth = 1
     VARIABLES.append({})
+
+    if added is not None:
+        print(added)
+        evaluate_scope(added, funcname, return_type, current_depth)
+    
     VARIABLE_OFFSET = 0
 
     asm.set_section("text")
@@ -711,6 +717,8 @@ if __name__ == "__main__":
             ])
             asm.add(f"{element['name']}:", indent=False)
             asm.add(f".zero {VAR_SZ}")
+            # var_id = variable_id(, 'main', 0)
+            VARIABLES[0][element['name']] = Variable(element['name'], 'main', 0, 0, element['type'], True, 0)
             continue
 
         if element["action"] == "varset":
