@@ -127,7 +127,7 @@ void VarGet::on_exit(){
     Variable var = find_var(name);
 
     string s = "";
-    for (int i : var.array_size) s += "[" + to_string(i) + "]";
+    for (int i : var.ladder_size) s += "[" + to_string(i) + "]";
     add_line("var get : " + name, true, true);
 
     // if (var.array_size.size() > 0) add_line("Pushing size", true, true);
@@ -140,8 +140,9 @@ void VarGet::on_exit(){
 
 void ArrayGet::on_exit(){
     // w_array_get();
-    int size = left_value->get_size_obj();
-    w_array_get2(size);
+    // int size = left_value->get_size_obj();
+    v_cout <<  mult << endl;
+    w_array_get2(mult * SIZE_INT);
 }
 
 void LLop::on_exit(){

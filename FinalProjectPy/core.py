@@ -1,18 +1,21 @@
 import sys
 import json
-from typing import List, Dict, Union
+from typing import List, Dict
 import math
 
 
 class Variable:
 
-    def __init__(self, varname: str, funcname: str, depth: int, offset: int, vartype: str, globl: bool = False) -> None:
+
+    def __init__(self, varname: str, funcname: str, depth: int, offset: int, vartype: str, globl: bool = False, unreference: int = 0) -> None:
         self.varname = varname
         self.funcname = funcname
         self.depth = depth
         self.offset = offset
         self.vartype = vartype
         self.globl = globl
+        self.unreference = unreference
+
 
     def location(self):
         if self.globl:
@@ -20,28 +23,31 @@ class Variable:
         else:
             return f"{self.offset}(%rbp)"
     
+
     def __repr__(self) -> str:
         return "v(" + self.varname + ", " + str(self.offset) + ", " + self.vartype + ")"
+
 
     def __str__(self) -> str:
         return self.__repr__()
 
 
-class ArrayAccess:
+# class ArrayAccess:
 
-    def __init__(self, array: Variable, index: tuple) -> None:
-        self.array: Variable = array
-        self.index = index
+#     def __init__(self, array: Variable, index: tuple) -> None:
+#         self.array: Variable = array
+#         self.index = index
 
     
 
-class Function:
+# class Function:
 
-    def __init__(self, name: str, arguments: List[int], return_type: str) -> None:
-        pass
+#     def __init__(self, name: str, arguments: List[int], return_type: str) -> None:
+#         pass
 
 
 class AssemblyFile:
+
 
     def __init__(self) -> None:
         
@@ -103,12 +109,40 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
 
     if element["action"] == "varget":
         return get_variable_object(element["name"], funcname, depth)
+    
+    print(element)
+    if element["action"] == "rlop":
+        
+        if element["op"] == "*x":
+
+            # asm.add([
+            # ])
+            evaluate_expression(element["value"], funcname, depth)
+            asm.add([
+                f"{COMMENT} using evaluating address inside",
+
+            ])
+
+            # print(VARIABLES, funcname, depth)
+            pointed_obj = get_variable_object_via_json(element["value"], funcname, depth)
+            # print(pointed_obj)
+            return Variable(f"*{pointed_obj.varname}", pointed_obj.funcname, pointed_obj.depth, pointed_obj.offset, pointed_obj.vartype, pointed_obj.globl, pointed_obj.unreference + 1)
+        # return 
+
+    # CAREFUL HERE, VALUEGET COULD COME FROM SOMETHING ELSE, DONT KNOW WHAT THOUGH
+    if element["action"] == "valueget":
+        return get_variable_object_via_json(element["value"], funcname, depth)
+    
+    if element["action"] == "arrayget":
+        pass
+        
 
 
-def get_variable_location_via_json(element, funcname: str, depth: int):
 
-    if element["action"] == "varget":
-        return get_variable_location(element["name"], funcname, depth)
+# def get_variable_location_via_json(element, funcname: str, depth: int):
+
+#     if element["action"] == "varget":
+#         return get_variable_location(element["name"], funcname, depth)
 
 
 def get_variable_object(varname: str, funcname: str, depth: int) -> Variable:
@@ -118,8 +152,10 @@ def get_variable_object(varname: str, funcname: str, depth: int) -> Variable:
 
     while depth_iterator >= 0:
         var_id = variable_id(varname, funcname, depth_iterator)
-        if var_id in VARIABLES[depth_iterator] or varname in VARIABLES[depth_iterator]:
+        if var_id in VARIABLES[depth_iterator]:
             return VARIABLES[depth_iterator][var_id]
+        if varname in VARIABLES[depth_iterator]:
+            return VARIABLES[depth_iterator][varname]
         depth_iterator -= 1
         
     raise Exception(f"Undefined Variable {var_id}/{varname}")
@@ -142,13 +178,35 @@ def get_variable(varname: str, funcname: str, depth: int):
 
 
 
-def push_location(location: str, comment: str = "Default comment :')"):
+def push_location(location: str, comment: str = "Default comment, variable expr :')"):
 
     asm.add([
-        f"{COMMENT} variable expr",
+        f"{COMMENT} {comment}",
         f"push {location}",
         ""
     ])
+
+
+def push_pointer(location: str, comment: str = "Default comment, pushing pointer :')"):
+
+    asm.add([
+        f"{COMMENT} {comment}",
+        f"lea {location}, %rax",
+        "push %rax",
+        ""
+    ])
+
+def push_unreference(location: str, unref_count: int, comment: str = "Default comment, pushing unreferenced variable :')"):
+
+    asm.add([
+        f"{COMMENT} {comment} unref_count: {unref_count}",
+        f"mov {location}, %rax",
+        ["mov (%rax), %rbx",
+        "mov %rbx, %rax"] * unref_count,
+        "push %rax",
+        ""
+    ])
+
 
 
 def end_function_here():
@@ -161,6 +219,8 @@ def end_function_here():
 
 
 def evaluate_scope(body, funcname, return_type, depth):
+
+    # print("++++", body)
 
     global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER
 
@@ -225,21 +285,65 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "varset":
 
+            keep_one_bit_flag = False
+
             evaluate_expression(element['value'], funcname, depth)
-            var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
-            location = var_obj.location()
-            vartype = var_obj.vartype
-            # vartype = get_variable_location_via_json(element["left_value"], funcname, depth)
+
+            left_val = element["left_value"]
+            if left_val["action"] == "rlop" and left_val["op"] == "*x":
+                evaluate_expression(left_val["value"], funcname, depth, True)
             
-            asm.add([
-                f"{COMMENT} varset left_value, for type {vartype}",
-                f"pop %rax"
-            ])
+            elif left_val["action"] == "varget" and "name" in left_val:
+                
+                var_obj = get_variable_object(left_val["name"], funcname, depth)
+                location = var_obj.location()
+                keep_one_bit_flag = (var_obj.vartype == "bool")
+
+                asm.add([
+                    f"{COMMENT} varset, pushing address",
+                    f"lea {location}, %rax",
+                    "push %rax",
+                    ""
+                ])  
+
+            else:
+                print("HUGH", left_val)    
+
+            
 
             asm.add([
-                f"mov %rax, {location}",
+                f"{COMMENT} dereference element",
+                f"pop %rax {COMMENT} get back where to put",
+                f"pop %rbx {COMMENT} get back evaluated value",
                 ""
             ])
+
+            if keep_one_bit_flag:
+                asm.add(f"and $1, %rbx")
+
+            asm.add([
+                f"mov %rbx, (%rax)", 
+                ""
+            ])
+
+
+
+
+            
+            # var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
+            # location = var_obj.location()
+            # vartype = var_obj.vartype
+            # # vartype = get_variable_location_via_json(element["left_value"], funcname, depth)
+            
+            # asm.add([
+            #     f"{COMMENT} varset left_value, for type {vartype}",
+            #     f"pop %rax"
+            # ])
+
+            # asm.add([
+            #     f"mov %rax, {location}",
+            #     ""
+            # ])
             continue
 
         if element["action"] == "for":
@@ -405,6 +509,24 @@ def evaluate_scope(body, funcname, return_type, depth):
             VARIABLES.pop()
 
 
+        if element["action"] == "keyword":
+
+            if element["keyword"] == "continue":
+
+                asm.add([
+                    f"{COMMENT} continue keyword",
+                    f"jmp while_entry_{WHILE_IDENTIFIER}",
+                    ""
+                ])
+
+            if element["keyword"] == "break":
+
+                asm.add([
+                    f"{COMMENT} break keyword",
+                    f"jmp while_out_{WHILE_IDENTIFIER}",
+                    ""
+                ])
+
         print(element)
 
         
@@ -412,10 +534,14 @@ def define_function(funcname, return_type, arguments, scope, added):
 
     global VARIABLES, VARIABLE_OFFSET
 
-    # print(VARIABLES)
     
     current_depth = 1
     VARIABLES.append({})
+
+    if added is not None:
+        print(added)
+        evaluate_scope(added, funcname, return_type, current_depth)
+    
     VARIABLE_OFFSET = 0
 
     asm.set_section("text")
@@ -447,7 +573,7 @@ def define_function(funcname, return_type, arguments, scope, added):
 
 
 
-def evaluate_expression(expr, funcname, depth: int):
+def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
 
     operators = {
         "+": "add %rax, %rbx",
@@ -461,18 +587,64 @@ def evaluate_expression(expr, funcname, depth: int):
         "|": "or %rax, %rbx",
         "<": "cmp %rbx, %rax\n\tsetl %bl\n\tmovzx %bl, %rbx",
         ">": "cmp %rax, %rbx\n\tsetl %bl\n\tmovzx %bl, %rbx",
-        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
+        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx", 
         ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
     }
+
+    unioperators = {
+        "!": "and $1, %rax\n\tnot %rax\n\tand $1, %rax"
+    }
+
+    # print(expr)
+            # print(left_val)
+    if expr["action"] == "lrop":
+
+        if expr["op"] == "&x":
+            left_val = expr["left_value"]
+            var_obj = get_variable_object_via_json(left_val, funcname, depth)
+            location = var_obj.location()
+            push_pointer(location, "pushing pointer from expr")
+            return
+    
+    if expr["action"] == "rlop":
+
+        if expr["op"] == "*x":
+            # print(expr)    
+            evaluate_expression(expr["value"], funcname, depth)
+            
+            asm.add([
+                f"{COMMENT} dereferencing variable",
+                "pop %rbx",
+                "mov (%rbx), %rax",
+                "push %rax",
+                ""
+            ])
+            return
+
+
 
     if expr["action"] == "var":
         get_variable(expr["name"], funcname, depth)
         return
     
     if expr["action"] == "valueget":
-        location = get_variable_location_via_json(expr["value"], funcname, depth)
-        push_location(location, "pushing var through valueget")
+        evaluate_expression(expr["value"], funcname, depth)
+        return
+
+        value = expr["value"]
+        if value["action"] == "rlop" and value["op"] == "*x":
+            pass
+
+        var_obj = get_variable_object_via_json(expr["value"], funcname, depth)
+        location = var_obj.location()
+        
+        if var_obj.unreference == 0:
+            push_location(location, "pushing var through valueget")
+        else:
+            push_unreference(location, var_obj.unreference, "pushing unreferenced pointer")
+
+        # location = get_variable_location_via_json(expr["value"], funcname, depth)
         return
 
     if expr["action"] == "funcall":
@@ -508,7 +680,14 @@ def evaluate_expression(expr, funcname, depth: int):
         return
 
     if expr["action"] == "varget":
-        evaluate_expression(expr['value'], funcname, depth)
+
+        # print("----", expr)
+        if "value" in expr:
+            evaluate_expression(expr['value'], funcname, depth)
+            return
+
+        var = get_variable_object(expr["name"], funcname, depth)
+        push_location(var.location(), "HEEEEEEEEELP")
         return
 
     if expr["action"] == "litteral":
@@ -536,8 +715,22 @@ def evaluate_expression(expr, funcname, depth: int):
             f"push ${'1' if expr['value'] else '0'}",
             ""
         ])
+        return
 
-    # print(expr)
+    if expr["action"] == "uniop":
+        
+        evaluate_expression(expr["value"], funcname, depth)
+        current_uniop = expr["uniop"]
+
+        asm.add([
+            f"{COMMENT} uniop {current_uniop}",
+            "pop %rax",
+            unioperators[current_uniop],
+            "push %rax",
+            ""
+        ])
+
+    print(expr)
 
         
 
@@ -570,6 +763,8 @@ if __name__ == "__main__":
             ])
             asm.add(f"{element['name']}:", indent=False)
             asm.add(f".zero {VAR_SZ}")
+            # var_id = variable_id(, 'main', 0)
+            VARIABLES[0][element['name']] = Variable(element['name'], 'main', 0, 0, element['type'], True, 0)
             continue
 
         if element["action"] == "varset":

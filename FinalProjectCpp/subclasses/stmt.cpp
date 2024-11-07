@@ -38,7 +38,7 @@ void Swhile::print(string indent){
 
 void SvarDef::print(string indent){
     v_cout << indent << "SvarDef: " << type << " " << name ;
-    for (auto i : array_size) v_cout << "[" << i << "]";
+    for (auto i : ladder_size) v_cout << "[" << i << "]";
     v_cout << endl;
     if(value != nullptr){
         value->print(indent + "  ");
