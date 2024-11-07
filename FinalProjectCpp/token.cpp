@@ -11,6 +11,9 @@
 
 int _label_id = 1 ;
 int _scope_id = 1 ;
+// It is to update mult for ArrayGet
+int _mult_tmp = 0;
+bool _is_treating_array = false;
 vector<string> _scope_stack = vector<string>();
 
 void Token::print(string indent){
@@ -124,9 +127,10 @@ Token* Token::simplify(JSON* json){
     } else if (action == "vardef"){
         DataType type_enum = data_type(json->get_string("type"));
         string name = json->get_string("name");
-        vector<int> size = simplify_int(json->get_array("size"));
+        vector<int> ladder_size = simplify_int(json->get_array("size"));
         Expr* value = (Expr*) simplify(json->get_object("value"));
-        return new SvarDef(type_enum, name, size, value);
+        return new SvarDef(type_enum, name, value, ladder_size);
+
     } else if (action == "varset"){
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");
@@ -166,11 +170,17 @@ Token* Token::simplify(JSON* json){
 
     } else if (action == "varget") { //left val
         string name = json->get_string("name");
+        if (_is_treating_array){
+            _is_treating_array = false;
+            _mult_tmp = 0;
+        }
         return new VarGet(name);
     } else if (action == "arrayget") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         Expr* index = (Expr*) simplify(json->get_object("index"));
-        return new ArrayGet(left_value, index);
+        _is_treating_array = true;
+        _mult_tmp ++;
+        return new ArrayGet(left_value, index, _mult_tmp);
     } else if (action == "llop") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");

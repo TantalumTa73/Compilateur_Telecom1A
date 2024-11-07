@@ -143,13 +143,13 @@ class SvarDef : public Stmt {
     public:
         DataType type;
         string name;
-        vector<int> array_size;
         Expr* value;
-        SvarDef(DataType type, string name, vector<int> array_size, Expr* value) : Stmt(VAR_DEF){
+        vector<int> ladder_size;
+        SvarDef(DataType type, string name, Expr* value, vector<int> ladder_size) : Stmt(VAR_DEF){
             this->type = type;
             this->name = name;
-            this->array_size = array_size;
             this->value = value;
+            this->ladder_size.assign(ladder_size.begin(), ladder_size.end());
         };
         void print(string indent = "") override;
         void on_exit() override;

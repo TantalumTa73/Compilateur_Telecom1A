@@ -1,6 +1,6 @@
 int main(){
 
-    int a[10] ;
+    int a[10];
     a[0] = 10;
     a[3] = 20;
     print_int( a[0] ) ;
@@ -17,8 +17,6 @@ int main(){
     /*
     int t[N1][N2][N3] ;
     t[i][j][k] : t + i*N2*N3*8 + j*N3*8 + k*8
-    
-    */
-
+*/
     return 0 ;
 }
