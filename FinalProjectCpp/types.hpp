@@ -77,4 +77,4 @@ DataType data_type(string s);
 TokenType token_type(string s);
 
 int type_size(DataType type);
-inline bool is_litteral(TokenType t);
+bool is_litteral(TokenType t);

@@ -38,7 +38,9 @@ void GVarDef::on_exit(){
         String* str = (String*)this->value;
         int len = size - str->length;
         if (len < 0) ERROR("String too long");
-        add_line(".asciz \"" + str->value + string(len, '\0') + "\"" );
+        string s = ".asciz \"" + str->value;
+        for (int i = 0; i < len; i++) s += "\\0";
+        add_line( s + "\"" );
     
     } else {
         add_line(".zero " + std::to_string(size));
@@ -53,19 +55,22 @@ void GVarDef::on_exit(){
 void SvarDef::on_exit(){
     
     int size = contexts[called_contexts.back()].init_var(name, type_size(type), array_size, false);
+    int address = contexts[called_contexts.back()].var_offset;
     
     add_line("init local variable", true, true);
+    add_line("sub $" + std::to_string(size) + ", %rsp");
 
     if (value != nullptr && value->tk_type == LITTERAL_STRING){
         String* str = (String*)this->value;
         int len = size - str->length;
         if (len < 0) ERROR("String too long");
-        local_string.push_back({called_contexts.back()+"_"+name, str->value + string(len, '\0')});
+        for (int i = 0; i < size ; i++){
+            string s = (i < str->length) ? std::to_string(str->value[i]) : "\\0";
+            add_line("movb $" + s + ", " + std::to_string(address + str->length - i) + "(%rbp)");
+        }
     } else if (value != nullptr){
-        int address = contexts[called_contexts.back()].var_offset;
         add_line("pop " + std::to_string(address) + "(%rbp)");
     }
-    add_line("sub $" + std::to_string(size) + ", %rsp");
     add_line();
 }
 
