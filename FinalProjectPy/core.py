@@ -95,6 +95,7 @@ FUNCTIONS = {}
 LOOP_IDENTIFIER = 0
 IF_IDENTIFIER = 0
 WHILE_IDENTIFIER = 0
+WHILE_CURRENT = []
 
 VAR_SZ = 8
 COMMENT = '#'
@@ -222,7 +223,7 @@ def evaluate_scope(body, funcname, return_type, depth):
 
     # print("++++", body)
 
-    global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER
+    global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER, WHILE_CURRENT
 
     if isinstance(body, dict):
 
@@ -469,6 +470,8 @@ def evaluate_scope(body, funcname, return_type, depth):
             VARIABLES.append({})
 
             WHILE_IDENTIFIER += 1
+            WHILE_CURRENT.append(WHILE_IDENTIFIER)
+
             while_entry = f"while_entry_{WHILE_IDENTIFIER}"
             while_out = f"while_out_{WHILE_IDENTIFIER}"
 
@@ -499,6 +502,7 @@ def evaluate_scope(body, funcname, return_type, depth):
 
             asm.add(f"{while_out}:", indent=False)
 
+            WHILE_CURRENT.pop()
             VARIABLES.pop()
             continue
 
@@ -515,7 +519,7 @@ def evaluate_scope(body, funcname, return_type, depth):
 
                 asm.add([
                     f"{COMMENT} continue keyword",
-                    f"jmp while_entry_{WHILE_IDENTIFIER}",
+                    f"jmp while_entry_{WHILE_CURRENT[-1]}",
                     ""
                 ])
 
@@ -523,7 +527,7 @@ def evaluate_scope(body, funcname, return_type, depth):
 
                 asm.add([
                     f"{COMMENT} break keyword",
-                    f"jmp while_out_{WHILE_IDENTIFIER}",
+                    f"jmp while_out_{WHILE_CURRENT[-1]}",
                     ""
                 ])
 
