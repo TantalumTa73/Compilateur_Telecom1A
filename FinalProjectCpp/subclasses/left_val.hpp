@@ -7,7 +7,6 @@ class LeftValue : public Token {
     public:
         LeftValue(TokenType t) : Token(t) {};
         void print(string indent = "") override ;
-        virtual int get_size_obj(int level = 0) = 0 ;
 };
 
 class VarGet : public LeftValue {
@@ -18,7 +17,6 @@ class VarGet : public LeftValue {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        int get_size_obj(int level = 0) override ;
         vector<Tk> children(string) override {
             return {};
         }
@@ -28,15 +26,17 @@ class ArrayGet : public LeftValue {
     public:
         LeftValue* left_value;
         Expr* index;
-        ArrayGet(LeftValue* left_value, Expr* index) : LeftValue(ARRAY_GET) {
+        int mult;
+        ArrayGet(LeftValue* left_value, Expr* index, int mult) : LeftValue(ARRAY_GET) {
             this->left_value = left_value;
             this->index = index;
+            this->mult = mult;
         };
         void print(string indent = "") override;
         void on_exit() override;
-        int get_size_obj(int level = 0) override {
-            return left_value->get_size_obj(level+1);
-        }
+        // int get_size_obj(int level = 0) override {
+        //     return left_value->get_size_obj(level+1);
+        // }
         vector<Tk> children(string) override {
             return {(Tk)left_value, (Tk)index};
         }
@@ -53,9 +53,6 @@ class LLop : public LeftValue {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        int get_size_obj(int level = 0) override {
-            return left_value->get_size_obj(level);
-        }
         vector<Tk> children(string) override {
             return {(Tk)left_value};
         }
@@ -73,10 +70,6 @@ class RLop : public LeftValue {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        int get_size_obj(int level = 0) override {
-            ERROR("Error in RLop : get_size_obj");
-            // return left_value->get_size_obj(level);
-        }
         vector<Tk> children(string) override {
             return {(Tk)value};
         }

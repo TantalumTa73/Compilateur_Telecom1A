@@ -1,6 +1,7 @@
 #pragma once
 #include "../token.hpp"
 #include "assembly.hpp"
+#include "expr.hpp"
 
 class Stmt : public Token {
     public:
@@ -143,13 +144,13 @@ class SvarDef : public Stmt {
     public:
         DataType type;
         string name;
-        vector<int> array_size;
         Expr* value;
-        SvarDef(DataType type, string name, vector<int> array_size, Expr* value) : Stmt(VAR_DEF){
+        vector<int> ladder_size;
+        SvarDef(DataType type, string name, Expr* value, vector<int> ladder_size) : Stmt(VAR_DEF){
             this->type = type;
             this->name = name;
-            this->array_size = array_size;
             this->value = value;
+            this->ladder_size.assign(ladder_size.begin(), ladder_size.end());
         };
         void print(string indent = "") override;
         void on_exit() override;
@@ -177,6 +178,14 @@ class SvarSet : public Stmt {
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children(string) override {
+            if (
+                value == nullptr ||
+                // value->tk_type == LITTERAL_VOID ||
+                // value->tk_type == LITTERAL_INT ||
+                // value->tk_type == LITTERAL_BOOL ||
+                // value->tk_type == LITTERAL_CHAR ||
+                value->tk_type == LITTERAL_STRING
+            ) return {(Tk)left_value};
             return {(Tk)left_value, (Tk)value};
         }
 };

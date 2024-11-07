@@ -94,6 +94,7 @@ std::ostream &operator<<(std::ostream &os, TokenType const &t) {
         case LITTERAL_VOID: return os << "void";
         case LITTERAL_INT: return os << "int";
         case LITTERAL_CHAR: return os << "char";
+        case LITTERAL_STRING: return os << "string";
         case LITTERAL_BOOL: return os << "bool";
 
         case VAR_GET: return os << "varget";
@@ -126,10 +127,16 @@ int type_size(DataType type){
     switch (type){
         case VOID: return 0;
         case INT: return 8;
+        // case CHAR: return 8;
+        // case BOOL: return 8;
         case CHAR: return 1;
-        // case BOOL: return 1;
-        case BOOL: return 8;
+        case BOOL: return 1;
         case PTR: return 8;
+
+        // use movsbl to convert char to int
     }
 }
 
+bool is_litteral(TokenType t){
+    return t == LITTERAL_VOID || t == LITTERAL_INT || t == LITTERAL_CHAR || t == LITTERAL_BOOL || t == LITTERAL_STRING;
+}

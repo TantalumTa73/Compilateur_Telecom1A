@@ -92,6 +92,7 @@ arg:
 array_size:
   // | LBR n = LITTERAL RBR { Int(n,$loc) }
   | LBR n = LITTERAL RBR { n }
+  | LBR RBR { -1 }
 ;
 
 simple_stmt:

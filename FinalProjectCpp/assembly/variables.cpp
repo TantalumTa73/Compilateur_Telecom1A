@@ -1,36 +1,92 @@
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <filesystem>
-
+#include "../token.hpp"
+#include "../context.hpp"
 #include "../write_assembly.hpp"
 
+#include "../subclasses/arg.hpp"
+#include "../subclasses/expr.hpp"
+#include "../subclasses/gstmt.hpp"
+#include "../subclasses/left_val.hpp"
+#include "../subclasses/litteral.hpp"
+#include "../subclasses/root.hpp"
+#include "../subclasses/stmt.hpp"
 
-void w_init_var(int size, int address){
+extern vector<tuple<string, string>> local_string ;
+
+
+void GVarDef::on_exit(){
+    
+
+    int size = contexts[GLOBAL].init_var(name, type_size(type), array_size, false);
+    string value = "" ;
+
+    set_section("data");
+    add_line(name + ":", false);
+
+    if (this->value == nullptr)
+        add_line(".zero " + std::to_string(size));
+
+    else if (this->value->tk_type == LITTERAL_INT)
+        add_line(".quad " + to_string(((Int*)this->value)->value) );
+
+    else if (this->value->tk_type == LITTERAL_BOOL)
+        add_line(".short " + to_string(((Bool*)this->value)->value) );
+
+    else if (this->value->tk_type == LITTERAL_CHAR)
+        add_line(".short " + to_string(((Char*)this->value)->value) );
+
+    else if (this->value->tk_type == LITTERAL_STRING){
+        String* str = (String*)this->value;
+        int len = size - str->length;
+        if (len < 0) ERROR("String too long");
+        string s = ".asciz \"" + str->value;
+        for (int i = 0; i < len; i++) s += "\\0";
+        add_line( s + "\"" );
+    
+    } else {
+        add_line(".zero " + std::to_string(size));
+        // TODO : init value in __cxx_global_var_init
+        v_cout << " err : " << name << ", " << this->value->tk_type << endl;
+        ERROR("Global variable inizialization not yet implemented for non litteral values : " + name);
+    }
+
+    // add_line();
+
+}
+void SvarDef::on_exit(){
+    
+    int size = contexts[called_contexts.back()].init_var(name, type_size(type), array_size, false);
+    int address = contexts[called_contexts.back()].var_offset;
+    
     add_line("init local variable", true, true);
-    if (address != 0) {
+    add_line("sub $" + std::to_string(size) + ", %rsp");
+
+    if (value != nullptr && value->tk_type == LITTERAL_STRING){
+        String* str = (String*)this->value;
+        int len = size - str->length;
+        if (len < 0) ERROR("String too long");
+        for (int i = 0; i < size ; i++){
+            string s = (i < str->length) ? std::to_string(str->value[i]) : "\\0";
+            add_line("movb $" + s + ", " + std::to_string(address + str->length - i) + "(%rbp)");
+        }
+    } else if (value != nullptr){
         add_line("pop " + std::to_string(address) + "(%rbp)");
     }
-    add_line("sub $" + std::to_string(size) + ", %rsp");
     add_line();
 }
 
-void w_init_global_var(string str, int size){
-    set_section("bss");
-    add_line("init global variable " + str, true, true);
-    add_line(".align " + std::to_string(size));
-    add_line(".type " + str + ", @object");
-    add_line(".size " + str + ", " + std::to_string(size));
-    add_line(str + ":", false);
-    add_line(".zero " + std::to_string(size));
-    add_line();
-    // set_section("data");
-    // add_line("init global variable", true, true);
+
+void w_init_global_var(string str, int size, string value){
+    // set_section("bss");
+    // add_line("init global variable " + str, true, true);
+    // add_line(".align " + std::to_string(size));
+    // add_line(".type " + str + ", @object");
+    // add_line(".size " + str + ", " + std::to_string(size));
     // add_line(str + ":", false);
-    // add_line(".quad " + std::to_string(size));
+    // add_line(".zero " + std::to_string(size));
     // add_line();
 }
+
+
 
 void w_set_var(string add, string op){
     // set local or global variable with the last value in the stack

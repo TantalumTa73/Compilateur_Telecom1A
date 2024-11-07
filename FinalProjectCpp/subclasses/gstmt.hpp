@@ -1,6 +1,7 @@
 #pragma once
 #include "../token.hpp"
 #include "arg.hpp"
+#include "expr.hpp"
 
 class GStmt : public Token {
     public:
@@ -50,9 +51,9 @@ class GVarDef : public GStmt {
         void print(string indent = "") override;
         void on_exit() override;
         vector<Tk> children(string) override {
-            if (value == nullptr) return {};
-            ERROR("Global variable inizialization not yet implemented");
-            // return {(Tk)value};
+            if (value == nullptr || is_litteral(value->tk_type)) return {};
+            ERROR("Global variable inizialization not yet implemented for non litteral values : " + name);
+            return {(Tk)value};
         }
 };
 
