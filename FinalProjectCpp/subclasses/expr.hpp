@@ -5,6 +5,7 @@
 
 class Expr : public Token {
     public:
+        bool isBool = false;
         Expr(TokenType t) : Token(t) {}
         virtual void print(string indent = "") override;
 };
@@ -139,6 +140,8 @@ class LazyAnd : public Expr {
         LazyAnd(Expr* v1, Expr* v2, int label) : Expr(LAZY_AND) {
             this->v1 = v1;
             this->v2 = v2;
+            v1->isBool = true;
+            v2->isBool = true;
             goto_set = new Jnz("L" + to_string(label) + "_set");
             cmd_not_set = new CmdX86("pushq $0");
             goto_end = new Jmp("L" + to_string(label) + "_end_set");
@@ -169,6 +172,8 @@ class LazyOr : public Expr {
         LazyOr(Expr* v1, Expr* v2, int label) : Expr(LAZY_OR) {
             this->v1 = v1;
             this->v2 = v2;
+            v1->isBool = true;
+            v2->isBool = true;
             goto_set = new Jz("L" + to_string(label) + "_set");
             label_set = new Label("L" + to_string(label) + "_set");
             cmd_not_set = new CmdX86("pushq $1");

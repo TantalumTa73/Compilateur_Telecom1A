@@ -33,3 +33,15 @@ void w_push_add(string add){
     add_line("push %rbx");
     add_line();
 }
+
+void w_convert_to_bool(){
+    add_line("convert to bool", true, true);
+    add_line("pop %rax");
+    add_line("cmp $0, %rax");
+    add_line("jnz nothing");
+    add_line();
+    add_line("push $1");
+    add_line();
+    add_line("nothing:", false);
+    add_line();
+}

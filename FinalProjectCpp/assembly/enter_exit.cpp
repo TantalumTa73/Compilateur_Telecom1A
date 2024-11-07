@@ -95,6 +95,8 @@ void SvarSet::on_exit(){
 
 void ValueGet::on_exit(){
     w_push_var();
+    if (isBool)
+        w_convert_to_bool();
 }
 
 void List::on_enter(){
@@ -104,7 +106,13 @@ void List::on_enter(){
 // LITTERAL -----------------------------
 
 void Int::on_enter(){
-    w_push_cst(value);
+    int val = value;
+    if (isBool){
+        if (val != 0){
+            val = 1;
+        }
+    }
+    w_push_cst(val);
 }
 void Char::on_enter(){
     w_push_cst((int) value);
@@ -139,9 +147,6 @@ void VarGet::on_exit(){
 }
 
 void ArrayGet::on_exit(){
-    // w_array_get();
-    // int size = left_value->get_size_obj();
-    v_cout <<  mult << endl;
     w_array_get2(mult * SIZE_INT);
 }
 

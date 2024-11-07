@@ -34,6 +34,7 @@ void w_push_cst(int val);
 // void w_push_var(string str);
 void w_push_var();
 void w_push_add(string str);
+void w_convert_to_bool();
 
 // functions.cpp
 void w_init_f(string str);
