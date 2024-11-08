@@ -27,10 +27,12 @@ class ArrayGet : public LeftValue {
         LeftValue* left_value;
         Expr* index;
         int mult;
-        ArrayGet(LeftValue* left_value, Expr* index, int mult) : LeftValue(ARRAY_GET) {
+        string name;
+        ArrayGet(LeftValue* left_value, Expr* index, int mult, string name) : LeftValue(ARRAY_GET) {
             this->left_value = left_value;
             this->index = index;
             this->mult = mult;
+            this->name = name;
         };
         void print(string indent = "") override;
         void on_exit() override;

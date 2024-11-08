@@ -53,7 +53,6 @@ Variable find_var(string var_name){
     
     for (auto it = called_contexts.rbegin(); 
         it != called_contexts.rend(); it ++){
-        
         if (contexts[*it].vars.find(var_name) != contexts[*it].vars.end())
             return contexts[*it].vars[var_name];
 

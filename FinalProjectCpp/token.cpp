@@ -197,7 +197,7 @@ Token* Token::simplify(JSON* json){
         Expr* index = (Expr*) simplify(json->get_object("index"));
         _is_treating_array = true;
         _mult_tmp ++;
-        return new ArrayGet(left_value, index, _mult_tmp);
+        return new ArrayGet(left_value, index, _mult_tmp, json->get_object("left_value")->get_string("name"));
     } else if (action == "llop") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");

@@ -154,7 +154,9 @@ void VarGet::on_exit(){
 }
 
 void ArrayGet::on_exit(){
-    w_array_get2(mult * SIZE_INT);
+    bool is_global = find_var(name).ctx_name == GLOBAL;
+    int val = is_global ? mult * SIZE_INT : -1 * mult * SIZE_INT ;
+    w_array_get2(val);
 }
 
 void LLop::on_exit(){
