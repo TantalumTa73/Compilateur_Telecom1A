@@ -42,9 +42,12 @@ void w_convert_to_bool(){
     add_line("jnz true_conversion" + to_string(true_conversion_id));
     add_line();
     add_line("push $0");
+    add_line("jmp end_convert" + to_string(true_conversion_id));
     add_line();
     add_line("true_conversion" + to_string(true_conversion_id) + ":", false);
     add_line("push $1");
+    add_line();
+    add_line("end_convert" + to_string(true_conversion_id) + ":", false);
     add_line();
     true_conversion_id ++;
 }
