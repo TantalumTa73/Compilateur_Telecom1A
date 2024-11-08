@@ -29,7 +29,8 @@ void GVarDef::on_exit(){
         add_line(".quad " + to_string(((Int*)this->value)->value) );
 
     else if (this->value->tk_type == LITTERAL_BOOL)
-        add_line(".short " + to_string(((Bool*)this->value)->value) );
+    // it works with a quad for now
+        add_line(".quad " + to_string(((Bool*)this->value)->value) );
 
     else if (this->value->tk_type == LITTERAL_CHAR)
         add_line(".short " + to_string(((Char*)this->value)->value) );

@@ -6,6 +6,7 @@
 
 #include "../write_assembly.hpp"
 
+int true_conversion_id = 0; 
 
 void w_push_cst(int val){
     add_line("push cst", true, true);
@@ -38,10 +39,12 @@ void w_convert_to_bool(){
     add_line("convert to bool", true, true);
     add_line("pop %rax");
     add_line("cmp $0, %rax");
-    add_line("jnz nothing");
+    add_line("jnz true_conversion" + to_string(true_conversion_id));
     add_line();
+    add_line("push $0");
+    add_line();
+    add_line("true_conversion" + to_string(true_conversion_id) + ":", false);
     add_line("push $1");
     add_line();
-    add_line("nothing:", false);
-    add_line();
+    true_conversion_id ++;
 }
