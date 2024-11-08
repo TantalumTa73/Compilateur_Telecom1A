@@ -114,17 +114,27 @@ Token* Token::simplify(JSON* json){
         string keyword = json->get_string("keyword");
         return new Skeyword(keyword);
     } else if (action == "for"){
+        int id = _scope_id++;
+        string name = "scope_" + to_string(id);
+        string ctx = _scope_stack.back();
+        _scope_stack.push_back(name);
         Stmt* init = (Stmt*) simplify(json->get_object("init"));
         Expr* cond = (Expr*) simplify(json->get_object("condition"));
         Stmt* update = (Stmt*) simplify(json->get_object("update"));
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
         int label = _label_id++;
-        return new Sfor(init, cond, update, body, label);
+        _scope_stack.pop_back();
+        return new Sfor(name, init, cond, update, body, label, ctx);
     } else if (action == "while"){
+        int id = _scope_id++;
+        string name = "scope_" + to_string(id);
+        string ctx = _scope_stack.back();
+        _scope_stack.push_back(name);
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Stmt* body = (Stmt*) simplify(json->get_object("body"));
         int label = _label_id++;
-        return new Swhile(condition, body, label);
+        _scope_stack.pop_back();
+        return new Swhile(name, condition, body, label, ctx);
     } else if (action == "vardef"){
         DataType type_enum = data_type(json->get_string("type"));
         string name = json->get_string("name");

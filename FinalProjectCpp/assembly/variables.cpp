@@ -16,7 +16,7 @@ extern vector<tuple<string, string>> local_string ;
 void GVarDef::on_exit(){
     
 
-    int size = contexts[GLOBAL].init_var(name, type_size(type), array_size, false);
+    int size = contexts[GLOBAL].init_var(name, type_size(type), ladder_size, false);
     string value = "" ;
 
     set_section("data");
@@ -52,13 +52,15 @@ void GVarDef::on_exit(){
     // add_line();
 
 }
-void SvarDef::on_exit(){
-    
-    int size = contexts[called_contexts.back()].init_var(name, type_size(type), array_size, false);
-    int address = contexts[called_contexts.back()].var_offset;
-    
+void SvarDef::on_enter(){
+    int size = contexts[called_contexts.back()].init_var(name, type_size(type), ladder_size, false);
+
     add_line("init local variable", true, true);
-    add_line("sub $" + std::to_string(size) + ", %rsp");
+    add_line("sub $" + to_string(size) + ", %rsp");
+}
+void SvarDef::on_exit(){
+    int size = contexts[called_contexts.back()].vars[name].full_size; 
+    int address = contexts[called_contexts.back()].var_offset;
 
     if (value != nullptr && value->tk_type == LITTERAL_STRING){
         String* str = (String*)this->value;
@@ -69,7 +71,7 @@ void SvarDef::on_exit(){
             add_line("movb $" + s + ", " + std::to_string(address + str->length - i) + "(%rbp)");
         }
     } else if (value != nullptr){
-        add_line("pop " + std::to_string(address) + "(%rbp)");
+        add_line("pop " + contexts[called_contexts.back()].vars[name].get_adress());
     }
     add_line();
 }

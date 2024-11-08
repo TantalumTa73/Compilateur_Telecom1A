@@ -48,6 +48,7 @@ void Sscope::on_enter(){
     Context f = Context(name,offset);
     contexts.insert({name, f});
 
+    add_line();
 }
 
 void GFunDef::on_exit(){
@@ -58,6 +59,12 @@ void GFunDef::on_exit(){
 
 void Sscope::on_exit(){
     add_line("end of scope: " + name, true, true);
+
+    add_line("free variables", true, true);
+    for (auto& x : contexts[name].vars){
+        add_line("add $" + to_string(x.second.full_size) + ", %rsp");
+    }
+
     add_line();
     called_contexts.pop_back();
 }

@@ -27,13 +27,13 @@ void Sfor::print(string indent){
     init->print(indent + "  ");
     condition->print(indent + "  ");
     update->print(indent + "  ");
-    body->print(indent + "  ");
+    body[0]->print(indent + "  ");
 }
 
 void Swhile::print(string indent){
     v_cout << indent << "Swhile" << endl;
     condition->print(indent + "  ");
-    body->print(indent + "  ");
+    body[0]->print(indent + "  ");
 }
 
 void SvarDef::print(string indent){

@@ -79,23 +79,21 @@ class Skeyword : public Stmt {
         }
 };
 
-class Sfor : public Stmt {
+class Sfor : public Sscope {
     public:
         Stmt* init;
         Expr* condition;
         Stmt* update;
-        Stmt* body;
         Label* label_start ;
         Label* label_update ;
         Label* label_end ;
         Jz* goto_end ;
         Jmp* goto_start ;
 
-        Sfor(Stmt* init, Expr* condition, Stmt* update, Stmt* body, int label) : Stmt(FOR){
+        Sfor(string name, Stmt* init, Expr* condition, Stmt* update, Stmt* body, int label, string ctx) : Sscope(name, {body}, ctx){
             this->init = init;
             this->condition = condition;
             this->update = update;
-            this->body = body;
             this->label_start = new Label("L" + to_string(label) + "_start_for");
             this->label_update = new Label("L" + to_string(label) + "_update_for");
             this->label_end = new Label("L" + to_string(label) + "_end_for");
@@ -107,24 +105,23 @@ class Sfor : public Stmt {
             return {
                 (Tk) init, (Tk) label_start,
                 (Tk) condition, (Tk) goto_end,
-                (Tk) body, 
+                (Tk) body[0], 
                 (Tk) label_update, (Tk) update, 
                 (Tk) goto_start, (Tk) label_end
             };
         }
 };
 
-class Swhile : public Stmt {
+class Swhile : public Sscope {
     public:
         Expr* condition;
-        Stmt* body;
         Label* label_start ;
         Label* label_end ;
         Jz* goto_end ;
         Jmp* goto_start ;
-        Swhile(Expr* condition, Stmt* body, int label) : Stmt(WHILE){
+        Swhile(string name, Expr* condition, Stmt* body, int label, string ctx) : Sscope(name, {body}, ctx){
             this->condition = condition;
-            this->body = body;
+            this->body = {body};
             this->label_start = new Label("L" + to_string(label) + "_start_while");
             this->label_end = new Label("L" + to_string(label) + "_end_while");
             this->goto_end = new Jz("L" + to_string(label) + "_end_while");
@@ -135,7 +132,7 @@ class Swhile : public Stmt {
             return {
                 (Tk) label_start, 
                 (Tk) condition, (Tk) goto_end,
-                (Tk) body, (Tk) goto_start, (Tk) label_end
+                (Tk) body[0], (Tk) goto_start, (Tk) label_end
             };
         }
 };
@@ -153,6 +150,7 @@ class SvarDef : public Stmt {
             this->ladder_size.assign(ladder_size.begin(), ladder_size.end());
         };
         void print(string indent = "") override;
+        void on_enter() override;
         void on_exit() override;
         vector<Tk> children(string) override {
             if (value == nullptr) return {};

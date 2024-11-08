@@ -39,13 +39,13 @@ class GVarDef : public GStmt {
     public:
         DataType type;
         string name;
-        vector<int> array_size;
+        vector<int> ladder_size;
         Expr* value;
-        GVarDef(DataType type, string name, vector<int> array_size,Expr* value) : 
+        GVarDef(DataType type, string name, vector<int> ladder_size, Expr* value) : 
         GStmt(G_VAR_DEF) {
             this->type = type;
             this->name = name;
-            this->array_size = array_size;
+            this->ladder_size = ladder_size;
             this->value = value;
         };
         void print(string indent = "") override;

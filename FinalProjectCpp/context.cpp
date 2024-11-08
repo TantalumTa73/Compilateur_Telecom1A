@@ -89,8 +89,9 @@ int Context::init_var(string var_name, int type_size, vector<int> ladder_size, b
     Variable new_var = Variable(var_name, name, offset, is_arg, type_size, ladder_size);
     vars.insert({var_name, new_var});
 
-    // v_cout << "Init var " << var_name << " in " << name ;
-    // v_cout << " at " << offset << "\n" ;
+    //  v_cout << "Init var " << var_name << " in " << name ;
+    //  v_cout << " at " << offset << "\n" ;
+    //  v_cout << " and full size " << new_var.full_size << "\n" ;
     
     if (is_arg) {
         arg_offset += new_var.full_size;
