@@ -69,7 +69,7 @@ class Bool : public Litteral {
             value = false;
         }
         Bool(bool value) : Litteral(LITTERAL_BOOL){
-            isBool = true;
+            is_bool = true;
             this->value = value;
         }
         void print(string indent = "") override {
