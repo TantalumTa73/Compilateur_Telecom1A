@@ -279,6 +279,7 @@ def evaluate_scope(body, funcname, return_type, depth):
             VARIABLES[depth][var_id] = Variable(varname, funcname, depth, -VARIABLE_OFFSET, vartype)
 
             if len(element["value"].keys()) > 0:
+                # should be changed so that int c = 3; covers also global variables.
                 rebuild_varset = {'action': 'varset', 'left_value': {'action': 'varget', 'name': varname}, 'op': '=', 'value': element['value']}
                 evaluate_scope([rebuild_varset], funcname, return_type, depth)
 
@@ -579,25 +580,28 @@ def define_function(funcname, return_type, arguments, scope, added):
 
 def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
 
+    boolean_cast_rax = "test %rax, %rax\n\tsetnz %al\n\tmovzx %al, %rax\n\t"
+    boolean_cast_rbx = "test %rbx, %rbx\n\tsetnz %bl\n\tmovzx %bl, %rbx\n\t"
+
     operators = {
         "+": "add %rax, %rbx",
         "-": "sub %rbx, %rax\n\tmov %rax, %rbx",
         "*": "imul %rax, %rbx",
         "/": "cqo\n\tidivq %rbx\n\tmov %rax, %rbx",
         "%": "xor %rdx, %rdx\n\tidivq %rbx\n\tmov %rdx, %rbx",
-        "&&": "and $1, %rax\n\tand $1, %rax\n\tand %rax, %rbx",
-        "||": "and $1, %rax\n\tand $1, %rax\n\tor %rax, %rbx",
+        "&&": f"{boolean_cast_rax}{boolean_cast_rbx}and %rax, %rbx",
+        "||": f"{boolean_cast_rax}{boolean_cast_rbx}or %rax, %rbx",
         "&": "and %rax, %rbx",
         "|": "or %rax, %rbx",
         "<": "cmp %rbx, %rax\n\tsetl %bl\n\tmovzx %bl, %rbx",
         ">": "cmp %rax, %rbx\n\tsetl %bl\n\tmovzx %bl, %rbx",
-        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx", 
+        "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
         ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
     }
 
     unioperators = {
-        "!": "and $1, %rax\n\tnot %rax\n\tand $1, %rax"
+        "!": f"{boolean_cast_rax}{boolean_cast_rbx}and $1, %rax"
     }
 
     # print(expr)
@@ -614,7 +618,7 @@ def evaluate_expression(expr, funcname, depth: int, for_pointers: bool = False):
     if expr["action"] == "rlop":
 
         if expr["op"] == "*x":
-            # print(expr)    
+
             evaluate_expression(expr["value"], funcname, depth)
             
             asm.add([
