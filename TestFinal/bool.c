@@ -1,14 +1,17 @@
+#include <stdbool.h>
+
 bool a = true;
 bool b = false;
-int c = 3;
-int d = 5;
+bool c = 2;
+bool d = 4;
+
 int main() {
 
     a = true;
     b = false;
 
-    c = 3;
-    d = 5;
+    c = 2;
+    d = 4;
     
     print_int(c);
 
