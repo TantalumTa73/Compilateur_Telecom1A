@@ -51,7 +51,7 @@ rule token = parse
   | '\n'    { new_line lexbuf; token lexbuf }
   | space+  { token lexbuf }
   
-  | '\"' ([^'\"']* as s) '\"' { STRING s }
+  | '\"' { litteral_string (Buffer.create 17) lexbuf }
   | '\'' (_ as c) '\'' { CHAR c }
 
   | int as n
@@ -112,6 +112,23 @@ rule token = parse
 
   | eof      { EOF }
   | _ as c   { raise (Lexing_error c) }
+
+and litteral_string buf = parse
+  | '\"' { STRING (Buffer.contents buf) }
+  | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your string.")) }
+
+  | '\\' '\'' { Buffer.add_char buf '\''; litteral_string buf lexbuf }
+  | '\\' '\"' { Buffer.add_char buf '\"'; litteral_string buf lexbuf }
+  | '\\' 'n' { Buffer.add_char buf '\n'; litteral_string buf lexbuf }
+  | '\\' 't' { Buffer.add_char buf '\t'; litteral_string buf lexbuf }
+  | '\\' '\\' { Buffer.add_char buf '\\'; litteral_string buf lexbuf }
+
+  | [^ '"' '\\']+
+    { Buffer.add_string buf (Lexing.lexeme lexbuf);
+      litteral_string buf lexbuf
+    }
+  | _ { raise (SyntaxError ("Illegal string character: " ^ Lexing.lexeme lexbuf)) }
+  | eof { raise (SyntaxError ("String is not terminated")) }
 
 and single_line_comment = parse
   | '\n' { new_line lexbuf; token lexbuf }

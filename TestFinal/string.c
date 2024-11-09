@@ -4,7 +4,7 @@
 // int x ;
 // int y = 92 ;
 // char c = 'c' ;
-char s1[7] = "%d %d" ;
+char s1[7] = "a=%d\n" ;
 // char s2[5] ;
 // int f(){}
 // int z = 1 + x ;
@@ -12,7 +12,7 @@ char s1[7] = "%d %d" ;
 int main(){
 
 
-    printf(&s1,1,2);
+    printf(&s1,1);
     // printf();
 
     // char c = 'c' ;
