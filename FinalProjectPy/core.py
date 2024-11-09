@@ -771,7 +771,7 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
             ""
         ])
         # TODO HERE, ADD FUNCTION TYPE
-        return
+        return "FIXING"
     
     if expr["action"] == "const":
         _type = evaluate_expression(expr["value"], funcname, depth)
