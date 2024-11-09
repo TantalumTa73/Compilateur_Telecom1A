@@ -20,9 +20,34 @@ void w_call_function(string str, int args){
         add_line("call putchar"); // print newline
         add_line();
     } else if (str == PRINTF){
-        add_line("calling printf",true,true);
-        // add_line("call printf");
-        add_line();
+        if (args == 0) ERROR("call fun : printf without args");
+        else if (args == 1){
+            // lea s1(%rip), %rax
+            // mov %rax, %rdi
+            add_line("pop %rax");
+            add_line("mov %rax, %rdi");
+            add_line("movb $0, %al");
+            add_line("call printf");
+            add_line();
+        } else if (args == 2){
+            add_line("pop %rax");
+            add_line("mov %rax, %rdi");
+            add_line("pop %rsi");
+            add_line("movb $0, %al");
+            add_line("call printf");
+            add_line();
+        } else if (args == 3){
+            add_line("pop %rax");
+            add_line("mov %rax, %rdi");
+            add_line("pop %rsi");
+            add_line("pop %rdx");
+            add_line("movb $0, %al");
+            add_line("call printf");
+            add_line();
+        } else {
+            ERROR("call fun : printf with too many args");
+        }
+       
     } else if (str == MALLOC){
         add_line("calling malloc",true,true);
         add_line("pop %rdi");
