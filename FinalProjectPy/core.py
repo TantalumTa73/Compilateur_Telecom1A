@@ -80,6 +80,7 @@ VARIABLE_OFFSET = 0
 FUNCTIONS = {}
 
 LOOP_IDENTIFIER = 0
+ARRAY_IDENTIFIER = 0
 IF_IDENTIFIER = 0
 WHILE_IDENTIFIER = 0
 WHILE_CURRENT = []
@@ -220,6 +221,9 @@ def get_array_size(size: list):
 
 def define_array(base_location: str, size: list):
 
+    global ARRAY_IDENTIFIER
+    ARRAY_IDENTIFIER += 1
+
     asm.add([
         f"{COMMENT} initial values, n-dimensional",
         f"lea {base_location}, %r8",
@@ -250,23 +254,22 @@ def define_array(base_location: str, size: list):
             ""
         ])
 
-        which = 0
-        asm.add(f"loop_n_dimensional_in_{l}_{which}:", indent=False)
+        asm.add(f"loop_n_dimensional_in_{l}_{ARRAY_IDENTIFIER}:", indent=False)
 
         asm.add([
             "cmp %r9, %r15",
-            f"jge loop_n_dimensional_out_{l}_{which}",
+            f"jge loop_n_dimensional_out_{l}_{ARRAY_IDENTIFIER}",
             "",
             "mov %r13, (%r11)",
             f"add ${VAR_SZ}, %r11", # HERE
             "add %r12, %r13",
             "",
             "add $1, %r15",
-            f"jmp loop_n_dimensional_in_{l}_{which}",
+            f"jmp loop_n_dimensional_in_{l}_{ARRAY_IDENTIFIER}",
             ""
         ])
 
-        asm.add(f"loop_n_dimensional_out_{l}_{which}:", indent=False)
+        asm.add(f"loop_n_dimensional_out_{l}_{ARRAY_IDENTIFIER}:", indent=False)
 
         asm.add([
             "",
