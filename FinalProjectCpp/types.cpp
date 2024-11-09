@@ -56,7 +56,7 @@ DataType data_type(string s){
     if (s == "bool") return BOOL;
     if (s == "int*") return PTR;
     if (s == "ptr") return PTR;
-    ERROR("Error in DataType : unknown type " + s + "\n");
+    ERROR("Error in DataType : unknown type \'" + s + "\'\n");
 }
 
 std::ostream &operator<<(std::ostream &os, DataType const &t) { 

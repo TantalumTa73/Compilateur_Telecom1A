@@ -152,7 +152,7 @@ litteral:
 expr:
   | x = litteral { Litteral(x, $loc) }
   | x = left_value { ValueGet(x, $loc) }
-  | SIZEOF LP t = TYPE RP { SizeOf(t, $loc) }
+  | SIZEOF LP t = data_type RP { SizeOf(t, $loc) }
   | x = IDENT LP args = separated_list(COMMA,expr) RP { FunCall(x,args, $loc) }
   | LB elements = separated_list(COMMA,expr) RB { List(elements, $loc) }
   | LP e = expr RP { e }

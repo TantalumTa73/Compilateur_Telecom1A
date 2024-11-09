@@ -185,8 +185,8 @@ Token* Token::simplify(JSON* json){
         return new String(value, id, length);
 
     } else if (action == "sizeof") {
-        string type_name = json->get_string("type");
-        return new SizeOf(type_name);
+        string value = json->get_string("value");
+        return new SizeOf(value);
 
     } else if (action == "varget") { //left val
         string name = json->get_string("name");
