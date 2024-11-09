@@ -436,6 +436,7 @@ def evaluate_scope(body, funcname, return_type, depth):
                 
                 var_obj = get_variable_object(left_val["name"], funcname, depth)
                 location = var_obj.location()
+                print(var_obj.vartype, var_obj.varname)
                 keep_one_bit_flag = (var_obj.vartype == "bool")
 
                 asm.add([
@@ -473,9 +474,9 @@ def evaluate_scope(body, funcname, return_type, depth):
             if keep_one_bit_flag:
                 asm.add([
                     f"{COMMENT} keep_one_bit_flag"
-                    "test %rax, %rax",
-                    "setnz %al",
-                    "movzx %al, %rax",
+                    "test %rbx, %rbx",
+                    "setnz %bl",
+                    "movzx %bl, %rbx",
                 ])
                 # asm.add(f"and $1, %rbx ")
 
@@ -797,7 +798,7 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
     }
 
     unioperators = {
-        "!": f"{boolean_cast_rax}{boolean_cast_rbx}and $1, %rax"
+        "!": f"{boolean_cast_rax}\n\tnot %rax\n\tand $1, %rax"
     }
 
     if expr["action"] == "lrop":
