@@ -33,20 +33,6 @@ class Variable:
         return self.__repr__()
 
 
-# class ArrayAccess:
-
-#     def __init__(self, array: Variable, index: tuple) -> None:
-#         self.array: Variable = array
-#         self.index = index
-
-    
-
-# class Function:
-
-#     def __init__(self, name: str, arguments: List[int], return_type: str) -> None:
-#         pass
-
-
 class AssemblyFile:
 
 
@@ -97,6 +83,8 @@ LOOP_IDENTIFIER = 0
 IF_IDENTIFIER = 0
 WHILE_IDENTIFIER = 0
 WHILE_CURRENT = []
+
+ARRAYS_SETUP = []
 
 VAR_SZ = 8
 COMMENT = '#'
@@ -220,6 +208,74 @@ def end_function_here():
     ])
 
 
+def get_array_size(size: list):
+    if len(size) == 0:
+        return 1
+    sz = 0
+    for el in size[::-1]:
+        sz = el * (1 + sz)
+    return sz + 1
+
+
+
+def define_array(base_location: str, size: list):
+
+    asm.add([
+        f"{COMMENT} initial values, n-dimensional",
+        f"lea {base_location}, %r8",
+        f"mov $1, %r9",
+        "mov $0, %r10",
+        ""
+    ])
+
+    for l in range(len(size)):
+
+        asm.add([
+            f"{COMMENT} looping for layer {l}",
+            f"mov ${VAR_SZ}, %r11",
+            "imul %r10, %r11",
+            "mov %r8, %rax",
+            "add %r11, %rax", # HERE
+            "mov %rax, %r11",
+            "",
+            f"mov ${VAR_SZ}, %r12",
+            f"imul ${size[l]}, %r12",
+            "",
+            "mov %r10, %r13",
+            "add %r9, %r13",
+            f"imul ${VAR_SZ}, %r13",
+            "add %r8, %r13",
+            "",
+            "mov $0, %r15",
+            ""
+        ])
+
+        which = 0
+        asm.add(f"loop_n_dimensional_in_{l}_{which}:", indent=False)
+
+        asm.add([
+            "cmp %r9, %r15",
+            f"jge loop_n_dimensional_out_{l}_{which}",
+            "",
+            "mov %r13, (%r11)",
+            f"add ${VAR_SZ}, %r11", # HERE
+            "add %r12, %r13",
+            "",
+            "add $1, %r15",
+            f"jmp loop_n_dimensional_in_{l}_{which}",
+            ""
+        ])
+
+        asm.add(f"loop_n_dimensional_out_{l}_{which}:", indent=False)
+
+        asm.add([
+            "",
+            "add %r9, %r10",
+            f"imul ${size[l]}, %r9",
+            ""
+        ])
+
+
 def evaluate_scope(body, funcname, return_type, depth):
 
     # print("++++", body)
@@ -267,14 +323,7 @@ def evaluate_scope(body, funcname, return_type, depth):
             vartype = element['type']
 
 
-            varsize = 1
-            # print(element["size"])
-            if len(element["size"]) > 0:
-                varsize = 0
-                for el in element["size"][::-1]: # DO A DRAWING HERE TO GET WHY DOING THAT
-                    varsize = el * (1 + varsize)
-                varsize += 1
-
+            varsize = get_array_size(element["size"])
 
             var_id = variable_id(varname, funcname, depth)
             memory_var_size = VAR_SZ * varsize
@@ -286,73 +335,12 @@ def evaluate_scope(body, funcname, return_type, depth):
             ])
 
             VARIABLE_OFFSET += memory_var_size
-            # VARIABLES[depth][var_id] = (var_id, -VARIABLE_OFFSET, vartype)
             VARIABLES[depth][var_id] = Variable(varname, funcname, depth, -VARIABLE_OFFSET, vartype + "*" * len(element["size"]), size=element["size"])#element["size"])
             
             var_obj = VARIABLES[depth][var_id]
             location = var_obj.location()
-            
-            # asm.add([
-            #     f"lea {location}, %rax",
-            #     f"add ${memory_var_size}"
-            # ])
 
-            # print(VARIABLES)
-
-            asm.add([
-                f"{COMMENT} initial values, n-dimensional",
-                f"lea {location}, %r8",
-                f"mov $1, %r9",
-                "mov $0, %r10",
-                ""
-            ])
-
-            for l in range(len(element["size"])):
-
-                asm.add([
-                    f"{COMMENT} looping for layer {l}",
-                    f"mov ${VAR_SZ}, %r11",
-                    "imul %r10, %r11",
-                    "mov %r8, %rax",
-                    "add %r11, %rax", # HERE
-                    "mov %rax, %r11",
-                    "",
-                    f"mov ${VAR_SZ}, %r12",
-                    f"imul ${element['size'][l]}, %r12",
-                    "",
-                    "mov %r10, %r13",
-                    "add %r9, %r13",
-                    f"imul ${VAR_SZ}, %r13",
-                    "add %r8, %r13",
-                    "",
-                    "mov $0, %r15",
-                    ""
-                ])
-
-                which = 0
-                asm.add(f"loop_n_dimensional_in_{l}_{which}:", indent=False)
-
-                asm.add([
-                    "cmp %r9, %r15",
-                    f"jge loop_n_dimensional_out_{l}_{which}",
-                    "",
-                    "mov %r13, (%r11)",
-                    f"add ${VAR_SZ}, %r11", # HERE
-                    "add %r12, %r13",
-                    "",
-                    "add $1, %r15",
-                    f"jmp loop_n_dimensional_in_{l}_{which}",
-                    ""
-                ])
-
-                asm.add(f"loop_n_dimensional_out_{l}_{which}:", indent=False)
-
-                asm.add([
-                    "",
-                    "add %r9, %r10",
-                    f"imul ${element['size'][l]}, %r9",
-                    ""
-                ])
+            define_array(location, size=element["size"])
 
 
             if len(element["value"].keys()) > 0:
@@ -387,11 +375,8 @@ def evaluate_scope(body, funcname, return_type, depth):
 
             elif left_val["action"] == "arrayget":
                 
-                # CAUTIOUS HERE, TO CONTINUE
-                # print(left_val)
                 evaluate_expression(left_val["left_value"], funcname, depth)
                 evaluate_expression(left_val["index"], funcname, depth)
-
 
                 asm.add([
                     f"{COMMENT} computing location for array gettting",
@@ -403,12 +388,8 @@ def evaluate_scope(body, funcname, return_type, depth):
                     ""
                 ])
 
-
-
             else:
                 print("HUGH", left_val)    
-
-            
 
             asm.add([
                 f"{COMMENT} dereference element",
@@ -418,31 +399,12 @@ def evaluate_scope(body, funcname, return_type, depth):
             ])
 
             if keep_one_bit_flag:
-                asm.add(f"and $1, %rbx")
+                asm.add(f"and $1, %rbx {COMMENT} keep_one_bit_flag")
 
             asm.add([
                 f"mov %rbx, (%rax)", 
                 ""
             ])
-
-
-
-
-            
-            # var_obj = get_variable_object_via_json(element["left_value"], funcname, depth)
-            # location = var_obj.location()
-            # vartype = var_obj.vartype
-            # # vartype = get_variable_location_via_json(element["left_value"], funcname, depth)
-            
-            # asm.add([
-            #     f"{COMMENT} varset left_value, for type {vartype}",
-            #     f"pop %rax"
-            # ])
-
-            # asm.add([
-            #     f"mov %rax, {location}",
-            #     ""
-            # ])
             continue
 
         if element["action"] == "for":
@@ -453,7 +415,6 @@ def evaluate_scope(body, funcname, return_type, depth):
             ])
 
             VARIABLES.append({})
-            # print(element["init"])
             evaluate_scope([element["init"]], funcname, return_type, depth + 1)
             
             LOOP_IDENTIFIER += 1
@@ -474,9 +435,7 @@ def evaluate_scope(body, funcname, return_type, depth):
             ])
 
             scope = element["body"]
-            # body = scope["body"]
             evaluate_scope(scope, funcname, return_type, depth + 1)
-
             evaluate_scope([element["update"]], funcname, return_type, depth + 1)
 
             # jump point
@@ -515,7 +474,6 @@ def evaluate_scope(body, funcname, return_type, depth):
             asm.add(f"{if_point}:", indent=False)
 
             scope_if = element["body"]
-            # scope_if = 
             evaluate_scope(scope_if, funcname, return_type, depth)
             
             asm.add([
@@ -536,7 +494,6 @@ def evaluate_scope(body, funcname, return_type, depth):
             if_past = f"if_past_{IF_IDENTIFIER}"
             
             evaluate_expression(element["condition"], funcname, depth + 1)
-
 
             asm.add([
                 f"{COMMENT} checking ifelse condition",
@@ -589,7 +546,6 @@ def evaluate_scope(body, funcname, return_type, depth):
                 ""
             ])
 
-            # print(element["body"])
             evaluate_scope(element["body"], funcname, return_type, depth + 1)
             
             asm.add([
@@ -634,8 +590,7 @@ def evaluate_scope(body, funcname, return_type, depth):
         
 def define_function(funcname, return_type, arguments, scope, added):
 
-    global VARIABLES, VARIABLE_OFFSET
-
+    global VARIABLES, VARIABLE_OFFSET, ARRAYS_SETUP
     
     current_depth = 1
     VARIABLES.append({})
@@ -654,6 +609,11 @@ def define_function(funcname, return_type, arguments, scope, added):
         "mov %rsp, %rbp",
         ""
     ])
+    
+    if element['name'] == 'main':
+        for location, size in ARRAYS_SETUP:
+            # varsize = get_array_size(size)
+            define_array(location, size)
 
     arg_count = len(arguments)
     for i, arg in enumerate(arguments):
@@ -701,8 +661,6 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         "!": f"{boolean_cast_rax}{boolean_cast_rbx}and $1, %rax"
     }
 
-    # print(expr)
-            # print(left_val)
     if expr["action"] == "lrop":
 
         if expr["op"] == "&x":
@@ -753,14 +711,10 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         return
 
     if expr["action"] == "funcall":
-        
-        # total_arg_size = 
 
         arg_count = len(expr["args"])
         for arg in expr["args"]:
             evaluate_expression(arg, funcname, depth)
-            # var_size = get_argument_size(arg)
-            # print(arg)
         
 
         asm.add([
@@ -787,7 +741,6 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
  
     if expr["action"] == "varget":
 
-        # print("----", expr)
         if "value" in expr:
             print("AAAAH")
             evaluate_expression(expr['value'], funcname, depth)
@@ -914,16 +867,23 @@ if __name__ == "__main__":
     for element in data:
         
         if element["action"] == "gvardef":
+            
+            arr_size = get_array_size(element["size"])
+            
             asm.set_section("bss")
             asm.add([
                 f".align {VAR_SZ}",
                 f".type {element['name']}, @object",
-                f".size {element['name']}, {VAR_SZ}"
+                f".size {element['name']}, {VAR_SZ * arr_size}"
             ])
             asm.add(f"{element['name']}:", indent=False)
-            asm.add(f".zero {VAR_SZ}")
-            # var_id = variable_id(, 'main', 0)
-            VARIABLES[0][element['name']] = Variable(element['name'], 'main', 0, 0, element['type'], True, 0)
+            asm.add(f".zero {VAR_SZ * arr_size}")
+
+            varname = element['name']
+            VARIABLES[0][varname] = Variable(varname, 'main', 0, 0, element['type'], True, 0)
+            var_obj = VARIABLES[0][varname]
+
+            ARRAYS_SETUP.append((var_obj.location(), element['size']))
             continue
 
         if element["action"] == "varset":

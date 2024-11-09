@@ -1,7 +1,6 @@
+int tab[100];
+
 int main(){
-
-    int tab[100];
-
     for (int i = 0; i < 100; i = i + 1){
         tab[i] = i;
     }
