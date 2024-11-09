@@ -281,28 +281,63 @@ def define_array(base_location: str, size: list):
 
 def evaluate_scope(body, funcname, return_type, depth):
 
-    # print("++++", body)
+    """
+    Sans doute la fonction la plus importante, permet d'évaluer 
+    tous les statements à l'intérieur d'un scope. Un scope est un 
+    regroupement de statements, souvent définis avec { stmt1; stmt2; etc; }
+
+    On a donc, un peu de la même manière que evaluate_expression, pleins 
+    de cas à traiter, qui sont sans doute plus complexes en général.
+    """
 
     global VARIABLES, VARIABLE_OFFSET, LOOP_IDENTIFIER, IF_IDENTIFIER, WHILE_IDENTIFIER, WHILE_CURRENT
 
     if isinstance(body, dict):
 
         if "action" in body and body["action"] == "scope":
-            # VARIABLES.append({})
+
+            """
+            C'est un test assez simple qui permet d'éviter du code
+            qui se répète, des fois l'abre qu'on explore peut être un peu
+            décalé, en fonction d'où on appelle evaluate_scope, ceci permet 
+            de descendre d'un echelon si besoin
+            """
             evaluate_scope(body["body"], funcname, return_type, depth)
-            # VARIABLES.pop()
             return
         
-        # VARIABLES.append({})
+        """
+        Même chose ici, mais cela permet de monter d'un écheleon. Cela permet
+        surtout de pouvoir appeler evaluate_scope(stmt1) tout simplement, 
+        parce que evaluate_scope(s) s'attend à ce que s soit une liste initialement.
+        """
         evaluate_scope([body], funcname, return_type, depth)
-        # VARIABLES.pop()
         return
     
 
+    """
+    Et ici, on peut traiter chacun des statements du scope.
+    """
     for element in body:
         
         if element["action"] == "return":
             
+            """
+            Retour de fonction classique, on met en plus
+            la valeur de retour attendu, si le return
+            n'est pas un return; (ie sans valeur retour) dans %rax,
+            ce qui permet ensuite de l'utiliser ou non après coup
+            sans pour autant modifier la hauteur de la pile.
+
+            Sinon, 
+            int a = f(1);
+            
+            et
+            f(1);
+
+            n'auraient pas la même hauteur de pile en sortie, si on utilisait
+            la pile plutôt qu'un registre.
+            """
+
             if len(element["value"].keys()) != 0:
                 evaluate_expression(element["value"], funcname, depth)
                 asm.add([
@@ -315,16 +350,35 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "expr":
+
+            """
+            Ici, on nous dit qu'il faut simplement évaluer une valeur.
+            On repart donc sur 'evaluate_expression(expr)'
+            """
+
             evaluate_expression(element["value"], funcname, depth)
             continue
 
         if element["action"] == "vardef":
 
-            # print(element)
+            """
+            C'est ici que les variables sont définies, il faut donc
+            les ajouter au dictionnaire courant. On garde toujours en 
+            mémoire la profondeur que l'on a (égale à peu de choses près
+            au nombre de brackets gauches ({) que l'on a ouverts sans encore
+            qu'ils soient refermés). Et on définit la variable dans 
+            VARIABLES[profondeur]. Voir get_variable_object pour plus de détails
+            sur la profondeur
+
+            Les variables simples prennent 64 bits de mémoire, et les tableaux
+            autant que nécessaire, mais voir define_array pour plus de détails.
+
+            Il faut donc faire baisser la taille de la pile pour avoir de la place
+            pour la nouvelle variable.
+            """
 
             varname = element['name']
             vartype = element['type']
-
 
             varsize = get_array_size(element["size"])
 
@@ -343,10 +397,21 @@ def evaluate_scope(body, funcname, return_type, depth):
             var_obj = VARIABLES[depth][var_id]
             location = var_obj.location()
 
+            """
+            Define array est une boucle qui fait n boucles 
+            pour un tableau de dimension n, donc 0 boucles pour une 
+            simple variable.
+            """
             define_array(location, size=element["size"])
 
-
             if len(element["value"].keys()) > 0:
+
+                """
+                Ici c'est un peu de la triche, pour transformer les instructions du 
+                genre int a = 5; en d'abord l'instruction int a; puis l'instruction
+                a = 5;
+                """
+
                 # should be changed so that int c = 3; covers also global variables.
                 rebuild_varset = {'action': 'varset', 'left_value': {'action': 'varget', 'name': varname}, 'op': '=', 'value': element['value']}
                 evaluate_scope([rebuild_varset], funcname, return_type, depth)
@@ -355,7 +420,11 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "varset":
 
+            """
+            Ce flag permet de savoir si l'on travaille avec des booléens
+            """
             keep_one_bit_flag = False
+
 
             evaluate_expression(element['value'], funcname, depth)
 
@@ -402,7 +471,13 @@ def evaluate_scope(body, funcname, return_type, depth):
             ])
 
             if keep_one_bit_flag:
-                asm.add(f"and $1, %rbx {COMMENT} keep_one_bit_flag")
+                asm.add([
+                    f"{COMMENT} keep_one_bit_flag"
+                    "test %rax, %rax",
+                    "setnz %al",
+                    "movzx %al, %rax",
+                ])
+                # asm.add(f"and $1, %rbx ")
 
             asm.add([
                 f"mov %rbx, (%rax)", 
@@ -593,9 +668,25 @@ def evaluate_scope(body, funcname, return_type, depth):
         
 def define_function(funcname, return_type, arguments, scope, added):
 
+    """
+    Ici notre but est donc d'écrire en assembleur l'équivalent d'une fonction
+
+    On doit donc crééer pour chacune de ces fonctions un espace de variable
+    que l'on va créer. On l'implémente avec une pile car en soi, une fois
+    que le python a finit de lire une fonction, plus jamais ses variables
+    ne seront utiles. Donc on peut ajouter un 'layer' à chaque nouvelle 
+    fonction/chaque nouveau scope (voir la fonction evaluate_scope)
+    et le retirer dès que la fonction est finie. 
+
+    VARIABLES est donc cette pile, VARIABLE_OFFSET permet de savoir
+    quel décalage total on a déjà utilisé par rapport à %rbp, le base pointer 
+    de la fonction en cours, et donc de savoir à quel endroit allouer
+    nos nouvelles variables.
+    """
+
     global VARIABLES, VARIABLE_OFFSET, ARRAYS_SETUP
     
-    current_depth = 1
+    current_depth = 1 # Voir la fonction evaluate scope
     VARIABLES.append({})
 
     if added is not None:
@@ -603,6 +694,12 @@ def define_function(funcname, return_type, arguments, scope, added):
         evaluate_scope(added, funcname, return_type, current_depth)
     
     VARIABLE_OFFSET = 0
+
+    """
+    Ici, on prend toutes les définitions d'une fonction, en s'assurant
+    que l'on est bien en section text, et en écrivant la base du début, 
+    ie sauvegarder l'ancien base pointer (rbp) et set le nouveau rsp
+    """
 
     asm.set_section("text")
     
@@ -613,11 +710,23 @@ def define_function(funcname, return_type, arguments, scope, added):
         ""
     ])
     
+    """
+    Ici, pour chacun des tableaux que l'on a déclaré en global
+    on assigne la structure attendue de tableau lorsque l'on rentre
+    pour la première fois dans le main. Voir la fonction define_array
+    pour plus de précisions.
+    """
     if element['name'] == 'main':
         for location, size in ARRAYS_SETUP:
-            # varsize = get_array_size(size)
             define_array(location, size)
 
+    """
+    Ensuite, on récupère chacun des arguments de la fonction, qu'on trouve donc
+    dans l'ordre à +16(%rbp) (car %(rbp) contient l'ancien %rbp, et +8(%rbp) contient
+    un pointeur vers la ligne à laquelle reprendre après la fin de la fonction) puis 
+    +24(%rbp), +32(%rbp) et ainsi de suite. Ne pas oublier de retourner les arguments
+    car la pile a inversée l'ordre.
+    """
     arg_count = len(arguments)
     for i, arg in enumerate(arguments):
         
@@ -630,15 +739,42 @@ def define_function(funcname, return_type, arguments, scope, added):
         var_id = variable_id(arg_name, funcname, current_depth)
         VARIABLES[current_depth][var_id] = Variable(var_id, funcname, current_depth, 8 * (1 + (arg_count - i)), arg_type)
 
+    """
+    Et c'est ici qu'on évalue l'intérieur de la fonction
+    """
     evaluate_scope(scope["body"], funcname, return_type, current_depth)
+    
+    """
+    Ici, on s'assure que même sans return la fonction termine bien
+    """
     end_function_here()
 
+    """
+    Puis on se débarasse du layer de variables inutiles maintenant
+    que la fonction a été traitée.
+    """
     VARIABLES.pop()
 
 
 
 
 def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = False):
+
+    """
+    Ici, il y a "simplement" pleins de cas à traiter, un par un. 
+    
+    On retourne le type supposé de l'expression évaluée, notamment
+    pour savoir si l'on fait de l'arithmétique de pointeur:
+    si pour c + d on a 'c' ou 'd' qui est détecté comme un pointeur,
+    on multiplie l'autre pointeur par 8, pour décaler correctement sur la pile 
+
+    Les expressions sont pour beaucoup des opérations binaires, qui 
+    sont toutes du genre f(a, b). Pour cela, on évalue, a, on le pousse 
+    sur la pile, on évalue b, puis on pop b puis on pop a, pour garder l'ordre
+    et on applique les "operators" définis juste en dessous. 
+    boolean_cast_rax et rbx servent à passer d'un entier à un booléen. (En
+    gros 1 si a != 0 sinon 0). 
+    """
 
     boolean_cast_rax = "test %rax, %rax\n\tsetnz %al\n\tmovzx %al, %rax\n\t"
     boolean_cast_rbx = "test %rbx, %rbx\n\tsetnz %bl\n\tmovzx %bl, %rbx\n\t"
@@ -667,15 +803,33 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
     if expr["action"] == "lrop":
 
         if expr["op"] == "&x":
+
+            """
+            Permet de récupérer l'addresse pointée par une variable.
+            Pour cela, on mémorise toutes les variables définies précédemment, 
+            on trouve l'objet qui lui correspond (dans le python) et cet objet
+            contient l'emplacement supposé de la variable en assembleur 
+            (ainsi que d'autres données, voir 'class Variable:' en haut)
+            
+            Et il ne reste plus qu'à pousser le pointeur sur la pile pour ensuite
+            l'utiliser: c'est la fonction push_pointer
+            """
+
             left_val = expr["left_value"]
             var_obj: Variable = get_variable_object_via_json(left_val, funcname, depth)
             location = var_obj.location()
+
             push_pointer(location, "pushing pointer from expr")
             return var_obj.vartype + "*"
     
     if expr["action"] == "rlop":
 
         if expr["op"] == "*x":
+
+            """
+            Ici on prend un pointeur et on accède à sa valeur, il suffit donc d'évaluer
+            expr dans notre *(expr), puis de retirer la référence.
+            """
 
             _type = evaluate_expression(expr["value"], funcname, depth)
             
@@ -686,39 +840,37 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
                 "push %rax",
                 ""
             ])
-            return _type[:-1] # removing one star
+            return _type[:-1] # On retire une étoile (le dernier caractère) car le type rendu possède une échelle de pointeur en moins
 
 
 
     if expr["action"] == "var":
-        get_variable(expr["name"], funcname, depth)
-        return
+        _type = get_variable(expr["name"], funcname, depth)
+        return _type
     
     if expr["action"] == "valueget":
+
+        """
+        À peu de choses près, comme pour ce qui est du cas au dessus,
+        une couche inutile du parseur pour nos besoins, donc on passe
+        simplement au niveau suivant dans l'arbre qu'on explore actuellemnt
+        """
+
         _type = evaluate_expression(expr["value"], funcname, depth)
         return _type
 
-        value = expr["value"]
-        if value["action"] == "rlop" and value["op"] == "*x":
-            pass
-
-        var_obj = get_variable_object_via_json(expr["value"], funcname, depth)
-        location = var_obj.location()
-        
-        if var_obj.unreference == 0:
-            push_location(location, "pushing var through valueget")
-        else:
-            push_unreference(location, var_obj.unreference, "pushing unreferenced pointer")
-
-        # location = get_variable_location_via_json(expr["value"], funcname, depth)
-        return
-
     if expr["action"] == "funcall":
+
+        """
+        Appel d'une fonction, si la fonction attend 6 arguments, on va
+        pousser sur la pile arg1, puis arg2, arg3, arg4, arg5 et enfin arg6.
+        La fonction part du principe qu'elle trouvera ses arguments en remontant
+        la pile (l'ordre des arguments sera donc inversé)
+        """
 
         arg_count = len(expr["args"])
         for arg in expr["args"]:
             evaluate_expression(arg, funcname, depth)
-        
 
         asm.add([
             f"{COMMENT} function call",
@@ -727,14 +879,26 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
             "push %rax",
             ""
         ])
+
         # TODO HERE, ADD FUNCTION TYPE
         return "FIXING"
     
     if expr["action"] == "const":
+        
+        """
+        Simplement une valeur constante, on peut passer au niveau suivant
+        de l'arbre
+        """
+        
         _type = evaluate_expression(expr["value"], funcname, depth)
         return _type
 
     if expr["action"] == "int":
+
+        """
+        On pousse ici l'entier correspondant sur la pile
+        """
+
         asm.add([
             f"{COMMENT} push const int",
             f"push ${expr['value']}",
@@ -743,6 +907,15 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         return "int"
  
     if expr["action"] == "varget":
+
+        """
+        Permet de récupérer la valeur d'une variable,
+        il faut donc récupérer à partir du nom de la variable,
+        et de la fonction dans laquelle on est, l'objet en python
+        que l'on a créé durant son initialisation, et obtenir
+        sa position dans la pile (ou sa position dans la mémoire globale
+        si la variable est globale). On push ensuite sa valeur sur la pile
+        """
 
         if "value" in expr:
             print("AAAAH")
@@ -754,13 +927,28 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         return var.vartype
 
     if expr["action"] == "litteral":
+
+        """
+        Contient des valeurs du type: int, bool, etc au prochain niveau
+        """
+
         evaluate_expression(expr["value"], funcname, depth)
         return "int"
 
     if expr["action"] == "binop":
+
+        """
+        Expliqué tout en haut
+        """
         
         _type1 = evaluate_expression(expr["v1"], funcname, depth)
         _type2 = evaluate_expression(expr["v2"], funcname, depth)
+
+
+        """
+        C'est ici que l'on multiplie par 8 la taille de l'élément
+        droit ou gauche si l'on détecte que l'on travaille sur des pointeurs
+        """
 
         if "*" in _type1:
             asm.add([
@@ -810,6 +998,11 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         return "bool"
 
     if expr["action"] == "uniop":
+
+        """
+        Comme pour les opérateurs binaires, mais l'on a ici un seul
+        opérateur
+        """
         
         evaluate_expression(expr["value"], funcname, depth)
         current_uniop = expr["uniop"]
@@ -824,6 +1017,17 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         return "bool"
 
     if expr["action"] == "arrayget":
+
+        """
+        On accède ici à la valeur d'un array,
+        il faut donc obtenir d'abord de quel array on parle, 
+        ce que l'on fait en évaluant 'left_value'.
+
+        Une fois cela fait, on évalue également l'index du tableau
+        et on peut simplement pop les deux valeurs, pour les sommer 
+        (en n'oubliant pas de multiplier l'index par 8 car on fait
+        de l'arithmétique de pointeurs ici). Puis on push la somme
+        """
 
         left_value = expr["left_value"]
         index = expr["index"]
@@ -845,7 +1049,7 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
 
 
 
-    print(expr)
+    print(expr) # Sert à print lorsqu'un type d'expression n'est pas traité
 
         
 
@@ -870,6 +1074,20 @@ if __name__ == "__main__":
     for element in data:
         
         if element["action"] == "gvardef":
+
+            """
+            Pour les variables globales, deux choses à bien retenir:
+            On ne peut faire la déclaration de quelque chose accessible partout
+            que dans la section "bss", qui doit être en dehors du main.
+
+            Cependant, l'allocation de ce qu'il y a dans les variables est fait
+            dans la fonction main. ARRAY_SETUP sert à appliquer la structure de tableau
+            choisie aux tableaux globaux. Voir le commentaire de define_array pour cela
+
+            De la même manière, la variable to_add_when_calling mémorise les allocations
+            du genre a = 5; qui même lorsqu'elles sont globales sont simplement executées
+            dans le main.
+            """
             
             arr_size = get_array_size(element["size"])
             
@@ -895,7 +1113,6 @@ if __name__ == "__main__":
 
         if element["action"] == "fundef":
             scope = element["body"]
-            # body = scope["body"]
             if element["name"] == "main":
                 appened = to_add_when_calling
             else:
@@ -904,8 +1121,11 @@ if __name__ == "__main__":
             continue
 
     with open(sys.argv[1].replace(".json", ".s"), "w") as f:
+        """
+        C'est à ce moment ci qu'on passe d'une variable contenant 
+        l'assembleur à un fichier
+        """
         f.write(asm.own_asm)    
-        # print(asm.own_asm)
 
 
 
