@@ -178,6 +178,9 @@ and toJSONexpr = function
   | List(l, p) -> `Assoc ([
     "action", `String "list" ;
     "values", `List (List.map toJSONexpr l) ] @ pos p)
+  | SizeOf(t, p) -> `Assoc ([
+    "action", `String "sizeof";
+    "type", `String t ] @ pos p)
   | FunCall(f, l, p) -> `Assoc ([
     "action", `String "funcall" ;
     "name", `String f ;

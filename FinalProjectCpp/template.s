@@ -6,8 +6,23 @@ int_fmt_scan:
 
 .section .text
 .globl print
+.globl malloc
 .extern printf               # Declare printf as an external function
 .globl main
+
+malloc:
+    # rdi = size (number of bytes to allocate)
+    # sys_brk system call
+    mov $45, %rax 
+    # initialize EBX to 0
+    xor %rbx, %rbx 
+    # invoke sys_brk
+    int $0x80
+
+    # allocate memory
+    # adjust EBX to point to the allocated memory
+    add %rdi, %rax
+    ret
 
 print_int:
         # Prologue
@@ -104,7 +119,6 @@ scan:
         mov %rbp, %rsp
         popq %rbp                   
         ret                      
-
 
 
 

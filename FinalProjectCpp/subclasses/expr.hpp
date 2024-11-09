@@ -47,6 +47,15 @@ class List : public Expr {
         }
 };
 
+class SizeOf : public Expr {
+    public:
+    DataType type;
+    SizeOf(string type_name) : Expr(SIZE_OF) {
+        type = data_type(type_name);
+    }
+    void on_enter() override;
+};
+
 class FunCall : public Expr {
     public:
         string name;

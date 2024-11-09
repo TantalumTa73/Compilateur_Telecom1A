@@ -17,6 +17,7 @@
 %token IF ELSE
 %token RETURN
 %token BREAK CONTINUE CONST INLINE STRUCT
+%token SIZEOF
 
 %token EQ PLUSEQ MINUSEQ MULTEQ DIVEQ MODEQ
 
@@ -151,6 +152,7 @@ litteral:
 expr:
   | x = litteral { Litteral(x, $loc) }
   | x = left_value { ValueGet(x, $loc) }
+  | SIZEOF LP t = TYPE RP { SizeOf(t, $loc) }
   | x = IDENT LP args = separated_list(COMMA,expr) RP { FunCall(x,args, $loc) }
   | LB elements = separated_list(COMMA,expr) RB { List(elements, $loc) }
   | LP e = expr RP { e }

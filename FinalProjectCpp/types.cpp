@@ -105,6 +105,7 @@ std::ostream &operator<<(std::ostream &os, TokenType const &t) {
         case LITTERAL: return os << "const";
         case VALUE_GET: return os << "valueget";
         case LIST: return os << "list";
+        case SIZE_OF: return os << "sizeof";
         case FUN_CALL: return os << "funcall";
         case LR_OP: return os << "leftvalop";
         case UNIOP: return os << "uniop";

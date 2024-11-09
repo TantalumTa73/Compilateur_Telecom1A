@@ -69,6 +69,14 @@ void Sscope::on_exit(){
     called_contexts.pop_back();
 }
 
+// SIZE_OF ------------------------------
+void SizeOf::on_enter(){
+    int size = type_size(type);
+    add_line("sizeof", true, true);
+    add_line("push $" + to_string(size));
+    add_line();
+}
+
 // CALL_FUN -----------------------------
 
 void FunCall::on_enter(){

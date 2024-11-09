@@ -45,6 +45,7 @@ enum TokenType {
     LITTERAL,
     VALUE_GET,
     LIST,
+    SIZE_OF,
     FUN_CALL,
     LR_OP,
     UNIOP,

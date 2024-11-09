@@ -45,6 +45,7 @@ and expr =
   | Litteral of litteral * ppos
   | ValueGet of left_value * ppos
   | List of expr list * ppos
+  | SizeOf of string * ppos
   | FunCall of string * expr list * ppos
 
   | LRop of lrop * left_value * ppos

@@ -77,6 +77,7 @@ class Litteral ;
 class ValueGet ;
 class List ;
 class FunCall ;
+class SizeOf ;
 
 class LRop ;
 class Uniop ;

@@ -25,6 +25,7 @@
   | "true" -> TRUE
   | "NULL" -> NULL
 
+  | "sizeof" -> SIZEOF
 
   | "void" -> TYPE "void"
   | "int" -> TYPE "int"
