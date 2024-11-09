@@ -1,9 +1,9 @@
-int f(){
-    return 1 ;
+int f(int a, int b){
+    return a + b;
 }
 
 int g(){
-    print_int(f());
+    print_int(f(40, 2));
     return 2 ;
 }
 
@@ -13,7 +13,6 @@ int g(){
 
 int main(){
 
-    // f();
     g();
 
     // args(1,2,3);
