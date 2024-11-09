@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # ./Bash/finalproject-gcc.sh $1
 ./Bash/finalproject-cpp.sh $1 $2
