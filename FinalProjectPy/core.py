@@ -93,6 +93,7 @@ WHILE_IDENTIFIER = 0
 WHILE_CURRENT = []
 
 ARRAYS_SETUP = []
+VERBOSE = False
 
 VAR_SZ = 8
 COMMENT = '#'
@@ -138,7 +139,8 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
         return get_variable_object_via_json(element["value"], funcname, depth)
     
     if element["action"] == "arrayget":
-        print(element)
+        if VERBOSE:
+            print(element)
         
 
 
@@ -515,7 +517,10 @@ def evaluate_scope(body, funcname, return_type, depth):
                 
                 var_obj = get_variable_object(left_val["name"], funcname, depth)
                 location = var_obj.location()
-                print(var_obj.vartype, var_obj.varname)
+
+                if VERBOSE:
+                    print(var_obj.vartype, var_obj.varname)
+                
                 keep_one_bit_flag = (var_obj.vartype == "bool")
 
                 asm.add([
@@ -541,7 +546,8 @@ def evaluate_scope(body, funcname, return_type, depth):
                 ])
 
             else:
-                print("NO WAY TO RETRIEVE LEFT-VAL FOUND", left_val)    
+                if VERBOSE:
+                    print("NO WAY TO RETRIEVE LEFT-VAL FOUND", left_val)    
 
             asm.add([
                 f"{COMMENT} dereference element",
@@ -828,7 +834,8 @@ def evaluate_scope(body, funcname, return_type, depth):
         """
         Si un statement n'a pas été traité.
         """
-        print(element, "stmt")
+        if VERBOSE:
+            print(element, "stmt")
 
 
         
@@ -856,7 +863,8 @@ def define_function(funcname, return_type, arguments, scope, added):
     VARIABLES.append({})
 
     if added is not None:
-        print(added)
+        if VERBOSE:
+            print(added)
         evaluate_scope(added, funcname, return_type, current_depth)
     
     VARIABLE_OFFSET = 0
@@ -960,6 +968,7 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
         ">=": "cmp %rax, %rbx\n\tsetle %bl\n\tmovzx %bl, %rbx",
         "==": "cmp %rax, %rbx\n\tsete %bl\n\tmovzx %bl, %rbx",
+        "!=": "cmp %rax, %rbx\n\tsetne %bl\n\tmovzx %bl, %rbx"
     }
 
     unioperators = {
@@ -1105,12 +1114,13 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         """
 
         if "value" in expr:
-            print("AAAAH")
+            if VERBOSE:
+                print("AAAAH")
             evaluate_expression(expr['value'], funcname, depth)
             return
 
         var = get_variable_object(expr["name"], funcname, depth)
-        push_location(var.location(), "HEEEEEEEEELP")
+        push_location(var.location(), "pushing variable location")
         return var.vartype
 
     if expr["action"] == "litteral":
@@ -1129,8 +1139,6 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         """
         
         _type1 = evaluate_expression(expr["v1"], funcname, depth)
-        
-
         _type2 = evaluate_expression(expr["v2"], funcname, depth)
 
 
@@ -1261,7 +1269,8 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         ])
         return val
 
-    print(expr, "expr") # Sert à print lorsqu'un type d'expression n'est pas traité
+    if VERBOSE:
+        print(expr, "expr") # Sert à print lorsqu'un type d'expression n'est pas traité
 
         
 
