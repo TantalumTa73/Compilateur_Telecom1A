@@ -1174,7 +1174,25 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
             asm.add(f"if_and_final_{AND_LAZY_IDENTIFIER}:", indent=False)
         
         elif binop == '||':
-            pass
+            
+            OR_LAZY_IDENTIFIER += 1
+
+            asm.add([
+                "pop %rax",
+                "test %rax, %rax",
+                "push %rax",
+                "",
+                f"jz if_and_lazy_first_true_{OR_LAZY_IDENTIFIER}",
+                "",
+                "push $0",
+                f"jmp if_and_final_{OR_LAZY_IDENTIFIER}",
+                ""
+            ])
+
+            asm.add(f"if_and_lazy_first_true_{OR_LAZY_IDENTIFIER}:", indent=False)
+            _type2 = evaluate_expression(expr["v2"], funcname, depth)
+            asm.add(f"if_and_final_{OR_LAZY_IDENTIFIER}:", indent=False)
+
         else:
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
 

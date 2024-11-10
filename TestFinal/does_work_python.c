@@ -2,17 +2,17 @@
 
 bool f() {
     print_int(0);
-    return false;
+    return true;
 }
 
 bool g() {
     print_int(1);
-    return false;
+    return true;
 }
 
 int main() {
 
-    if (f() && g()) {
+    if (f() || g()) {
         print_int(0);
     } else {
         print_int(3);
