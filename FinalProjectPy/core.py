@@ -1162,14 +1162,14 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
                 "test %rax, %rax",
                 "push %rax",
                 "",
-                f"jnz if_and_lazy_first_true_{AND_LAZY_IDENTIFIER}",
+                f"jnz if_and_lazy_first_false_{AND_LAZY_IDENTIFIER}",
                 "",
                 "push $0",
                 f"jmp if_and_final_{AND_LAZY_IDENTIFIER}",
                 ""
             ])
 
-            asm.add(f"if_and_lazy_first_true_{AND_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_and_lazy_first_false_{AND_LAZY_IDENTIFIER}:", indent=False)
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
             asm.add(f"if_and_final_{AND_LAZY_IDENTIFIER}:", indent=False)
         
@@ -1182,16 +1182,16 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
                 "test %rax, %rax",
                 "push %rax",
                 "",
-                f"jz if_and_lazy_first_true_{OR_LAZY_IDENTIFIER}",
+                f"jz if_or_lazy_first_true_{OR_LAZY_IDENTIFIER}",
                 "",
                 "push $0",
-                f"jmp if_and_final_{OR_LAZY_IDENTIFIER}",
+                f"jmp if_or_final_{OR_LAZY_IDENTIFIER}",
                 ""
             ])
 
-            asm.add(f"if_and_lazy_first_true_{OR_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_or_lazy_first_true_{OR_LAZY_IDENTIFIER}:", indent=False)
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
-            asm.add(f"if_and_final_{OR_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_or_final_{OR_LAZY_IDENTIFIER}:", indent=False)
 
         else:
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
