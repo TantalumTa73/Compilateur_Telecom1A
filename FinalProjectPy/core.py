@@ -138,7 +138,7 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
         return get_variable_object_via_json(element["value"], funcname, depth)
     
     if element["action"] == "arrayget":
-        pass
+        print(element)
         
 
 
@@ -982,11 +982,32 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
             """
 
             left_val = expr["left_value"]
-            var_obj: Variable = get_variable_object_via_json(left_val, funcname, depth)
-            location = var_obj.location()
+            
+            if left_val['action'] == "arrayget":
+                
+                inside_left_val = left_val['left_value']
+                inside_index = left_val['index']
 
-            push_pointer(location, "pushing pointer from expr")
-            return var_obj.vartype + "*"
+                _type1 = evaluate_expression(inside_left_val, funcname, depth)
+                _type2 = evaluate_expression(inside_index, funcname, depth)
+
+                asm.add([
+                    f"{COMMENT} reference array access",
+                    "pop %rbx",
+                    "pop %rax",
+                    f"imul ${VAR_SZ}, %rbx",
+                    "add %rbx, %rax",
+                    "push %rax",
+                    ""
+                ])
+                return _type1 + "*"
+
+            else:
+                var_obj: Variable = get_variable_object_via_json(left_val, funcname, depth)
+                location = var_obj.location()
+
+                push_pointer(location, "pushing pointer from expr")
+                return var_obj.vartype + "*"
     
     if expr["action"] == "rlop":
 
@@ -1108,6 +1129,8 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         """
         
         _type1 = evaluate_expression(expr["v1"], funcname, depth)
+        
+
         _type2 = evaluate_expression(expr["v2"], funcname, depth)
 
 
