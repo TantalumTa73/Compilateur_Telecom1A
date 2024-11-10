@@ -972,7 +972,8 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
     }
 
     unioperators = {
-        "!": f"{boolean_cast_rax}\n\tnot %rax\n\tand $1, %rax"
+        "!": f"{boolean_cast_rax}\n\tnot %rax\n\tand $1, %rax",
+        "-": f"imul $-1, %rax",
     }
 
     if expr["action"] == "lrop":

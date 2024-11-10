@@ -15,6 +15,10 @@ int factorielle(int n) {
 
 int main() {
 
+    int a = -5;
+    print_int(a);
+    print_int(3 + 5 / 5 + 3 * (3 + 1));
+
     int f7 = factorielle(7);
 
     int f7_iter = 1;
