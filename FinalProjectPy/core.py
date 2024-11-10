@@ -486,6 +486,8 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "varset":
 
+            print(VARIABLES)
+
             """
             Ce flag permet de savoir si l'on travaille avec des booléens
             """
@@ -1290,7 +1292,7 @@ if __name__ == "__main__":
             asm.add(f".zero {VAR_SZ * arr_size}")
 
             varname = element['name']
-            VARIABLES[0][varname] = Variable(varname, 'main', 0, 0, element['type'], True, 0)
+            VARIABLES[0][varname] = Variable(varname, 'main', 0, 0, element['type'] + "*" * len(element['size']), True, 0)
             var_obj = VARIABLES[0][varname]
 
             ARRAYS_SETUP.append((var_obj.location(), element['size']))
