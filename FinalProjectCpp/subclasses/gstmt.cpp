@@ -16,7 +16,7 @@ void GFunDef::print(string indent){
 
 void GVarDef::print(string indent){
     v_cout << indent << "GVarDef: " << type << " " << name ;
-    for (auto i : ladder_size) v_cout << "[" << i << "]";
+    for (auto i : ladder) v_cout << "[" << i << "]";
     v_cout << endl;
     if(value != nullptr){
         value->print(indent + "  ");

@@ -111,7 +111,8 @@ void SvarSet::on_exit(){
 // GET_VAR -----------------------------
 
 void ValueGet::on_exit(){
-    w_push_var();
+    if (!is_address)
+        w_push_var();
     if (is_bool)
         w_convert_to_bool();
 }
@@ -123,7 +124,8 @@ void List::on_enter(){
 // LITTERAL -----------------------------
 
 void Int::on_enter(){
-    int val = value;
+    // need to be generic...
+    int val  = is_address ? value * 8 : value;
     if (is_bool){
         if (val != 0){
             val = 1;
@@ -152,7 +154,7 @@ void VarGet::on_exit(){
     Variable var = find_var(name);
 
     string s = "";
-    for (int i : var.ladder_size) s += "[" + to_string(i) + "]";
+    for (int i : var.ladder) s += "[" + to_string(i) + "]";
     add_line("var get : " + name, true, true);
 
     // if (var.array_size.size() > 0) add_line("Pushing size", true, true);

@@ -13,10 +13,10 @@ struct Variable {
         bool is_arg;
         int type_size ;
         int full_size ;
-        vector<int> ladder_size;
+        vector<int> ladder;
         Variable();
         Variable(string name, string fun_name, int offset, bool is_arg,
-            int type_size, vector<int> ladder_size);
+            int type_size, vector<int> ladder);
         string get_adress(int shift = 0);
 };
 
@@ -30,7 +30,7 @@ class Context {
         Context();
         Context(string name_, int offset = 0);
 
-        int init_var(string var_name, int type_size, vector<int> ladder_size, bool is_arg);
+        int init_var(string var_name, int type_size, vector<int> ladder, bool is_arg);
 
         int var_offset;
     private:

@@ -16,7 +16,7 @@ extern vector<tuple<string, string>> local_string ;
 void GVarDef::on_exit(){
     
 
-    int size = contexts[GLOBAL].init_var(name, type_size(type), ladder_size, false);
+    int size = contexts[GLOBAL].init_var(name, type_size(type), ladder, false);
     string value = "" ;
 
     set_section("data");
@@ -54,7 +54,7 @@ void GVarDef::on_exit(){
 
 }
 void SvarDef::on_enter(){
-    int size = contexts[called_contexts.back()].init_var(name, type_size(type), ladder_size, false);
+    int size = contexts[called_contexts.back()].init_var(name, type_size(type), ladder, false);
 
     add_line("init local variable", true, true);
     add_line("sub $" + to_string(size) + ", %rsp");

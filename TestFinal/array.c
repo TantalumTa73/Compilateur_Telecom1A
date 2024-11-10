@@ -1,15 +1,7 @@
-int tab[2][2];
+int tab[2][3];
 
 int main(){
-    for (int i = 0; i < 2; i ++){
-        for (int j = 0; j < 2; j ++){
-            tab[i][j] = i * 2 + j;
-        }
-    }
-    for (int i = 0; i < 2; i ++){
-        for (int j = 0; j < 2; j ++){
-            print_int(tab[i][j]);
-        }
-    }
+    *(tab[1] + 2) = 42;
+    print_int(tab[1][2]);
     return 0;
 }
