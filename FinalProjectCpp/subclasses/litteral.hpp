@@ -60,6 +60,7 @@ class String : public Litteral {
             v_cout << indent << "String: " << value << " (" << length << ")\n";
         }
         void on_enter() override;
+        void on_exit() override;
 };
 
 class Bool : public Litteral {

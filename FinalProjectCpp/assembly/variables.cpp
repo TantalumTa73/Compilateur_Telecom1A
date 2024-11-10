@@ -10,8 +10,6 @@
 #include "../subclasses/root.hpp"
 #include "../subclasses/stmt.hpp"
 
-extern vector<tuple<string, string>> local_string ;
-
 
 void GVarDef::on_exit(){
     

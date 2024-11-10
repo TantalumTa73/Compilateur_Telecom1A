@@ -10,6 +10,8 @@
 #include "../subclasses/root.hpp"
 #include "../subclasses/stmt.hpp"
 
+extern vector<tuple<string, string>> local_string ;
+
 void Sreturn::on_exit(){
     w_ret(called_contexts.back() == MAIN, value != nullptr);
 }
@@ -137,6 +139,17 @@ void Char::on_enter(){
 void String::on_enter(){
     // ERROR("String not yet implemented");
     // w_push_cst((int) value);
+}
+void String::on_exit(){
+
+    local_string.push_back({
+        called_contexts.back()+"_"+to_string(string_id), 
+        value
+    });
+    add_line("string : id_" + to_string(string_id), true, true);
+    add_line("lea " + called_contexts.back()+"_"+to_string(string_id)+"(%rip), %rax");
+    add_line("push %rax");
+    add_line();
 }
 void Bool::on_enter(){
     int val = this->value ? 1 : 0;

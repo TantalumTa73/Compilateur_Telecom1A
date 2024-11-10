@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// int x ;
-// int y = 92 ;
-// char c = 'c' ;
-char s1[7] = "a=%d\n" ;
-// char s2[5] ;
-// int f(){}
-// int z = 1 + x ;
+
+// char sg[7] = "a=%d\n" ;
 
 int main(){
 
+    // char s[4] = "s\n";
+    char sl[7] = "b=%d\n" ;
+    // char x = 1;
+    // printf(&sg,1);
+    // printf(&s);
+    printf(&sl,2);
+    // printf("c = %d\n",3);
 
-    printf(&s1,1);
+    // lea scope_1_1(%rip), %rax
+    // push %rax
+
     // printf();
 
     // char c = 'c' ;
