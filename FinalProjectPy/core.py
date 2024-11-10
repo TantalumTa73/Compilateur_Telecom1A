@@ -828,7 +828,7 @@ def evaluate_scope(body, funcname, return_type, depth):
         """
         Si un statement n'a pas été traité.
         """
-        print(element)
+        print(element, "stmt")
 
 
         
@@ -1213,9 +1213,32 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         ])
         return _type1[:-1]
 
+    if expr["action"] == "sizeof":
 
+        """
+        On gère le cas des sizeof à part, en rentrant à la main
+        la taille de chaque variable, pour ne pas considérer 'int'
+        par exemple comme une variable.
+        """
 
-    print(expr) # Sert à print lorsqu'un type d'expression n'est pas traité
+        possible_values = {
+            'int': 8,
+            'bool': 8
+        }
+
+        val = expr['value']
+        to_push = VAR_SZ
+        if val in possible_values:
+            to_push = possible_values[val]
+
+        asm.add([
+            f"{COMMENT} pushing sizeof",
+            f"push ${to_push}",
+            ""
+        ])
+        return val
+
+    print(expr, "expr") # Sert à print lorsqu'un type d'expression n'est pas traité
 
         
 

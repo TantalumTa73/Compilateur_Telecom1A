@@ -75,4 +75,24 @@ scan:
         sub $8, %rsp       
         jmp .call_scanf
 
+own_malloc:
+        # Prologue
+        push %rbp                
+        mov %rsp, %rbp    
+
+        # Get back the argument, number of bits to allocate
+        mov 16(%rbp), %rax
+        mov %rax, %rdi
+
+        extern malloc
+        call malloc
+        # and rax should contain the pointer
+
+        # Epilogue
+        mov %rbp, %rsp
+        pop %rbp                   
+        ret    
+
+
+
 
