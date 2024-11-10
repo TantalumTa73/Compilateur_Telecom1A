@@ -963,6 +963,7 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         "||": f"{boolean_cast_rax}{boolean_cast_rbx}or %rax, %rbx",
         "&": "and %rax, %rbx",
         "|": "or %rax, %rbx",
+        "^": "xor %rax, %rbx",
         "<": "cmp %rbx, %rax\n\tsetl %bl\n\tmovzx %bl, %rbx",
         ">": "cmp %rax, %rbx\n\tsetl %bl\n\tmovzx %bl, %rbx",
         "<=": "cmp %rbx, %rax\n\tsetle %bl\n\tmovzx %bl, %rbx",
@@ -1068,6 +1069,12 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         arg_count = len(expr["args"])
         for arg in expr["args"]:
             evaluate_expression(arg, funcname, depth)
+
+        """
+        On remplace par notre propre fonction de malloc
+        """
+        if expr['name'] == 'malloc':
+            expr['name'] = 'own_malloc'
 
         asm.add([
             f"{COMMENT} function call",
