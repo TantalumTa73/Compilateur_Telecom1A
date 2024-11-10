@@ -125,7 +125,7 @@ void List::on_enter(){
 
 void Int::on_enter(){
     // need to be generic...
-    int val  = is_address ? value * 8 : value;
+    int val  = is_address ? value * SIZE_INT : value;
     if (is_bool){
         if (val != 0){
             val = 1;
@@ -168,7 +168,10 @@ void VarGet::on_exit(){
 void ArrayGet::on_exit(){
     v_cout << "arrayget's name : " << name << endl;
     bool is_global = find_var(name).ctx_name == GLOBAL;
-    int val = is_global ? mult * SIZE_INT : -1 * mult * SIZE_INT ;
+    int val = is_global ? 1 : -1;
+    for (int i = 0; i < mult; i ++){
+        val *= SIZE_INT;
+    }
     w_array_get2(val);
 }
 
