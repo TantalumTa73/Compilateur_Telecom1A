@@ -1156,42 +1156,44 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         if binop == '&&':
 
             AND_LAZY_IDENTIFIER += 1
+            current_and_lazy_id = AND_LAZY_IDENTIFIER
 
             asm.add([
                 "pop %rax",
                 "test %rax, %rax",
                 "push %rax",
                 "",
-                f"jnz if_and_lazy_first_false_{AND_LAZY_IDENTIFIER}",
+                f"jnz if_and_lazy_first_false_{current_and_lazy_id}",
                 "",
                 "push $0",
-                f"jmp if_and_final_{AND_LAZY_IDENTIFIER}",
+                f"jmp if_and_final_{current_and_lazy_id}",
                 ""
             ])
 
-            asm.add(f"if_and_lazy_first_false_{AND_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_and_lazy_first_false_{current_and_lazy_id}:", indent=False)
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
-            asm.add(f"if_and_final_{AND_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_and_final_{current_and_lazy_id}:", indent=False)
         
         elif binop == '||':
             
             OR_LAZY_IDENTIFIER += 1
+            current_or_lazy_identifier = OR_LAZY_IDENTIFIER
 
             asm.add([
                 "pop %rax",
                 "test %rax, %rax",
                 "push %rax",
                 "",
-                f"jz if_or_lazy_first_true_{OR_LAZY_IDENTIFIER}",
+                f"jz if_or_lazy_first_true_{current_or_lazy_identifier}",
                 "",
                 "push $0",
-                f"jmp if_or_final_{OR_LAZY_IDENTIFIER}",
+                f"jmp if_or_final_{current_or_lazy_identifier}",
                 ""
             ])
 
-            asm.add(f"if_or_lazy_first_true_{OR_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_or_lazy_first_true_{current_or_lazy_identifier}:", indent=False)
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
-            asm.add(f"if_or_final_{OR_LAZY_IDENTIFIER}:", indent=False)
+            asm.add(f"if_or_final_{current_or_lazy_identifier}:", indent=False)
 
         else:
             _type2 = evaluate_expression(expr["v2"], funcname, depth)
