@@ -11,21 +11,18 @@ void w_call_printf(int args){
     else if (args == 1){
         // lea s1(%rip), %rax
         // mov %rax, %rdi
-        add_line("pop %rax");
-        add_line("mov %rax, %rdi");
+        add_line("pop %rdi");
         add_line("movb $0, %al");
         add_line("call printf");
         add_line();
     } else if (args == 2){
-        add_line("pop %rax");
-        add_line("mov %rax, %rdi");
+        add_line("pop %rdi");
         add_line("pop %rsi");
         add_line("movb $0, %al");
         add_line("call printf");
         add_line();
     } else if (args == 3){
-        add_line("pop %rax");
-        add_line("mov %rax, %rdi");
+        add_line("pop %rdi");
         add_line("pop %rsi");
         add_line("pop %rdx");
         add_line("movb $0, %al");

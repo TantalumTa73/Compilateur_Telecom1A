@@ -27,18 +27,21 @@ void w_ret(bool is_main, bool has_arg){
 void end(){
 
     // v_cout << "end\nlocal_string :   ";
-    add_line();
-    set_section("data");
+    if (local_string.size() > 0){
+        add_line();
+        add_line("Local strings :", true, true);
+        set_section("data");
+    }
     for (auto [name, value] : local_string){
         add_line(name + ":", false);
         add_line(".asciz \"" + value + "\"");
     }
 
-    v_cout << "global_var_init :   ";
-    for (auto [name, value] : global_var_init){
-        v_cout << name << " : " << value->tk_type << " ; ";
-    }
-    v_cout << "\n";
+    // v_cout << "global_var_init :   ";
+    // for (auto [name, value] : global_var_init){
+    //     v_cout << name << " : " << value->tk_type << " ; ";
+    // }
+    // v_cout << "\n";
 
     add_line();
     add_line(".section .note.GNU-stack");
