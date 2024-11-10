@@ -23,7 +23,7 @@ echo "json file : $json_file"  >> log.txt
 python3 FinalProjectPy/core.py $json_file FinalProjectPy/template.txt
 # cd ..
 # echo "bonjour1"
-gcc $s_file -o $out_file
+gcc $s_file -o $out_file -g
 # echo "bonjour2"
 ./$out_file
 # You just need to compute the .s file, not to run it

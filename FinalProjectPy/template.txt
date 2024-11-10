@@ -7,6 +7,7 @@ int_fmt_scan:
 .section .text
 .globl print
 .extern printf               # Declare printf as an external function
+.extern malloc
 .globl main
 
 print_int:
@@ -74,5 +75,28 @@ scan:
 .align_stack_scanf:
         sub $8, %rsp       
         jmp .call_scanf
+
+own_malloc:
+        # Prologue
+        push %rbp                
+        mov %rsp, %rbp    
+
+        # Get back the argument, number of bits to allocate
+        push 16(%rbp)
+
+        # call print_int
+        # sub $8, %rsp
+        # push %rax
+        
+        mov 16(%rbp), %rax
+        mov %rax, %rdi
+
+        # and rax should contain the pointer
+        call malloc
+
+        # Epilogue
+        mov %rbp, %rsp
+        pop %rbp                   
+        ret   
 
 

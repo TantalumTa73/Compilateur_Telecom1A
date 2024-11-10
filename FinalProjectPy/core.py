@@ -486,6 +486,8 @@ def evaluate_scope(body, funcname, return_type, depth):
 
         if element["action"] == "varset":
 
+            print(VARIABLES)
+
             """
             Ce flag permet de savoir si l'on travaille avec des booléens
             """
@@ -828,7 +830,7 @@ def evaluate_scope(body, funcname, return_type, depth):
         """
         Si un statement n'a pas été traité.
         """
-        print(element)
+        print(element, "stmt")
 
 
         
@@ -1213,9 +1215,32 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         ])
         return _type1[:-1]
 
+    if expr["action"] == "sizeof":
 
+        """
+        On gère le cas des sizeof à part, en rentrant à la main
+        la taille de chaque variable, pour ne pas considérer 'int'
+        par exemple comme une variable.
+        """
 
-    print(expr) # Sert à print lorsqu'un type d'expression n'est pas traité
+        possible_values = {
+            'int': 8,
+            'bool': 8
+        }
+
+        val = expr['value']
+        to_push = VAR_SZ
+        if val in possible_values:
+            to_push = possible_values[val]
+
+        asm.add([
+            f"{COMMENT} pushing sizeof",
+            f"push ${to_push}",
+            ""
+        ])
+        return val
+
+    print(expr, "expr") # Sert à print lorsqu'un type d'expression n'est pas traité
 
         
 
@@ -1267,7 +1292,7 @@ if __name__ == "__main__":
             asm.add(f".zero {VAR_SZ * arr_size}")
 
             varname = element['name']
-            VARIABLES[0][varname] = Variable(varname, 'main', 0, 0, element['type'], True, 0)
+            VARIABLES[0][varname] = Variable(varname, 'main', 0, 0, element['type'] + "*" * len(element['size']), True, 0)
             var_obj = VARIABLES[0][varname]
 
             ARRAYS_SETUP.append((var_obj.location(), element['size']))

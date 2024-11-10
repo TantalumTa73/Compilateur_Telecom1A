@@ -14,8 +14,9 @@ int _label_if_id = 1 ;
 int _scope_id = 1 ;
 vector<string> _string_stack = vector<string>();
 // It is to update mult for ArrayGet
-int _mult_tmp = 0;
+int _mult_tmp = 1;
 bool _is_treating_array = false;
+string _array_name;
 vector<string> _scope_stack = vector<string>();
 
 void Token::print(string indent){
@@ -193,15 +194,16 @@ Token* Token::simplify(JSON* json){
         string name = json->get_string("name");
         if (_is_treating_array){
             _is_treating_array = false;
-            _mult_tmp = 0;
+            _mult_tmp = 1;
+            _array_name = name;
         }
         return new VarGet(name);
     } else if (action == "arrayget") {
+        int mult = _mult_tmp ++;
+        _is_treating_array = true;
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         Expr* index = (Expr*) simplify(json->get_object("index"));
-        _is_treating_array = true;
-        _mult_tmp ++;
-        return new ArrayGet(left_value, index, _mult_tmp, json->get_object("left_value")->get_string("name"));
+        return new ArrayGet(left_value, index, mult, _array_name);
     } else if (action == "llop") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");
