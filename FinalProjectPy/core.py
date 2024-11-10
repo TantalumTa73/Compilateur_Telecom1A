@@ -119,7 +119,7 @@ def get_variable_object_via_json(element, funcname: str, depth: int) -> Variable
     if element["action"] == "varget":
         return get_variable_object(element["name"], funcname, depth)
     
-    print(element)
+    # print(element)
     if element["action"] == "rlop":
         
         if element["op"] == "*x":
@@ -485,8 +485,6 @@ def evaluate_scope(body, funcname, return_type, depth):
             continue
 
         if element["action"] == "varset":
-
-            print(VARIABLES)
 
             """
             Ce flag permet de savoir si l'on travaille avec des booléens
