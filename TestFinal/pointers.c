@@ -1,6 +1,9 @@
-int t[3][3];  // 2D array
+void f_add(int* a){
+    *a += 1;
+}
 
 int main() {
-    int** a;
-    // a[0][1] = 2;
+    int a = 41;
+    f_add(&a); 
+    print_int(a);
 }
