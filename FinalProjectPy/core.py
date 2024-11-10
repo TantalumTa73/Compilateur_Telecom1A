@@ -91,6 +91,8 @@ ARRAY_IDENTIFIER = 0
 IF_IDENTIFIER = 0
 WHILE_IDENTIFIER = 0
 WHILE_CURRENT = []
+AND_LAZY_IDENTIFIER = 0
+OR_LAZY_IDENTIFIER = 0
 
 ARRAYS_SETUP = []
 VERBOSE = False
@@ -934,6 +936,8 @@ def define_function(funcname, return_type, arguments, scope, added):
 
 def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = False):
 
+    global AND_LAZY_IDENTIFIER, OR_LAZY_IDENTIFIER
+
     """
     Ici, il y a "simplement" pleins de cas à traiter, un par un. 
     
@@ -1147,7 +1151,33 @@ def evaluate_expression(expr, funcname, depth: int, pointer_arithmetic: bool = F
         """
         
         _type1 = evaluate_expression(expr["v1"], funcname, depth)
-        _type2 = evaluate_expression(expr["v2"], funcname, depth)
+
+        binop = expr['binop']
+        if binop == '&&':
+
+            AND_LAZY_IDENTIFIER += 1
+
+            asm.add([
+                "pop %rax",
+                "test %rax, %rax",
+                "push %rax",
+                "",
+                f"jnz if_and_lazy_first_true_{AND_LAZY_IDENTIFIER}",
+                "",
+                "push $0",
+                f"jmp if_and_final_{AND_LAZY_IDENTIFIER}",
+                ""
+            ])
+
+            asm.add(f"if_and_lazy_first_true_{AND_LAZY_IDENTIFIER}:", indent=False)
+            _type2 = evaluate_expression(expr["v2"], funcname, depth)
+            asm.add(f"if_and_final_{AND_LAZY_IDENTIFIER}:", indent=False)
+        
+        elif binop == '||':
+            pass
+        else:
+            _type2 = evaluate_expression(expr["v2"], funcname, depth)
+
 
 
         """
