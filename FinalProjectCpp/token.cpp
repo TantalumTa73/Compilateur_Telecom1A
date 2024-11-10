@@ -10,6 +10,7 @@
 #include "subclasses/stmt.hpp"
 
 int _label_id = 1 ;
+int _label_if_id = 1 ;
 int _scope_id = 1 ;
 vector<string> _string_stack = vector<string>();
 // It is to update mult for ArrayGet
@@ -112,7 +113,7 @@ Token* Token::simplify(JSON* json){
         return new Sreturn(value);
     } else if (action == "keyword"){
         string keyword = json->get_string("keyword");
-        return new Skeyword(keyword);
+        return new Skeyword(keyword, _label_id);
     } else if (action == "for"){
         int id = _scope_id++;
         string name = "scope_" + to_string(id);
@@ -153,13 +154,13 @@ Token* Token::simplify(JSON* json){
     } else if (action == "if") {
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Stmt* body_if = (Stmt*) simplify(json->get_object("body"));
-        int label = _label_id++;
+        int label = _label_if_id++;
         return new Sif(condition, body_if, label);
     } else if (action == "ifelse") {
         Expr* condition = (Expr*) simplify(json->get_object("condition"));
         Stmt* body_if = (Stmt*) simplify(json->get_object("body_if"));
         Stmt* body_else = (Stmt*) simplify(json->get_object("body_else"));
-        int label = _label_id++;
+        int label = _label_if_id++;
         return new SifElse(condition, body_if, body_else, label);
 
 

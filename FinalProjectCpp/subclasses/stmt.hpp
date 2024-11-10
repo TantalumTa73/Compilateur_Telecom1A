@@ -27,7 +27,7 @@ class Sscope : public Stmt {
         void print(string indent = "") override;
         void on_enter() override ;
         void on_exit() override ;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             vector<Tk> res;
             for (auto v : body) {
                 res.push_back((Tk) v);
@@ -52,7 +52,7 @@ class Sreturn : public Stmt {
         void print(string indent = "") override;
 
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             if (value == nullptr) return {};
             return {(Tk)value};
         }
@@ -61,18 +61,20 @@ class Sreturn : public Stmt {
 class Skeyword : public Stmt {
     public:
         string keyword;
-        Skeyword(string keyword) : Stmt(KEYWORD){
+        int label;
+        Skeyword(string keyword, int label) : Stmt(KEYWORD){
             this->keyword = keyword;
+            this->label = label;
         };
         void print(string indent = "") override;
         void on_enter() override;
-        vector<Tk> children(string label) override {
+        vector<Tk> children() override {
             if (keyword == "break"){
                 v_cout << "break to " << label << endl;
-                return {new Jmp(label)};
+                return {new Jmp("L" + to_string(label) + "_end")};
             } else if (keyword == "continue"){
                 v_cout << "continue to " << label << endl;
-                return {new Jmp(label)};
+                return {new Jmp("L" + to_string(label) + "_update")};
             } else {
                 return {};
             }
@@ -94,14 +96,15 @@ class Sfor : public Sscope {
             this->init = init;
             this->condition = condition;
             this->update = update;
-            this->label_start = new Label("L" + to_string(label) + "_start_for");
-            this->label_update = new Label("L" + to_string(label) + "_update_for");
-            this->label_end = new Label("L" + to_string(label) + "_end_for");
-            this->goto_end = new Jz("L" + to_string(label) + "_end_for");
-            this->goto_start = new Jmp("L" + to_string(label) + "_start_for");
+            this->label_start = new Label("L" + to_string(label) + "_start");
+            
+            this->label_update = new Label("L" + to_string(label) + "_update");
+            this->label_end = new Label("L" + to_string(label) + "_end");
+            this->goto_end = new Jz("L" + to_string(label) + "_end");
+            this->goto_start = new Jmp("L" + to_string(label) + "_start");
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {
                 (Tk) init, (Tk) label_start,
                 (Tk) condition, (Tk) goto_end,
@@ -122,13 +125,13 @@ class Swhile : public Sscope {
         Swhile(string name, Expr* condition, Stmt* body, int label, string ctx) : Sscope(name, {body}, ctx){
             this->condition = condition;
             this->body = {body};
-            this->label_start = new Label("L" + to_string(label) + "_start_while");
-            this->label_end = new Label("L" + to_string(label) + "_end_while");
-            this->goto_end = new Jz("L" + to_string(label) + "_end_while");
-            this->goto_start = new Jmp("L" + to_string(label) + "_start_while");
+            this->label_start = new Label("L" + to_string(label) + "_start");
+            this->label_end = new Label("L" + to_string(label) + "_end");
+            this->goto_end = new Jz("L" + to_string(label) + "_end");
+            this->goto_start = new Jmp("L" + to_string(label) + "_start");
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {
                 (Tk) label_start, 
                 (Tk) condition, (Tk) goto_end,
@@ -152,7 +155,7 @@ class SvarDef : public Stmt {
         void print(string indent = "") override;
         void on_enter() override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             if (value == nullptr) return {};
             return {(Tk)value};
         }
@@ -175,7 +178,7 @@ class SvarSet : public Stmt {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             if (
                 value == nullptr ||
                 // value->tk_type == LITTERAL_VOID ||
@@ -198,7 +201,7 @@ class Sexpr : public Stmt {
             this->value = value;
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)value};
         }
 };
@@ -216,7 +219,7 @@ class Sif : public Stmt {
             this->label_endif = new Label("L" + to_string(label) + "_endif");
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)condition, (Tk) goto_end,(Tk) body, (Tk) label_endif};
         }
         void on_enter() override;
@@ -241,7 +244,7 @@ class SifElse : public Stmt {
             this->label_endif = new Label("L" + to_string(label) + "_endif");
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {
                 (Tk) condition, (Tk) goto_else,
                 (Tk) body_if, (Tk) end_if, 

@@ -30,19 +30,19 @@ void Compiler::init_compiling(){
 void Compiler::reversed_children_push(){
     // Push children in reverse order
 
-    string label_start = (continue_stack.size() > 0) ? continue_stack.back() : "";
-    string label_end = (break_stack.size() > 0) ? break_stack.back() : "";
-    string arg = "";
-    if (actual_token != nullptr && actual_token->tk_type == KEYWORD){
-        Skeyword* keyword = dynamic_cast<Skeyword*>(actual_token);
-        assert(keyword != nullptr);
-        if(keyword->keyword == "break"){
-            arg = label_end;
-        } else if (keyword->keyword == "continue"){
-            arg = label_start;
-        }
-    }
-    vector<Token*> body = actual_token->children(arg);
+    // string label_start = (continue_stack.size() > 0) ? continue_stack.back() : "";
+    // string label_end = (break_stack.size() > 0) ? break_stack.back() : "";
+    // string arg = "";
+    // if (actual_token != nullptr && actual_token->tk_type == KEYWORD){
+    //     Skeyword* keyword = dynamic_cast<Skeyword*>(actual_token);
+    //     assert(keyword != nullptr);
+    //     if(keyword->keyword == "break"){
+    //         arg = label_end;
+    //     } else if (keyword->keyword == "continue"){
+    //         arg = label_start;
+    //     }
+    // }
+    vector<Token*> body = actual_token->children();
     actual_token->remained_children = body.size();
     reverse(body.begin(), body.end());
 

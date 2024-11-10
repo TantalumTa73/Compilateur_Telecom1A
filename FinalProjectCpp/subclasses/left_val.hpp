@@ -17,7 +17,7 @@ class VarGet : public LeftValue {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {};
         }
 };
@@ -39,7 +39,7 @@ class ArrayGet : public LeftValue {
         // int get_size_obj(int level = 0) override {
         //     return left_value->get_size_obj(level+1);
         // }
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)left_value, (Tk)index};
         }
         
@@ -55,7 +55,7 @@ class LLop : public LeftValue {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)left_value};
         }
         
@@ -72,7 +72,7 @@ class RLop : public LeftValue {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)value};
         }
         

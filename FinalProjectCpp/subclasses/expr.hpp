@@ -22,7 +22,7 @@ class ValueGet : public Expr {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)value};
         }
 };
@@ -38,7 +38,7 @@ class List : public Expr {
         };
         void print(string indent = "") override;
         void on_enter() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             vector<Tk> res;
             for (auto v : values) {
                 res.push_back((Tk)v);
@@ -71,7 +71,7 @@ class FunCall : public Expr {
         void print(string indent = "") override;
         void on_enter() override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             vector<Tk> res;
             for (auto it = args.rbegin(); it != args.rend(); ++it) {
                 res.push_back((Tk)*it);
@@ -91,7 +91,7 @@ class LRop : public Expr {
             this->left_value = left_value;
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)left_value};
         }
         void on_exit() override;
@@ -110,7 +110,7 @@ class Uniop : public Expr {
             this->value = value;
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)value};
         }
         void on_exit() override;
@@ -130,7 +130,7 @@ class Binop : public Expr {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)v1, (Tk)v2};
         }
 };
@@ -158,7 +158,7 @@ class LazyAnd : public Expr {
             label_set = new Label("L" + to_string(label) + "_set");
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {
                 (Tk) v1, (Tk) goto_set, 
                 (Tk) cmd_not_set, (Tk) goto_end, 
@@ -190,7 +190,7 @@ class LazyOr : public Expr {
             label_end = new Label("L" + to_string(label) + "_end_set");
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {
                 (Tk) v1, (Tk) goto_set, 
                 (Tk) cmd_not_set, (Tk) goto_end, 
@@ -216,7 +216,7 @@ class Ternop : public Expr {
             this->v2 = v2;
         };
         void print(string indent = "") override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {(Tk)condition, (Tk)v1, (Tk)v2};
         }
         void on_exit() override;

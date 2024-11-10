@@ -25,7 +25,7 @@ class GFunDef : public GStmt {
         void print(string indent = "") override;
         void on_enter() override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             vector<Tk> res;
             for (auto v : args) {
                 res.push_back((Tk) v);
@@ -50,7 +50,7 @@ class GVarDef : public GStmt {
         };
         void print(string indent = "") override;
         void on_exit() override;
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             if (value == nullptr || is_litteral(value->tk_type)) return {};
             ERROR("Global variable inizialization not yet implemented for non litteral values : " + name);
             return {(Tk)value};

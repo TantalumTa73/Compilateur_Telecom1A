@@ -12,7 +12,7 @@ class Arg : public Token {
         void print(string indent = "") override {
             v_cout << indent << "Arg: " << name << " " << type << "\n";
         }
-        vector<Tk> children(string) override {
+        vector<Tk> children() override {
             return {};
         }
 };
