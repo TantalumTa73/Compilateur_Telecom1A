@@ -14,11 +14,13 @@ class Expr : public Token {
 class ValueGet : public Expr {
     public:
         LeftValue* value;
+        bool is_address;
         ValueGet() : Expr(VALUE_GET) {
             value = nullptr;
         };
-        ValueGet(LeftValue* value) : Expr(VALUE_GET) {
+        ValueGet(LeftValue* value, bool is_address) : Expr(VALUE_GET) {
             this->value = value;
+            this->is_address = is_address;
         };
         void print(string indent = "") override;
         void on_exit() override;

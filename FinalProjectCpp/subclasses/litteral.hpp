@@ -20,11 +20,14 @@ class Void : public Litteral {
 class Int : public Litteral {
     public:
         int value;
+        bool is_address;
         Int() : Litteral(LITTERAL_INT){
             value = 0;
+            is_address = false;
         }
-        Int(int value) : Litteral(LITTERAL_INT){
+        Int(int value, bool is_address) : Litteral(LITTERAL_INT){
             this->value = value;
+            this->is_address = is_address;
         }
         void print(string indent = "") override {
             v_cout << indent << "Int: " << value << "\n";

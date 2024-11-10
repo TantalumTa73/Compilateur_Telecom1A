@@ -1,14 +1,21 @@
-int tab[2][2];
+int tab[3][3][3];
 
 int main(){
-    for (int i = 0; i < 2; i ++){
-        for (int j = 0; j < 2; j ++){
-            tab[i][j] = i * 2 + j;
+    int b = 0;
+    for (int i = 0; i < 3; i ++){
+        for (int j = 0; j < 3; j ++){
+            for (int k = 0; k < 3; k ++){
+                tab[i][j][k] = b;
+                b ++;
+            }
         }
     }
-    for (int i = 0; i < 2; i ++){
-        for (int j = 0; j < 2; j ++){
-            print_int(tab[i][j]);
+
+    for (int i = 0; i < 3; i ++){
+        for (int j = 0; j < 3; j ++){
+            for (int k = 0; k < 3; k ++){
+                print_int(tab[i][j][k]);
+            }
         }
     }
     return 0;

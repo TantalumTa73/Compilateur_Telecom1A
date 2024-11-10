@@ -169,7 +169,7 @@ void w_rlop(string op){
     add_line("RLop "+op, true, true);
     if        (op == "*x") {
         add_line("pop %rax");
-        add_line("push %rax");
+        add_line("push (%rax)");
         // allready done in the next instruction (left val to expr)
     } else {
         ERROR(op+" unknown left_val_operators");

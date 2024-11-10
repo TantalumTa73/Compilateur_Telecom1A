@@ -14,10 +14,11 @@ int _label_if_id = 1 ;
 int _scope_id = 1 ;
 vector<string> _string_stack = vector<string>();
 // It is to update mult for ArrayGet
-int _mult_tmp = 1;
+int _mult_tmp = 0;
 bool _is_treating_array = false;
 string _array_name;
 vector<string> _scope_stack = vector<string>();
+bool _is_address = false;
 
 void Token::print(string indent){
     v_cout << indent << "Token: " << "\n";
@@ -140,9 +141,9 @@ Token* Token::simplify(JSON* json){
     } else if (action == "vardef"){
         DataType type_enum = data_type(json->get_string("type"));
         string name = json->get_string("name");
-        vector<int> ladder_size = simplify_int(json->get_array("size"));
+        vector<int> ladder = simplify_int(json->get_array("size"));
         Expr* value = (Expr*) simplify(json->get_object("value"));
-        return new SvarDef(type_enum, name, value, ladder_size);
+        return new SvarDef(type_enum, name, value, ladder);
 
     } else if (action == "varset"){
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
@@ -170,7 +171,7 @@ Token* Token::simplify(JSON* json){
     } else if (action == "int") {
         string value = json->get_string("value");
         int val = stoi(value);
-        return new Int(val);
+        return new Int(val, _is_address);
     } else if (action == "bool") {
         string value = json->get_string("value");
         bool value_bool = (value == "1");
@@ -193,24 +194,32 @@ Token* Token::simplify(JSON* json){
     } else if (action == "varget") { //left val
         string name = json->get_string("name");
         if (_is_treating_array){
-            _is_treating_array = false;
-            _mult_tmp = 1;
+            _mult_tmp = 0;
             _array_name = name;
+            _is_treating_array = false;
         }
         return new VarGet(name);
     } else if (action == "arrayget") {
-        int mult = _mult_tmp ++;
         _is_treating_array = true;
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
+        _mult_tmp ++;
+        int mult = _mult_tmp;
+        bool tmp = _is_address;
+        _is_address = false;
         Expr* index = (Expr*) simplify(json->get_object("index"));
+        _is_address = tmp;
         return new ArrayGet(left_value, index, mult, _array_name);
     } else if (action == "llop") {
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
         string op = json->get_string("op");
         return new LLop(left_value, op);
     } else if (action == "rlop") {
-        Expr* value = (Expr*) simplify(json->get_object("value"));
         string op = json->get_string("op");
+        if (op == "*x"){
+            _is_address = true;
+        }
+        Expr* value = (Expr*) simplify(json->get_object("value"));
+        _is_address = false;
         return new RLop(op, value);
 
 
@@ -218,7 +227,7 @@ Token* Token::simplify(JSON* json){
         return (Litteral*) simplify(json->get_object("value"));
     } else if (action == "valueget") {
         LeftValue* value = (LeftValue*) simplify(json->get_object("value"));
-        return new ValueGet(value);
+        return new ValueGet(value, _is_address);
     } else if (action == "list") {
         vector<Expr*> values = simplify<Expr*>(json->get_array("values"));
         return new List(values);

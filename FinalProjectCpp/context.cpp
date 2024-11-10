@@ -14,20 +14,20 @@ Variable::Variable(){
     is_arg = false;
     type_size = 0;
     full_size = 0;
-    ladder_size = vector<int>();
+    ladder = vector<int>();
 }
 
-Variable::Variable(string name, string ctx_name, int address, bool is_arg, int type_size, vector<int> ladder_size){
+Variable::Variable(string name, string ctx_name, int address, bool is_arg, int type_size, vector<int> ladder){
     this->name = name ;
     this->ctx_name = ctx_name ;
     this->address = address;
     this->is_arg = is_arg ;
     this->type_size = type_size ;
     
-    this->ladder_size = vector<int>();
+    this->ladder = vector<int>();
     this->full_size = type_size ;
-    for (auto it = ladder_size.rbegin(); it != ladder_size.rend() ; it++){
-        this->ladder_size.push_back(this->full_size);
+    for (auto it = ladder.rbegin(); it != ladder.rend() ; it++){
+        this->ladder.push_back(this->full_size);
         this->full_size *= (*it);
     }
 
@@ -76,14 +76,14 @@ Context::Context(string name_, int offset)
     return ;
 }
 
-int Context::init_var(string var_name, int type_size, vector<int> ladder_size, bool is_arg) {
+int Context::init_var(string var_name, int type_size, vector<int> ladder, bool is_arg) {
     if (auto search = vars.find(var_name); search != vars.end()) {
         ERROR("Init var : " + var_name + " already defined in " + name + "\n");
         return -1;
     }
 
     int offset = is_arg ? arg_offset : var_offset;
-    Variable new_var = Variable(var_name, name, offset, is_arg, type_size, ladder_size);
+    Variable new_var = Variable(var_name, name, offset, is_arg, type_size, ladder);
     vars.insert({var_name, new_var});
 
     //  v_cout << "Init var " << var_name << " in " << name ;
