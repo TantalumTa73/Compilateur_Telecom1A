@@ -202,7 +202,8 @@ Token* Token::simplify(JSON* json){
     } else if (action == "arrayget") {
         _is_treating_array = true;
         LeftValue* left_value = (LeftValue*) simplify(json->get_object("left_value"));
-        int mult = _mult_tmp ++;
+        _mult_tmp ++;
+        int mult = _mult_tmp;
         bool tmp = _is_address;
         _is_address = false;
         Expr* index = (Expr*) simplify(json->get_object("index"));
