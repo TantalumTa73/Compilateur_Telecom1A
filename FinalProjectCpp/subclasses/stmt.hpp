@@ -74,7 +74,7 @@ class Skeyword : public Stmt {
                 return {new Jmp("L" + to_string(label) + "_end")};
             } else if (keyword == "continue"){
                 v_cout << "continue to " << label << endl;
-                return {new Jmp("L" + to_string(label) + "_update")};
+                return {new Jmp("L" + to_string(label) + "_start")};
             } else {
                 return {};
             }
