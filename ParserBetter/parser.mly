@@ -70,7 +70,7 @@ prog:
 
 data_type:
   | t = TYPE { t }
-  | t = TYPE STAR { t ^ "*" }
+  | t = data_type STAR { t ^ "*" }
 ;
 
 global_stmt:
