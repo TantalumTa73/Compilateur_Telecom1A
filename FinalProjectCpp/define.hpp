@@ -27,7 +27,9 @@ inline string file_name;
 #define PRINT_INT "print_int"
 #define PRINT_CHAR "print_char"
 #define PRINTF "printf"
+
 #define SCAN_INT "scan_int"
+#define SCANF "scanf"
 
 #define MALLOC "malloc"
 

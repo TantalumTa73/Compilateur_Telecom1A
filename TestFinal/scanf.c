@@ -1,17 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+char s[12] = "%d" ;
+int a = 2938 ;
+
 int main(){
 
-    int a = 1 ;
-
-    print_int(a);        // 1
-
-    print_char('c');
-
-    // scanf('%d', &a) ;
-
-    // print_int(a);        // ?
+    print_int(a);
+    scanf(&s,&a) ;
+    print_int(a);
 
     return 0 ;
 }

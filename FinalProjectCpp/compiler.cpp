@@ -14,8 +14,8 @@ void Compiler::init_compiling(){
     contexts.insert({PRINT_INT, empty_f});
     contexts.insert({PRINT_CHAR, empty_f});
     contexts.insert({PRINTF, empty_f});
-    contexts.insert({PRINTF, empty_f});
 
+    contexts.insert({SCANF, empty_f});
     contexts.insert({SCAN_INT, empty_f});
 
     contexts.insert({MALLOC, empty_f});
