@@ -1,22 +1,6 @@
-int tab[3][3][3];
-
 int main(){
-    int b = 0;
-    for (int i = 0; i < 3; i ++){
-        for (int j = 0; j < 3; j ++){
-            for (int k = 0; k < 3; k ++){
-                tab[i][j][k] = b;
-                b ++;
-            }
-        }
-    }
-
-    for (int i = 0; i < 3; i ++){
-        for (int j = 0; j < 3; j ++){
-            for (int k = 0; k < 3; k ++){
-                print_int(tab[i][j][k]);
-            }
-        }
-    }
+        int t[3][3];
+        *(t[1] + 2) = 42;
+        print_int(t[1][2]);
     return 0;
 }

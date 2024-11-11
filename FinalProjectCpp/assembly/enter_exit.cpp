@@ -180,11 +180,10 @@ void VarGet::on_exit(){
 
 void ArrayGet::on_exit(){
     v_cout << "arrayget's name : " << name << endl;
-    bool is_global = find_var(name).ctx_name == GLOBAL;
+    Variable var = find_var(name);
+    bool is_global = var.ctx_name == GLOBAL;
     int val = is_global ? 1 : -1;
-    for (int i = 0; i < mult; i ++){
-        val *= SIZE_INT;
-    }
+    val *= var.ladder[mult - 1];
     w_array_get2(val);
 }
 
